@@ -322,7 +322,58 @@ $ echo -en "\nhttps://master00-$OCP_REGION.generic.opentlc.com\n\n"
 .. Password:    r3dh4t1!
 
 
-=== OpenShift objects
+== RH-SSO
+TODO:  Elaborate
+
+. Log into the pre-configured _kie-realm_:
++
+-----
+$ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
+-----
++
+Authenticate using the following credentials:  admin / admin1234
+
+. View pre-existing SSO clients:
+.. In the left panel, navigate to:  `Clients`.
+.. The existence of the following two SSO Clients:
+
+... *business-central*
++
+_Authorization Code_ flow client leveraged by the Business Central web application
+
+... *kie-server*
++
+_Bearer-only_ client leveraged by the KIE-Server
+
+. View pre-configured users
+.. In the left panel, navigate to: `Users -> View all users`.
+.. The following table provides details of each pre-configured user:
++
+[cols="1,1,5",options="header"]
+|==============================
+|Username|Password|Description
+|adminuser|admin1!|Admin user assigned to the roles: Administrators, admin, kie-server, kiemgmt, rest-all
+|controlleruser|controller1!|Used by kie-server when accessing KIE controller embedded in Business Central
+|casemanager|r3dh4t1!|
+|casesupplier|r3dh4t1!|
+|caseuser|r3dh4t1!|
+|Super|Password1!|TODO
+|Ava|Password1!|TODO
+|Bill|Password1!|TODO
+|Tina|Password1!|TODO
+|Tom|Password1!|TODO
+|Eve|Password1!|TODO
+|Ann|Password1!|TODO
+|Bob|Password1!|TODO
+|==============================
+
+
+== Process Automation Manager
+
+Your lab environment includes a 3scale API Manager with one tenant.
+The API Manager functionality operates in the namespace:  _$API_MANAGER_NS_.
+
+=== RH-PAM resources
 
 . Review RH-PAM DeploymentConfigs:
 +
@@ -353,53 +404,6 @@ rhpam-postgresql-1-nks5f   1/1       Running   2          23h
 ...
 -----
 
-== RH-SSO
-
-. Log into the pre-configured _kie-realm_:
-+
------
-$ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
------
-+
-Authenticate using the following credentials:  admin / admin1234
-
-. View pre-existing SSO clients:
-.. In the left panel, navigate to:  `Clients`.
-.. The existence of the following two SSO Clients:
-
-... *business-central*
-+
-_Authorization Code_ flow client leveraged by the Business Central web application
-
-... *kie-server*
-+
-_Bearer-only_ client leveraged by the KIE-Server
-
-. View pre-configured users
-.. In the left panel, navigate to: `Users -> View all users`.
-.. The following table provides details of each pre-configured user:
-+
-[cols="1,1,5",options="header"]
-|Username|Password|Description
-|adminuser|admin1!|Admin user assigned to the roles: Administrators, admin, kie-server, kiemgmt, rest-all
-|controlleruser|controller1!|Used by kie-server when accessing KIE controller embedded in Business Central
-|casemanager|r3dh4t1!|
-|casesupplier|r3dh4t1!|
-|caseuser|r3dh4t1!|
-|Super|Password1!|TODO
-|Ava|Password1!|TODO
-|Bill|Password1!|TODO
-|Tina|Password1!|TODO
-|Tom|Password1!|TODO
-|Eve|Password1!|TODO
-|Ann|Password1!|TODO
-|Bob|Password1!|TODO
-
-
-== Process Automation Manager
-
-Your lab environment includes a 3scale API Manager with one tenant.
-The API Manager functionality operates in the namespace:  _$API_MANAGER_NS_.
 
 === Validate Integration with RH-SSO
 
