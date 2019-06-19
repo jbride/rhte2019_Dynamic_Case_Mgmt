@@ -332,6 +332,8 @@ $ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
 -----
 +
 Authenticate using the following credentials:  admin / admin1234
++
+image::images/sso_login_home.png[]
 
 . View pre-existing SSO clients:
 .. In the left panel, navigate to:  `Clients`.
@@ -456,6 +458,8 @@ $ echo -en "\n\nhttps://$bc_url\n\n"
 -----
 
 . Authenticate using:  adminuser / admin1! 
++
+image::images/bc_login_home.png[]
 
 
 [blue]#Congratulations!#
