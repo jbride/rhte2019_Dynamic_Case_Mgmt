@@ -24,6 +24,10 @@ NOTE: If your network connection is intermittent, consider installing the https:
 
 === Background
 
+=== Deployment Topology
+
+images::images/arch_topology.png[]
+
 == Course Virtual Machine
 
 Your lab environment is remote and consists of the following:
