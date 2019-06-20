@@ -26,7 +26,7 @@ NOTE: If your network connection is intermittent, consider installing the https:
 
 === Deployment Topology
 
-images::images/arch_topology.png[]
+image::images/arch_topology.png[]
 
 == Course Virtual Machine
 
