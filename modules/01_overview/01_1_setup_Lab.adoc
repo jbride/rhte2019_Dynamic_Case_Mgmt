@@ -159,13 +159,13 @@ $ sudo -i
 # mkdir -p $HOME/lab && \
        wget https://bit.ly/2ItoCid -O $HOME/lab/pam_rhsso_state_update.sh \
        && chmod 755 $HOME/lab/pam_rhsso_state_update.sh \
-       && $HOME/lab/pam_rhsso_state_update.sh 71b4
+       && $HOME/lab/pam_rhsso_state_update.sh 5dff
 -----
 
 . You should see a response similar to the following:
 +
 -----
-will update the following stale guid in the Process Automation Manager: 71b4
+will update the following stale guid in the Process Automation Manager: 5dff
 
 deploymentconfig.apps.openshift.io/rhpam-kieserver updated
 deploymentconfig.apps.openshift.io/rhpam-bc updated
@@ -174,7 +174,7 @@ deploymentconfig.apps.openshift.io/rhpam-bc updated
 +
 If you are curious as to what exactly is getting modified in the Process Automation Manager, you can review link:https://bit.ly/2ItoCid[the script].
 +
-In particular, notice that the wildcard DNS of RH-SSO URLs used in the Process Automation Manager have changed.
+In particular, notice that the wildcard DNS of RH-SSO URLs used in the Process Automation Manager are modified.
 
 . After a couple of minutes, expect two of the three RH-PAM pods to have re-started:
 +
@@ -323,30 +323,40 @@ $ echo -en "\nhttps://master00-$OCP_REGION.generic.opentlc.com\n\n"
 
 
 == RH-SSO
-TODO:  Elaborate
+TODO:  Elaborate on purpose
 
 . Log into the pre-configured _kie-realm_:
 +
 -----
 $ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
 -----
-+
-Authenticate using the following credentials:  admin / admin1234
+
+. Authenticate using the following credentials:  admin / admin1234
 +
 image::images/sso_login_home.png[]
 
-. View pre-existing SSO clients:
-.. In the left panel, navigate to:  `Clients`.
-.. The existence of the following two SSO Clients:
+=== SSO Clients
+In this section of the lab, you view pre-existing SSO clients and modify one of them (the _business-central_ SSO Client).
 
-... *business-central*
-+
-_Authorization Code_ flow client leveraged by the Business Central web application
+. In the left panel, navigate to:  `Clients`.
+. Notice the existence of two SSO Clients of importance for this lab: _kie-server_ and _business-central_.
 
-... *kie-server*
+. *kie-server*
 +
 _Bearer-only_ client leveraged by the KIE-Server
++
+image::images/kie-server-SSO.png[]
 
+. *business-central*
++
+_Authorization Code_ flow client leveraged by the Business Central web application.
++
+You will need to add a _redirect_uri_ of your Business Central web application to this SSO Client.  Do so as follows:
+
+.. TODO
+
+
+=== Users
 . View pre-configured users
 .. In the left panel, navigate to: `Users -> View all users`.
 .. The following table provides details of each pre-configured user:
@@ -486,6 +496,10 @@ TODO
 . https://github.com/gpe-mw-ansible-org/rhpam-dev-ansible
 +
 TODO
+
+. Additional notes as follows
+
+.. In RH-SSO, change the _kie-server_ SSO client to a _bearer-only_ client
 
 ifdef::showscript[]
 
