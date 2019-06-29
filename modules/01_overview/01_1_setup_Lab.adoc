@@ -20,9 +20,10 @@ NOTE: If your network connection is intermittent, consider installing the https:
 
 
 == Overview
-
+TODO
 
 === Background
+TODO
 
 === Deployment Topology
 
@@ -36,7 +37,7 @@ Your lab environment is remote and consists of the following:
 . *Red Hat Process Automation Manager* (RH-PAM) 
 . *Red Hat Single Sign-On* (RH-SSO)
 
-This lab environment is accessible can also be accessed via ssh.
+This lab environment can be accessed via ssh as well as through your local browser.
 
 === Order Virtual Machine
 This section guides you through the procedure to order a virtual machine (VM) for this course.
@@ -48,7 +49,7 @@ NOTE: [blue]#This section is applicable if you are an existing student of either
 . In a web browser, navigate to the _Cloud Forms_ environment for OPEN and RHSE at:   https://labs.opentlc.com.
 . Authenticate using your _OPENTLC_ credentials, for example: `johndoe-redhat.com`.
 . Navigate to the following catalog:  `Services -> Catalog -> Catalog Items -> OPENTLC Middleware Solutions Labs`.
-. Select the following catalog item: `RHTE_2019: Dynamic Case Mgmt`.
+. Select the following catalog item: `RHTE19: Dynamic Case Mgmt`.
 . Click `Order` on the next page.
 
 . In the subsequent order form, select the check box confirming you understand the runtime and expiration dates. :
@@ -332,7 +333,7 @@ TODO:  Elaborate on purpose
 . Log into the pre-configured _kie-realm_:
 +
 -----
-$ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
+$ echo -en "\n\n$rhsso_url/auth/admin/kie-realm/console\n\n"
 -----
 
 . Authenticate using the following credentials:  admin / admin1234
@@ -347,9 +348,13 @@ In this section of the lab, you view pre-existing SSO clients and modify one of 
 
 . *kie-server*
 +
-_Bearer-only_ client leveraged by the KIE-Server
+SSO client leveraged by the KIE-Server.  Enabled with the following flows:
+
+.. _Resource Owner Password Credentials_ 
 +
-image::images/kie-server-SSO.png[]
+Supports liveness and readiness probes of kie-server using the user: _adminUser_.
+
+.. TODO:  Does an external application pass a bearer token to kie-server even though _kie-server_ SSO client is not of type:  _bearer only_  ?
 
 . *business-central*
 +
@@ -491,15 +496,66 @@ It is offered to those that are interested in provisioning an environment to sup
 
 The lab environment assumes an existing OCP 3.11 installation with cluster admin access and about 24GB of RAM.
 
-The lab environment can be provisioned via the following Ansible roles:
+The lab environment can be provisioned via the following Ansible:
 
-. https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm
-+
-TODO
+==== link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm[rh-sso-multi-realm]
 
-. https://github.com/gpe-mw-ansible-org/rhpam-dev-ansible
+. login into your OCP lab environment as a cluster admin
+
+. Determine rhsso_url environment variable:
 +
-TODO
+-----
+rhsso_url = https://sso-rhsso-sso0.apps-71b4.generic.opentlc.com
+-----
+
+. Log into _master realm_ of RH-SSO at the following URL:
++
+-----
+$ echo -en "$rhsso_url/auth/admin/master/console/"
+-----
+
+. Authenticate using credentials of:  master /master
+
+
+==== link:https://github.com/gpe-mw-ansible-org/rhpam-dev-ansible[rhpam-dev-ansible]
+
+-----
+use_custom_pam=false
+ocp_user=user1
+use_cluster_quota=true
+guid=$ocp_user
+businesscentral_image_namespace=openshift
+kieserver_image_namespace=openshift
+
+ansible-playbook playbooks/rhpam_dev.yml\
+    -e ocp_user=$ocp_user \
+    -e guid=$guid \
+    -e use_cluster_quota=$use_cluster_quota \
+    -e kieserver_image_namespace=$kieserver_image_namespace \
+    -e businesscentral_image_namespace=$businesscentral_image_namespace \
+    -e use_custom_pam=$use_custom_pam \
+    -e rhsso_url=$rhsso_url/auth \
+    -e smtp_host=$smtp_host \
+    -e smtp_port=$smtp_port \
+    -e smtp_userid=$smtp_userid \
+    -e smtp_passwd=$smtp_passwd 
+-----
+
+
+. Study:
++
+-----
+$ https://github.com/jboss-container-images/jboss-eap-modules/blob/master/os-eap-sso/added/keycloak.sh
+-----
+
+-----
+INFO Obtained auth token from https://sso-rhsso-sso0.apps-71b4.generic.opentlc.com/auth for realm kie-realm
+INFO Registered openid-connect client for module root in realm kie-realm on 
+INFO Configured keycloak subsystem for openid-connect module root from ROOT.war
+-----
+
+. BC
+.. https://rhpam-bc-rhpam-dev-user1.apps-71b4.generic.opentlc.com   :   adminUser / admin1!
 
 . Additional notes as follows
 
