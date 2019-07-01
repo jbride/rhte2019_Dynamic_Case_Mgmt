@@ -563,4 +563,31 @@ INFO Configured keycloak subsystem for openid-connect module root from ROOT.war
 
 ifdef::showscript[]
 
+ansible-playbook playbooks/rhpam_dev.yml    -e ocp_user=$ocp_user     -e guid=$guid     -e use_cluster_quota=$use_cluster_quota     -e kieserver_image_namespace=$kieserver_image_namespace     -e businesscentral_image_namespace=$businesscentral_image_namespace     -e use_custom_pam=$use_custom_pam     -e rhsso_url=https://$rhsso_url/auth     -e smtp_host=$smtp_host     -e smtp_port=$smtp_port     -e smtp_userid=$smtp_userid     -e smtp_passwd=$smtp_passwd -e configure_smtp_relay=true
+
+
+oc delete all -l "service=rhpam-kieserver"
+
+        - name: smtp-relay
+          image: quay.io/rhtgptetraining/ocp-smtp-relay:1.0
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          env:
+          - name: MTP_RELAY
+            value: "{{ smtp_host }}"
+          - name: MTP_PORT
+            value: "{{ smtp_port }}"
+          - name: MTP_USER
+            value: "{{ smtp_userid }}"
+          - name: MTP_PASS
+            value: "{{ smtp_passwd }}"
+          ports:
+          - name: smtp
+            containerPort: 25
+            protocol: TCP
+
+
 endif::showscript[]
