@@ -164,13 +164,13 @@ $ sudo -i
 # mkdir -p $HOME/lab && \
        wget https://bit.ly/2ItoCid -O $HOME/lab/pam_rhsso_state_update.sh \
        && chmod 755 $HOME/lab/pam_rhsso_state_update.sh \
-       && $HOME/lab/pam_rhsso_state_update.sh 5dff
+       && $HOME/lab/pam_rhsso_state_update.sh da7e
 -----
 
 . You should see a response similar to the following:
 +
 -----
-will update the following stale guid in the Process Automation Manager: 5dff
+will update the following stale guid in the Process Automation Manager: da7e
 
 deploymentconfig.apps.openshift.io/rhpam-kieserver updated
 deploymentconfig.apps.openshift.io/rhpam-bc updated
@@ -187,7 +187,7 @@ In particular, notice that the wildcard DNS of RH-SSO URLs used in the Process A
 $ oc get pods -n rhpam-dev-user1
 
 rhpam-bc-3-rvwtn           1/1       Running   1          2m
-rhpam-kieserver-4-5f97q    1/1       Running   0          2m
+rhpam-kieserver-4-5f97q    2/2       Running   0          2m
 rhpam-postgresql-1-nks5f   1/1       Running   1          20h
 -----
 
