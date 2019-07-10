@@ -23,7 +23,7 @@ One of the departments in our organization wants to hire a new person, so the de
 
 === Case Management Diagrams
 
-TODO export PNG and display here.
+image::images/all_process.png[Hiring Case Diagram]
 
 == Department request for jobs
 == HR define job requirements
