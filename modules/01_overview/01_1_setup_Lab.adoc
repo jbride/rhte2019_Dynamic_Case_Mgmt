@@ -35,7 +35,9 @@ During the workshop we will perform the following activities:
 The scope of the workshop includes the analysis of an existing platform that integrates *Case Management* with modern Javascript frameworks like *ReactJs* over *NodeJs*. CI/CD methodologies, case management 1-0-1, Decision Manager rules execution and Resource Planner (along with lot of other topics) are out of scope.
 
 === Background
-TODO
+This workshop is inspired in the original demo created in March 2019 (link:https://gitlab.consulting.redhat.com/uki-sa/pam-demo[PAM Demo]) by link:https://gitlab.consulting.redhat.com/bholmes[Ben Holmes] and his team. Thank you for the inspiration received by a well done project.
+
+In this workshop we will see another example of this implementation, but now using a more data-driven case management solution and a different UI approach using ReactJs instead of Angular with a similar usability flow.
 
 === Deployment Topology
 
