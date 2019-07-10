@@ -20,7 +20,19 @@ NOTE: If your network connection is intermittent, consider installing the https:
 
 
 == Overview
-TODO
+In this workshop we will deploy, manage and develop a platform that assist with the *Hiring request process*. The *Hiring request process* is the process that consists in receiving a *Hiring Petition*, evaluate the *Candidate skills* and other *Hiring requirements* to fulfill the *Job Position*.
+The scope of the solution is from the *Hiring Petition* to the *Job Offer Acceptance*; this means that any process after the *Candidate* has been selected is out of the scope of our current platform.
+
+image::images/milestones-overview.png[Milestones Overview]
+
+During the workshop we will perform the following activities:
+
+* Deploy and configure the most representative parts of the platform, paying attention to the bending and connection points of their infrastructure.
+* Execute an end to end demo of the most common cases, specially the happy path.
+* Analyze the client applications to find the integration points with the back end components.
+* Modify one of the client applications to allow some dynamicity allowed by *Red Hat Process Automation Manager* when working with *Case Management* projects.
+
+The scope of the workshop includes the analysis of an existing platform that integrates *Case Management* with modern Javascript frameworks like *ReactJs* over *NodeJs*. CI/CD methodologies, case management 1-0-1, Decision Manager rules execution and Resource Planner (along with lot of other topics) are out of scope.
 
 === Background
 TODO
@@ -33,8 +45,8 @@ image::images/arch_topology.png[]
 
 Your lab environment is remote and consists of the following:
 
-. *OpenShift Container Platform* (OCP)  
-. *Red Hat Process Automation Manager* (RH-PAM) 
+. *OpenShift Container Platform* (OCP)
+. *Red Hat Process Automation Manager* (RH-PAM)
 . *Red Hat Single Sign-On* (RH-SSO)
 
 This lab environment can be accessed via ssh as well as through your local browser.
@@ -127,7 +139,7 @@ $ ssh <opentlc-userId>@workstation-$GUID.rhpds.opentlc.com
 -----
 
 . Authenticate into OpenShift as a non cluster admin user (user1) using the `oc` utility
-+ 
++
 -----
 $ oc login https://master00.example.com -u user1 -p r3dh4t1!
 -----
@@ -151,7 +163,7 @@ $ sudo -i
 === Refresh Process Automation Manager state
 
 Your Process Automation Manager needs to be refreshed with the URL of the Red Hat SSO specific to your lab environment.
-For this purpose, a script has been provided as follows: 
+For this purpose, a script has been provided as follows:
 
 . Gain OCP cluster access via the shell of the root operating system user:
 +
@@ -352,7 +364,7 @@ In this section of the lab, you view pre-existing SSO clients and modify one of 
 +
 SSO client leveraged by the KIE-Server.  Enabled with the following flows:
 
-.. _Resource Owner Password Credentials_ 
+.. _Resource Owner Password Credentials_
 +
 Supports liveness and readiness probes of kie-server using the user: _adminUser_.
 
@@ -437,7 +449,7 @@ You can verify this via the logs of both RH-PAM applications.
 . View log statements regarding SSO integration in Business Central:
 +
 -----
-$ oc logs `oc get pod -n $RHPAM_PROJECT | grep "rhpam-bc" | awk '{print $1}'` -n $RHPAM_PROJECT | head -n 15 
+$ oc logs `oc get pod -n $RHPAM_PROJECT | grep "rhpam-bc" | awk '{print $1}'` -n $RHPAM_PROJECT | head -n 15
 
 ...
 
@@ -453,7 +465,7 @@ This _business-central_ SSO client comes pre-configured to implement the _Author
 . View log statements regarding SSO integration in KIE-Server:
 +
 -----
-$ oc logs `oc get pod -n $RHPAM_PROJECT | grep "rhpam-kieserver" | awk '{print $1}'` -n $RHPAM_PROJECT | head -n 15 
+$ oc logs `oc get pod -n $RHPAM_PROJECT | grep "rhpam-kieserver" | awk '{print $1}'` -n $RHPAM_PROJECT | head -n 15
 
 ...
 
@@ -478,7 +490,7 @@ Log into the administration portal of your Business Central web app as follows:
 $ echo -en "\n\nhttps://$bc_url\n\n"
 -----
 
-. Authenticate using:  adminuser / admin1! 
+. Authenticate using:  adminuser / admin1!
 +
 image::images/bc_login_home.png[]
 
@@ -519,7 +531,7 @@ user_test5_tester5 = testing5 service
 ....
 -----
 
-. Issue a swift command to obtain information on the container created for you. 
+. Issue a swift command to obtain information on the container created for you.
 +
 -----
 $ swift --info --debug  -A http://192.168.0.20:8080/auth/v1.0 -U test:tester -K testing list TEST
@@ -545,7 +557,7 @@ $ curl -v -H 'X-Storage-User: test:tester' -H 'X-Storage-Pass: testing' http://1
 > Accept: */*
 > X-Storage-User: test:tester
 > X-Storage-Pass: testing
-> 
+>
 < HTTP/1.1 200 OK
 < X-Storage-Url: http://192.168.0.20:8080/v1/AUTH_test
 < X-Auth-Token-Expires: 75389
@@ -556,7 +568,7 @@ $ curl -v -H 'X-Storage-User: test:tester' -H 'X-Storage-Pass: testing' http://1
 < X-Trans-Id: txff48655287f6427cbcec7-005d1b8f94
 < X-Openstack-Request-Id: txff48655287f6427cbcec7-005d1b8f94
 < Date: Tue, 02 Jul 2019 17:08:36 GMT
-< 
+<
 -----
 
 . Create a simple text file under the /tmp directory and issue curl PUT and GET commands to verify that the document can be saved and retrieved. Use the OAuth token output from the previous command here. The x-object-meta-mtime parameter is optional.
@@ -651,7 +663,7 @@ ansible-playbook playbooks/rhpam_dev.yml\
     -e smtp_host=$smtp_host \
     -e smtp_port=$smtp_port \
     -e smtp_userid=$smtp_userid \
-    -e smtp_passwd=$smtp_passwd 
+    -e smtp_passwd=$smtp_passwd
 -----
 
 
@@ -663,7 +675,7 @@ $ https://github.com/jboss-container-images/jboss-eap-modules/blob/master/os-eap
 
 -----
 INFO Obtained auth token from https://sso-rhsso-sso0.apps-71b4.generic.opentlc.com/auth for realm kie-realm
-INFO Registered openid-connect client for module root in realm kie-realm on 
+INFO Registered openid-connect client for module root in realm kie-realm on
 INFO Configured keycloak subsystem for openid-connect module root from ROOT.war
 -----
 

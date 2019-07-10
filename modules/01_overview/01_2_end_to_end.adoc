@@ -25,7 +25,24 @@ One of the departments in our organization wants to hire a new person, so the de
 
 image::images/all_process.png[Hiring Case Diagram]
 
+== Installing client applications
+Client applications for this lab are ReactJs websites over a NodeJs server that interact with the kie-server deployed in Openshift during the previous lab.
+To install the web sites be sure to have at reach:
+
+* The RH-SSO KIE-REALM / kie-server client JSON configuration for an external application.
+* The KIE-SERVER external route
+
+=== The back office application
+The back office application is a web site developed using ReactJs, Redux and Patternfly over NodeJs. This back office web site's source code project is: https://github.com/barhte2019/hiring-app-internal
+
+The back office application allows administrative users like *Talent Acquisition*, *HR* or the *Department interested in hiring* to manage the *Hiring Petitions* and *Candidates*.
+
+
+
+=== The public web site application
+
 == Department request for jobs
+Using the back office application (hiring_app_internal),
 == HR define job requirements
 == Candidate Apply for jobs
 == The interview Process
