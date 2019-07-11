@@ -43,6 +43,12 @@ In this workshop we will see another example of this implementation, but now usi
 
 image::images/arch_topology.png[]
 
+During the workshop we will work around the topology in the picture above. I will refer to them by their short name to describe their contents, hence the `pam7-tools-$guid` is the `Tools` namespace, the `rhpam-dev-$guid` is the `RHPAM-DEV` namespace and the `rhsso-sso0` is the `RHSSO` namespace.
+We have a `Tools` namespace with `pgadmin4` and `Nexus`. With `pgadmin4` we have a tool to navigate databases in our environment with a web tool. With `Nexus` we have an online repository for Maven projects.
+In the `RHPAM-DEV` namespace we have the Red Hat Process Automation Manager components for authoring, runtime, database and email.
+In the `RHSSO` namespace we have Red Hat SSO for authentication and authorization across our environment.
+The `client-app` namespace with its containers will be deployed and modified during the workshop to demonstrate its integration with RHPAM.
+
 == Course Virtual Machine
 
 Your lab environment is remote and consists of the following:
