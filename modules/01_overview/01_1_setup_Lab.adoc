@@ -357,7 +357,7 @@ In this section you will navigate the current configuration in your Red Hat SSO 
 . Log into the pre-configured _kie-realm_:
 +
 -----
-$ echo -en "\n\n$rhsso_url/auth/admin/kie-realm/console\n\n"
+$ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
 -----
 
 . Authenticate using the following credentials:  admin / admin1234
@@ -378,19 +378,25 @@ SSO client leveraged by the KIE-Server.  Enabled with the following flows:
 +
 Supports liveness and readiness probes of kie-server using the user: _adminUser_.
 
-.. TODO:  Does an external application pass a bearer token to kie-server even though _kie-server_ SSO client is not of type:  _bearer only_  ?
-
 . *business-central*
 +
 _Authorization Code_ flow client leveraged by the Business Central web application.
 +
 You will need to add a _redirect_uri_ of your Business Central web application to this SSO Client.  Do so as follows:
 
-.. TODO
+.. Retrieve the remote URL for your business central from the ssh console by running:
++
+----
+$ echo -en "\n\nhttps://$bc_url/*\n\n"
+----
+.. *Edit* the `business-central` client in *Red Hat SSO* to specify the *Valid Redirect URIs* to the value retrieved in previous step; note the appending "/*" to the end of it. This means that all URIs sharing the same domain will be secured by this client.
++
+image:images/valid-redirect-uris.png[Valid Redirect URIs example]
+.. *Save* the changes to the client
 
 
 === Users
-. View pre-configured users
+. View pre-configured users in *Red Hat SSO*
 .. In the left panel, navigate to: `Users -> View all users`.
 .. The following table provides details of each pre-configured user:
 +
@@ -399,24 +405,24 @@ You will need to add a _redirect_uri_ of your Business Central web application t
 |Username|Password|Description
 |adminuser|admin1!|Admin user assigned to the roles: Administrators, admin, kie-server, kiemgmt, rest-all
 |controlleruser|controller1!|Used by kie-server when accessing KIE controller embedded in Business Central
-|casemanager|r3dh4t1!|
-|casesupplier|r3dh4t1!|
-|caseuser|r3dh4t1!|
-|Super|Password1!|TODO
-|Ava|Password1!|TODO
-|Bill|Password1!|TODO
-|Tina|Password1!|TODO
-|Tom|Password1!|TODO
-|Eve|Password1!|TODO
-|Ann|Password1!|TODO
-|Bob|Password1!|TODO
+|casemanager|r3dh4t1!| Generic case manager user.
+|casesupplier|r3dh4t1!| Generic case supplier user.
+|caseuser|r3dh4t1!| Generic case user.
+|Super|Password1!|An administrative user with access to all cases and tasks.
+|Ava|Password1!|Ava is an out of the box applicant user type for our Hiring process. Ava is able to apply for jobs, she is not able to login to business central, but is able to login into the public client application.
+|Bill|Password1!|Bill is an out of the box applicant user type for our Hiring process. Bill is able to apply for jobs, he is not able to login to business central, but is able to login into the public client application.
+|Tina|Password1!|Tina is a `Taleng-acquisition` user for our Hiring process. Tina is able to create hiring requests using the internal client application, although is not able to access business central.
+|Tom|Password1!|Tom is a `Taleng-acquisition` user for our Hiring process. Tom is able to create hiring requests using the internal client application, although is not able to access business central.
+|Eve|Password1!|Eve is an `Interviewer` user for our hiring process. Eve is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
+|Ann|Password1!|Eve is an `Interviewer` user for our hiring process. Ann is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
+|Bob|Password1!|Eve is an `Interviewer` user for our hiring process. Bob is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
 |==============================
 
 
 == Process Automation Manager
 
-Your lab environment includes a 3scale API Manager with one tenant.
-The API Manager functionality operates in the namespace:  _$API_MANAGER_NS_.
+Your lab environment includes a common authoring installation for Red Hat Process Automation Manager. The common Authoring installation includes: A database, Business Central and Kie Server.
+Red Hat Process Automation Manager containers operate in the namespace:  _$RHPAM_PROJECT_.
 
 === RH-PAM resources
 
@@ -459,13 +465,11 @@ You can verify this via the logs of both RH-PAM applications.
 . View log statements regarding SSO integration in Business Central:
 +
 -----
-$ oc logs `oc get pod -n $RHPAM_PROJECT | grep "rhpam-bc" | awk '{print $1}'` -n $RHPAM_PROJECT | head -n 15
+$ oc logs `oc get pod -n $RHPAM_PROJECT | grep "rhpam-bc" | awk '{print $1}'` -n $RHPAM_PROJECT | head -n 15 | grep rhsso
 
 ...
 
 INFO Obtained auth token from https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth for realm kie-realm
-WARN ERROR: Unable to register openid-connect client for module root in realm kie-realm on : {"errorMessage":"Client business-central already exists"}
-INFO Configured keycloak subsystem for openid-connect module root from ROOT.war
 -----
 +
 The log statements above allude to an integration with an SSO _realm_ called: _kie-realm_ using an SSO _client_ called:  _business-central_.
@@ -507,10 +511,9 @@ image::images/bc_login_home.png[]
 
 == OpenStack _Swift_ node for Document Storage
 
-TODO:: Verify this works as userX, currently tried as root
-
 One of the nodes in the environment you have ordered runs an Openstack Swift instance which provides object storage. A container is created in this environment which can store objects. In the lab, offer letters will be stored and retrieved from this storage using a Fuse route. In this section, you will verify that you have access to the Swift object store by running a few curl commands to test it. A cotnainer called TEST and a user called test has been pre-created with a password testing. You will obtain an OAuth token to access the object store API, using the user and password information provided.
 
+. Switch to root user using `sudo -i`
 . ssh into the Swift node
 +
 -----
@@ -617,7 +620,7 @@ You have verified that in your environment you can access the Swift object stora
 
 
 [blue]#Congratulations!#
-Your lab environment is now ready to use.  Please proceed to the next lab:  link:TODO[*TODO*]
+Your lab environment is now ready to use.  Please proceed to the next lab.
 
 
 == Appendix
