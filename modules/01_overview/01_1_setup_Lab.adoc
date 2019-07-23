@@ -153,38 +153,18 @@ $ oc login https://master00.example.com -u user1 -p r3dh4t1!
 -----
 
 
-. OCP cluster admin access
-+
-OCP cluster admin access is provided by switching to the root operating system of your lab environment as follows.
-+
------
-$ sudo -i
-
-# oc login -u system:admin      # NOTE: This command is typically not needed
-                                #       /root/.kube/config already contains the _system:admin_ user's token
-
-
-# exit
------
-
 
 === Refresh Process Automation Manager state
 
 Your Process Automation Manager needs to be refreshed with the URL of the Red Hat SSO specific to your lab environment.
 For this purpose, a script has been provided as follows:
 
-. Gain OCP cluster access via the shell of the root operating system user:
-+
------
-$ sudo -i
------
-
 . Execute the following:
 +
 -----
 
-# mkdir -p $HOME/lab && \
-       wget https://bit.ly/2ItoCid -O $HOME/lab/pam_rhsso_state_update.sh \
+$ mkdir -p $HOME/lab && \
+       wget https://bit.ly/2OcUXPb -O $HOME/lab/pam_rhsso_state_update.sh \
        && chmod 755 $HOME/lab/pam_rhsso_state_update.sh \
        && $HOME/lab/pam_rhsso_state_update.sh da7e
 -----
@@ -194,12 +174,15 @@ $ sudo -i
 -----
 will update the following stale guid in the Process Automation Manager: da7e
 
-deploymentconfig.apps.openshift.io/rhpam-kieserver updated
-deploymentconfig.apps.openshift.io/rhpam-bc updated
+deploymentconfig.apps.openshift.io/rhpam-bc patched
+
+Pause for the following number of seconds: 15
+
+deploymentconfig.apps.openshift.io/rhpam-kieserver patched
 
 -----
 +
-If you are curious as to what exactly is getting modified in the Process Automation Manager, you can review link:https://bit.ly/2ItoCid[the script].
+If you are curious as to what exactly is getting modified in the Process Automation Manager, you can review link:https://bit.ly/2OcUXPb[the script].
 +
 In particular, notice that the wildcard DNS of RH-SSO URLs used in the Process Automation Manager are modified.
 
@@ -212,20 +195,6 @@ rhpam-bc-3-rvwtn           1/1       Running   1          2m
 rhpam-kieserver-4-5f97q    2/2       Running   0          2m
 rhpam-postgresql-1-nks5f   1/1       Running   1          20h
 -----
-
-. Provider the OCP user called _user1_ with the ability to impersonate cluster admin:
-+
------
-# oc adm policy add-cluster-role-to-user sudoer user1
------
-
-. Exit out of the root operating system user shell:
-+
------
-# exit
------
-+
-[blue]#Make sure to exit out of the root shell after every use#
 
 [[env_vars]]
 == Environment Variables
@@ -266,48 +235,6 @@ Your lab environment is built on Red Hat's OpenShift Container Platform (OCP).
 Access to your OCP resources can be gained via both the `oc` CLI utility and the OCP web console.
 
 
-. Validate the ability to _impersonate_ cluster admin:
-+
------
-$ oc get nodes --as=system:admin
-
-NAME                      STATUS    ROLES            AGE       VERSION
-infranode00.example.com   Ready     infra            4d        v1.11.0+d4cacc0
-master00.example.com      Ready     compute,master   4d        v1.11.0+d4cacc0
------
-+
-For the purpose of this lab, the cluster-admin of your OCP environment has provided you with the ability to _impersonate_ the _cluster-admin_.
-You would not have had the ability to execute the above command (by specifying `--as=system:admin`) if the cluster-admin had not already done so.
-In the next lab you will use this ability to impersonate the cluster admin.
-
-
-. View details of the ClusterQuota that the _cluster-admin_ has assigned to your OpenShift user:
-+
------
-$ oc describe clusterquota quota-rhpam-$OCP_USERNAME --as=system:admin
-
-....
-
-Resource                Used    Hard
---------                ----    ----
-configmaps              1       15
-limits.cpu              4100m   9
-limits.memory           8904Mi  16Gi
-persistentvolumeclaims  4       10
-pods                    5       20
-requests.cpu            750m    4
-requests.memory         3160Mi  8Gi
-requests.storage        9Gi     40Gi
-secrets                 23      50
-services                5       50
------
-
-. Provide _user1_ with view access to the namespace where Red Hat SSO is installed:
-+
------
-$ oc adm policy add-role-to-user view user1 -n rhsso-sso0 --as=system:admin
------
-
 . View existing projects:
 +
 -----
@@ -317,7 +244,6 @@ $ oc get projects
 
 pam-7-tools-user1   Tools          Active
 rhpam-dev-user1     RHPAM-dev      Active
-rhsso-sso0                         Active
 -----
 
 . *pam-7-tools-user1*
@@ -624,6 +550,58 @@ Your lab environment is now ready to use.  Please proceed to the next lab.
 
 
 == Appendix
+
+=== Optional: OCP cluster admin related tasks
+
+. OCP cluster admin access is provided by switching to the root operating system of your lab environment as follows.
++
+-----
+$ sudo -i
+-----
+
+. Provider the OCP user called _user1_ with the ability to impersonate cluster admin:
++
+-----
+# oc adm policy add-cluster-role-to-user sudoer user1
+-----
+
+. Validate the ability to _impersonate_ cluster admin:
++
+-----
+$ oc get nodes --as=system:admin
+
+NAME                      STATUS    ROLES            AGE       VERSION
+infranode00.example.com   Ready     infra            4d        v1.11.0+d4cacc0
+master00.example.com      Ready     compute,master   4d        v1.11.0+d4cacc0
+-----
+
+. View details of the ClusterQuota that the _cluster-admin_ has assigned to your OpenShift user:
++
+-----
+$ oc describe clusterquota quota-rhpam-$OCP_USERNAME --as=system:admin
+
+....
+
+Resource                Used    Hard
+--------                ----    ----
+configmaps              1       15
+limits.cpu              4100m   9
+limits.memory           8904Mi  16Gi
+persistentvolumeclaims  4       10
+pods                    5       20
+requests.cpu            750m    4
+requests.memory         3160Mi  8Gi
+requests.storage        9Gi     40Gi
+secrets                 23      50
+services                5       50
+-----
+
+. Provide _user1_ with view access to the namespace where Red Hat SSO is installed:
++
+-----
+$ oc adm policy add-role-to-user view user1 -n rhsso-sso0 --as=system:admin
+-----
+
 
 
 
