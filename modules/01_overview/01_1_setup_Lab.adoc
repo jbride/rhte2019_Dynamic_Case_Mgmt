@@ -244,12 +244,10 @@ echo "export OCP_DOMAIN=\$OCP_REGION.generic.opentlc.com" >> ~/.bashrc
 echo "export OCP_WILDCARD_DOMAIN=apps-\$OCP_DOMAIN" >> ~/.bashrc
 echo "export rhsso_url=sso-rhsso-sso0.\$OCP_WILDCARD_DOMAIN" >> ~/.bashrc
 echo "export bc_url=rhpam-bc-rhpam-dev-\$OCP_USERNAME.\$OCP_WILDCARD_DOMAIN" >> ~/.bashrc
-echo "export web_app_url=TODO.\$OCP_WILDCARD_DOMAIN" >> ~/.bashrc
 
 echo "export RHPAM_PROJECT=rhpam-dev-\$OCP_USERNAME" >> ~/.bashrc
 echo "export RHPAM_TOOLS_PROJECT=pam-7-tools-\$OCP_USERNAME" >> ~/.bashrc
 echo "export RHSSO_PROJECT=rhsso_sso0" >> ~/.bashrc
-echo "export WEBAPP_PROJECT=TODO" >> ~/.bashrc
 
 source ~/.bashrc
 -----
@@ -350,7 +348,11 @@ $ echo -en "\nhttps://master00-$OCP_REGION.generic.opentlc.com\n\n"
 
 
 == RH-SSO
-TODO:  Elaborate on purpose
+We use Red Hat SSO to manage the authentication and authorization across our solution.
+By using RH-SSO we will be able to allow external users to register and track their job applications, and we will also handle the authorization of internal users to manage and track their hiring requests.
+Business Central, Kie-Server and the client applications will use Red Hat SSO to authenticate and authorize their operations.
+
+In this section you will navigate the current configuration in your Red Hat SSO Realm:
 
 . Log into the pre-configured _kie-realm_:
 +
