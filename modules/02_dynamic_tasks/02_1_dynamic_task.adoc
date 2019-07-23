@@ -21,9 +21,9 @@ In this lab we will experiment with the dynamic tasks creation: An administrativ
 === Background
 During the interview process one of the interviewers detects that this user can be a good fit for a different position, so asks another user to interview the candidate; the new assigned group or user realizes that this is a good fit and changes the interviewer team and the job to which this user is applying to.
 
-=== Case Management Diagrams
+=== Case Management Diagram
 
-TODO export PNG and display here.
+image::images/all_process.png[Case Diagram]
 
 == Change the UI for Dynamic tasks creation
 === The current UI analysis
