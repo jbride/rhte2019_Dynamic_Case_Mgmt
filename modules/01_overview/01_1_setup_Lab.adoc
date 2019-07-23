@@ -261,10 +261,6 @@ This OCP project contains both the RH-PAM Business Central and KIE-Server applic
 +
 Both of these applications are secured using the OpenID Connect protocol via an integration with a Red Hat SSO server.
 
-. *rhsso-sso0*
-+
-This OCP project contains the RH-SSO application that secures the RH_PAM Business Central and KIE-Server.
-
 === OCP Web Console
 
 . Point your browser to the URL created by executing the following :
