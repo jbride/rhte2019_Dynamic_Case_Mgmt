@@ -1,0 +1,32 @@
+:noaudio:
+:scrollbar:
+:data-uri:
+:toc2:
+:linkattrs:
+
+= Lab Setup
+
+.Prerequisites
+.. Module 01 Overview completion
+
+:numbered:
+
+
+
+== Overview
+In this module we will create containers that host the client applications that will interact with the kie-server.
+
+=== Background
+
+
+=== Topology
+
+== Import and Browse the project contents
+
+== Run-time preparation
+
+=== Create a RHSSO client
+
+=== Create containers and upload them to OCP
+
+== Make an small change and deploy container

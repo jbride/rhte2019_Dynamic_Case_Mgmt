@@ -1,0 +1,38 @@
+:noaudio:
+:scrollbar:
+:data-uri:
+:toc2:
+:linkattrs:
+
+= Lab Setup
+
+.Prerequisites
+.. Module 01 Overview completion
+
+:numbered:
+
+
+
+== Overview
+In this module we will import the case management project, analyze its contents and interact with the run-time using Business Central and the Kie-Server.
+
+=== Background
+
+
+=== Topology
+
+== Browse and Deploy project
+
+=== Import and Browse the project contents
+
+=== Deploy the project to kie-server
+
+== Test the run-time
+
+=== Use Kie-Server swagger to interact with the case management project
+
+=== Use curl client to interact with the case management project
+
+=== Make a change and interact again with the case management project
+
+== Use JUnit to test the data driven assets
