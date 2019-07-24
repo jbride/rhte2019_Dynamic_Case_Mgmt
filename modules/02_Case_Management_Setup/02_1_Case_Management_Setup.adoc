@@ -17,13 +17,89 @@
 In this module we will import the case management project, analyze its contents and interact with the run-time using Business Central and the Kie-Server.
 
 === Background
-
+The objective of the case management project is to depict the process that should be executed when launching a new hiring request. The more information we drive to the RH PAM engine, the best; we will avoid to use a database directly from the applications, centralizing the business rules, flows and data that drive the hiring process.
+Any application that is integrated in the system will then have to use the case management project that we design to request and change information.
+The data that is changed by different applications in our organization's portfolio will have an effect in the *Case File*. The *Case File* holds information that affects the flow of execution, based in _milestones_ and _stages_.
+Pay attention to the conditions that trigger the _milestones_ and _stages_ completion, notice that is not as intuitive as if we were using a regular BPMN project, in which the flow is strictly handled by the flow connectors, in "case-management-land" the flow of execution is changed by the data that is received in the _Case File_.
 
 === Topology
 
+image:images/managed-topology.png[Managed Topology Usage]
+
+When we use Red Hat Process Automation Manager as a solution for authoring and hosting the services that empower case management we have the option to either go for an link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-unmanaged-server-config-proc[un-managed] topology or a link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-managed-kie-server-con[managed] topology.
+In this workshop we will use a managed topology, this means that the Kie-server that works as a run-time server will request for its configuration to a controller. The Business Central will work as the controller for the Kie-server.
+This topology also will facilitate our infrastructure with an authoring environment from which we will be able to analyze and change our case definition.
+
 == Browse and Deploy project
+In this section we will import the source code for the case management project into Business Central, and use Business Central to deploy the project to the kie-server run-time.
+To execute this section you will need the Business Central Route. Retrieve the Business Central Route by entering by ssh protocol to the provisioned workstation in last lab, and running the following command:
+
+----
+$ echo -en "\n\nhttps://$bc_url/*\n\n"
+----
+
 
 === Import and Browse the project contents
+
+We will import the following project to our Business Central: https://github.com/barhte2019/hr-hiring
+
+Red Hat Process Automation Manager uses git as source code repository. Each project in Business Central is also a git repository. When you create a new Project in Business Central you are creating also a git repository.
+Git repositories can be imported to business central from remote repositories, but be aware that they don't keep their remote reference when you import them, instead they are copied to the Business Central's file system.
+Business Central uses git file system to persist more than only the source code for your projects: All user preferences, configurations and any other internal information that Business Central requires to persist it will be persisted in git repositories; hence Business Central does not need a Database (DBMS), it will use the File System and git instead.
+
+To import the repository in Business Central:
+
+. Navigate to Business Central route.
+. Login to Business Central using `adminuser/admin1!` credentials.
+
++
+image:images/business-central-home.png[Business Central Home Page]
+
+. Navigate to the `Design` page.
+. As this will be our first project we will see an image:images/import-project-button.png[import project button] in the home page of our `Design` option. Click this image:images/import-project-button.png[import project button].
+
++
+image:images/empty-projects-view.png[Empty projects view]
+
+. Provide the following repository URL: https://github.com/barhte2019/hr-hiring.git and click *Import*
+
++
+image:images/import-project.png[Import project window]
+
++
+[NOTE]
+====
+When you need to import a *private* repository you can provide the credentials to authenticate with your git repository in the `advanced` section of the import pop-up.
+====
+
+. From the repository contents, Business Central will list the available kjar projects, in our case we only have 1 project; select this only project (hr-hiring), and click ok from the top right corner.
+
++
+image:images/hr-hiring-project-select.png[Select project to import]
+
+. Wait for the indexing process to finish
+
++
+[NOTE]
+====
+The indexing process classifies our assets to be _Data Objects_, _Rules_, _Busines Processes_, etc., enabling easier search and organization of the project in Business Central.
+====
+
+=== Browse the project contents
+The main assets that we will explore to understand how our project works are *Processes*, use the "Assets Type Drop-down" to select *Process* instead of *All*.
+
+[NOTE]
+====
+For descriptive purposes I am naming here "Assets Type Drop-down" to the drop-down control in the top-left corner of the *Assets* tab in this Library Perspective.
+Identify the control because initially it is selected as All:
+
+image:images/assets-type-location.png[Assets Type Location]
+
+You have more options to select here, at this point we are selecting *Process*
+
+image:images/assets-type-options.png[Assets type options]
+
+====
 
 === Deploy the project to kie-server
 
