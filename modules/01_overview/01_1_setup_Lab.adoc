@@ -450,7 +450,7 @@ $ ssh swift.example.com
 . Look-up the IP and user information by viewing the /etc/swift/proxy.conf file on the Swift node.
 +
 -----
-$ cat /etc/swift/proxy.conf
+$ cat /etc/swift/proxy-server.conf
 .....
 [DEFAULT]
 bind_ip = 192.168.0.20
