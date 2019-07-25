@@ -225,6 +225,7 @@ image:images/swagger-get-server.png[Swagger Get Server]
 +
 image:images/try-out-get-server.png[Try it out - Get Server]
 
++
 [NOTE]
 ====
 The *GET /server* endpoint does not require any parameters, in the following steps we will use other endpoints that will require some information for the execution, some of those parameters will be optional and some required. In this case, because no parameters are expected to execute this operation we only see the *Execute* button.
@@ -236,6 +237,44 @@ The *GET /server* endpoint does not require any parameters, in the following ste
 image:images/swagger-get-server-response.png[Swagger get server response]
 
 ==== Start a case instance for job-vacancy-lifecycle
+
+. Using the kie-server Swagger API, locate the *POST* endpoint for */server/containers/{containerId}/cases/{caseDefId}/instances*. This endpoint is described as: "Starts a new case instance for a specified case definition".
+
++
+image:images/swagger-start-case-instance.png[Start Case Instance Endpoint]
+
+. Use the *Try it out* button to enable the parameters and *Execute* button.
+
++
+image:images/swagger-start-case-instance-try-out.png[Start Case Instance Parameters]
+
+. Fill up the parameters with the following values:
+
+.. *containerId*: hr-hiring
+.. *caseDefId*: `com.myspace.hr_hiring.job-vacancy-lifecycle`
+.. *body*:
+
++
+[source,json]
+----
+{
+  "case-data" : {
+    "hiringPetition" : {"jobTitle": "Javascript Frontend Developer", "jobDescription": "A nice job with a great company, are you ready for this challenge? This could be your next opportunity", "location": "remote Mexico"}
+  },
+  "case-group-assignments": { "talent-acquisition": "talent-acquisition" },
+  "case-user-assignments" : { "owner" : "adminUser" }
+}
+----
+
++
+[NOTE]
+====
+The case definition Id is retrieved from the case definition properties:
+
+image:images/locate-definition-id.png[Case Definition Id]
+
+The data and roles definition depends on the expected case variables and the available roles in the system.
+====
 
 ==== Activate and deactivate milestones and stages.
 
