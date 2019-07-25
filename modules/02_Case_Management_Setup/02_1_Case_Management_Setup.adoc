@@ -255,14 +255,19 @@ image:images/swagger-start-case-instance-try-out.png[Start Case Instance Paramet
 .. *body*:
 
 +
-[source,json]
+[source]
 ----
 {
   "case-data" : {
-    "hiringPetition" : {"jobTitle": "Javascript Frontend Developer", "jobDescription": "A nice job with a great company, are you ready for this challenge? This could be your next opportunity", "location": "remote Mexico"}
+    "hiringPetition" : {
+      "jobTitle": "Business Automation SME",
+      "jobDescription": "A nice job with a great company, are you ready for this challenge? This could be your next opportunity",
+      "location": "remote Mexico"}
   },
-  "case-group-assignments": { "talent-acquisition": "talent-acquisition" },
-  "case-user-assignments" : { "owner" : "adminUser" }
+  "case-group-assignments": {
+  "talent-acquisition": "talent-acquisition" },
+  "case-user-assignments" : {
+  "owner" : "adminUser" }
 }
 ----
 
@@ -275,6 +280,10 @@ image:images/locate-definition-id.png[Case Definition Id]
 
 The data and roles definition depends on the expected case variables and the available roles in the system.
 ====
+
+. *Execute* the POST request, and look for the result. The result should include the *Job Id*; (actually is the case instance ID, its prefix configuration is part of the case definition properties.)
+
+FIXME: Current RH-SSO configuration does not allow Swagger execution. It responds as `TypeError: Failed to fetch`
 
 ==== Activate and deactivate milestones and stages.
 
