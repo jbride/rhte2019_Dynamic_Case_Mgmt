@@ -101,7 +101,86 @@ image:images/assets-type-options.png[Assets type options]
 
 ====
 
+Let's start with the `job-vacancy-lifecycle` Business Process:
+
+. Select the `job-vacancy-lifecycle` Business Process from the Library Assets.
+
++
+image:images/hr-hiring-process-list.png[hr-hiring Process List]
+
+. Once the process loads in the screen, from the right edge of the diagram, search for the image:images/toggle-properties-button.png[Toggle properties button] (Toggle Properties Button) so you can access the Case Diagram properties.
+
++
+image:images/job-vacancy-lifecycle-properties.png[Job Vacancy Lifecycle Properties]
+
++
+[NOTE]
+====
+When you click in any of the diagram elements you will see the properties of the selected element, if you click in the canvas you will see the diagram properties.
+====
+
+. Open the *Variable Definitions* drop-down from the *Core Properties*, the drop-down arrow will trigger a modal window with the list of available variables for the case definition. Notice that most of those variables are useful for the *Case File*, we only have 1 variable that is not used in the *Case File*, but it is used for the *Process Instance*.
+
++
+image:images/job-vacancy-lifecycle-vardef.png[Case definition variables]
+
+. The *Case File* variable values can affect the activation of _milestones_ and _stages_. Identify the *Benefits and Compensation* stage, and look at its properties
+
++
+image:images/benefits-compensation-props.png[Benefits and compensation properties]
+
+. Notice the *AdhocActivationCondition* and the *AdhocCompletionCondition*
+
++
+.AdhockActivationCondition
+[source,java]
+----
+org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") != true)
+----
+
++
+.AdhocCompletionCondition
+[source,java]
+----
+org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") == true)
+----
+
+. At any time during the life-cycle of a *Case Instance* that is based in this *Case Definition*, if some external or internal event changes the given values for this conditions to be met, the *Case Instance* will react to that information change and either activate or complete stages or milestones. Examine the _completion_ and _activation_ conditions of the remaining stages.
+
+. _Milestones_ also have a condition that will cause the milestone to be *Achieved*. In order to see the condition for a _milestone_: Select the *Assignments* property of the milestone.
+
++
+image:images/milestone-condition.png[Milestone condition]
+
+Remember, any time you can change the values that cause those milestones and stages to be completed or activated, and when this completion or activation is triggered, the flow in the milestone or the stage is followed, in the next sections we will play with the data to cause different flows in the case instances.
+
+. Close the `job-vacancy-lifecycle`
+. Analyze the `hiring-case-definition` case diagram
+
++
+image:images/hiring-case-definition.png[Hiring Case Definition]
+
 === Deploy the project to kie-server
+
+Now is time to deploy our case management project to the kie-server run-time so we can start testing its functionality.
+
+. Close any open assets (processes or classes that you were analizing)
+. From the library view, locate the image:images/deploy-button.png[Deploy button]
+
++
+image:images/deploy-button-location.png[Deploy button location]
+
+. Click the image:images/deploy-button.png[Deploy Button] and wait for the *Success* message.
+
++
+image:images/hr-hiring-deploy.png[HR Hiring Deploy Success]
+
+. Navigate to *Menu > Deploy > Execution Servers*
+
+. Confirm that the deployment unit is in started (green) status
+
++
+image:images/hr-hiring-deployed.png[Hr-hiring deployed]
 
 == Test the run-time
 
