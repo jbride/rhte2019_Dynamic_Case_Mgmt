@@ -187,12 +187,8 @@ In this section we will use the kie-server run-time to interact with the project
 First we need the kie-server route, get the kie-server route from the openshift web console, under the RHPAM-dev project; or using the workstation ssh:
 
 ----
-$ oc login https://master00.example.com -u user1 -p r3dh4t1!
-$ oc project rhpam-dev-user1
-$ oc get route | grep kieserver | awk '{print $2}'
+$ echo -en "\n\nhttps://$ks_url/\n\n"
 ----
-
-=== Use Kie-Server swagger to interact with the case management project
 
 The swagger API for kie-server provides endpoint test tools and some documentation about the different operations that can be performed in the kie-server run-time; including: Start Case Instances, Change data in the case instances and work in Human Tasks, among more operations regarding the engine, processes, rules, case managemet and more.
 
@@ -228,7 +224,7 @@ image:images/try-out-get-server.png[Try it out - Get Server]
 +
 [NOTE]
 ====
-The *GET /server* endpoint does not require any parameters, in the following steps we will use other endpoints that will require some information for the execution, some of those parameters will be optional and some required. In this case, because no parameters are expected to execute this operation we only see the *Execute* button.
+The *GET /server* endpoint does not require any parameters, other operations require some information for the execution, some of those parameters will be optional and some required. In this case, because no parameters are expected to execute this operation we only see the *Execute* button.
 ====
 
 . Click the *Execute* button to send the operation to the server. The server will process the parameters (if any), will execute the proper operation for the endpoint and come back with a result for us. In this case is the server status.
@@ -236,59 +232,115 @@ The *GET /server* endpoint does not require any parameters, in the following ste
 +
 image:images/swagger-get-server-response.png[Swagger get server response]
 
-==== Start a case instance for job-vacancy-lifecycle
-
-. Using the kie-server Swagger API, locate the *POST* endpoint for */server/containers/{containerId}/cases/{caseDefId}/instances*. This endpoint is described as: "Starts a new case instance for a specified case definition".
-
 +
-image:images/swagger-start-case-instance.png[Start Case Instance Endpoint]
+[WARNING]
+====
+*Swagger not available in our Red Hat SSO Configuration.*
+The current configuration of Red Hat SSO is not allowing authentication for the secured endpoints, take for instance the endpoint for starting case instances (*POST* endpoint for */server/containers/{containerId}/cases/{caseDefId}/instances*); if you try to execute this endpoint and give the proper parameters for execution you will see a Swagger response as `TypeError: Failed to fetch`.
+Not to worry: we will use `curl` as a client to interact with the kie-server runtime, then we will observe how our ReactJs client applications also interact usin the REST APIs over HTTP.
+====
 
-. Use the *Try it out* button to enable the parameters and *Execute* button.
+=== Use curl client to interact with the case management project
 
-+
-image:images/swagger-start-case-instance-try-out.png[Start Case Instance Parameters]
+In this section we will use the `curl` client. If you are using an OS-X is more likely that your laptop has the `curl` client, you can confirm its existence by executing a simple `curl` command:
 
-. Fill up the parameters with the following values:
-
-.. *containerId*: hr-hiring
-.. *caseDefId*: `com.myspace.hr_hiring.job-vacancy-lifecycle`
-.. *body*:
-
-+
-[source]
 ----
-{
-  "case-data" : {
-    "hiringPetition" : {
-      "jobTitle": "Business Automation SME",
-      "jobDescription": "A nice job with a great company, are you ready for this challenge? This could be your next opportunity",
-      "location": "remote Mexico"}
-  },
-  "case-group-assignments": {
-  "talent-acquisition": "talent-acquisition" },
-  "case-user-assignments" : {
-  "owner" : "adminUser" }
-}
+$ curl https://httpstat.us/200
+----
+
+The response of the previous command is a simple:
+
+----
+200 OK
+----
+
+If you receive any other response, you can opt to use the workstation ssh, where the `curl` command is available.
+
+==== Start a case instance
+
+The endpoint to start a case instance is:
+
+|===
+|HTTP METHOD|ENDPOINT
+|POST|/server/containers/{containerId}/cases/{caseDefId}/instances
+|===
+
+. Generate a token of authentication with Red Hat SSO: Remember that the kie-server is secured behind Red Hat SSO, if we want to consume secured operations (like starting a case instance), we are ought to generate a token first; then we will use that token in one of the request headers over HTTP. To generate an authentication token execute the following command (Pay attention to the rh_sso url, you must use your own):
+
++
+----
+$ RESULT=`curl -k --data "grant_type=password&client_id=kie-remote&username=adminuser&password=admin1%21" https://sso-rhsso-sso0.apps-8735.generic.opentlc.com/auth/realms/kie-realm/protocol/openid-connect/token`
+$ echo $RESULT
 ----
 
 +
 [NOTE]
 ====
-The case definition Id is retrieved from the case definition properties:
-
-image:images/locate-definition-id.png[Case Definition Id]
-
-The data and roles definition depends on the expected case variables and the available roles in the system.
+Note that we are "encoding" the exclamation mark for the password ( ! `is equivalent to` %21). Other characters in the password like ampersand (&) or at (@) should also be encoded if they are part of the password.
 ====
 
-. *Execute* the POST request, and look for the result. The result should include the *Job Id*; (actually is the case instance ID, its prefix configuration is part of the case definition properties.)
 
-FIXME: Current RH-SSO configuration does not allow Swagger execution. It responds as `TypeError: Failed to fetch`
+. As you can see, the `$RESULT` contains more than just the `token` that we need, so we are about to isolate that token from the response so we can use it:
 
-==== Activate and deactivate milestones and stages.
++
+----
+$ TOKEN=`echo $RESULT | sed 's/.*access_token":"//g' | sed 's/".*//g'`
+$ echo $TOKEN
+----
 
-=== Use curl client to interact with the case management project
++
+[NOTE]
+====
+Tokens have an expiration date, if you provide a token that has expired you will get an `unauthorized` result from the API, when this happens, repeat the steps to generate a brand new token.
+The expiration date for the tokens depends on the Red Hat SSO configuration, by default in our environment is *5 minutes*, you can change that in the *KIE-REALM* settings in Red Hat SSO.
+====
 
-=== Make a change and interact again with the case management project
+. Now we can use the `token` to execute our endpoint in the kie-server url (Mind the kie-server url, use your own):
 
-== Use JUnit to test the data driven assets
++
+----
+$ curl -k -H "Authorization: bearer $TOKEN" -H "content-type: application/json" -H "accept: application/json" https://rhpam-kieserver-rhpam-dev-user1.apps-8735.generic.opentlc.com/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\"} }, \"case-group-assignments\": { \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"talent-acquisition\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"adminUser\" }}"
+----
+
++
+[NOTE]
+====
+Note the replacement of the `{containerId}` and `{caseDefId}` parameters in the URL.
+
+* For the `{containerId}` we can either use the deployment-unit *alias* or the *id*, this information can be retrieved from *Business Central*, under the *Menu > Deploy > Execution Servers*.
+
+* For the `{caseDefId}` we use one of the properties of our case definition, if you look at the properties for the case definition that you want to create an instance from:
+
+image:images/locate-definition-id.png[Locate Definition Id]
+
+Notice that these *{containerId}* and *{caseDefId}* are bits of information that we want to keep handy for when we integrate our solution with external tools.
+====
+
+. The result of executing the `curl` command successfully you will see a Job Id like the following *"JOB-0000000001"*.
+
+==== Confirm the current state of the case instance
+
+. Using *Business Central* navigate to *Menu > Manage > Process Instances*, you will see 1 instance
+
++
+image:images/manage-process-instances.png[Manage Process Instances]
+
+. Click the existing process instance to see its details.
+
++
+image:images/instance-details.png[Instance Details]
+
+. In the *Process Variables* tab, confirm the *CaseId* to match the result from your `curl` command.
+
++
+image:images/process-variables.png[Process Variables]
+
+. In the *Diagram* tab notice that all milestones and stages for this case are enabled, some human tasks are also waiting for response (the ones highlighted in red). Once we complete some of these tasks you will see them in gray color (this means that they were executed), when they have a black border in colorful state that means that the given node has not been activated yet.
+
++
+image:images/process-picture.png[Process Picture]
+
+This REST API over HTTP is the approach that client applications use to communicate with our case management solution.
+Red Hat Process Automation Manager is in charge of monitoring the state of the case instances, and our client applications can query RHPAM for any changes in the case file. Also, when the client applications report state changes to RHPAM, case instances react to those changes.
+In the next labs we will interact with ReactJs applications that use this approach.
+You can now proceed to the next lab.
