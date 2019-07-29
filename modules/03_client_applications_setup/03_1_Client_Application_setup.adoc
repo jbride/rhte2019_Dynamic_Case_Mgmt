@@ -33,6 +33,42 @@ image:images/client-apps-topology.png[Client Apps Topology]
 
 Web applications interact with the kie-server run-time using REST API over HTTP. For this purpose they will need to carry a token in the request header; Red Hat SSO will be used to request and renew the token.
 
+== Create a RHSSO client
+
+In this section we will prepare an authentication and authorization client in *Red Hat SSO* so we can authenticate using the same `realm` that we use to authenticate kie-server and business central RHPAM elements.
+
+. Browse to *Red Hat SSO*, remember, from your `opentlc lab ssh` you can execute the following command to retrieve the *Red Hat SSO route*:
+
++
+----
+echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
+----
+
+. Use the `admin/admin1234` credentials to authenticate into *Red Hat SSO*.
+
++
+image:images/sso_login_home.png[SSO Login Home]
+
+. Navigate to the *Clients* section, and click the image:images/create-button.png[] button in the top right corner of the Clients list.
+
++
+image:images/sso-clients-list.png[RH SSO initial clients list]
+
+. Set the name of the new client as `kie-remote` and *Save* it.
+
++
+image:images/kie-remote-add.png[Add Kie-remote client]
+
+. From the settings for the `kie-remote` client: [red]#Switch off# the *Standard Flow Enabled* and *Save* the changes.
+
++
+image:images/kie-remote-standard-flow.png[Switch off standard flow]
+
+. From the *Kie-remote* client settings, keep handy the *JSON* format for the *Installation Tab*, specially the *auth-server-url*, we will use it when installing the client applications.
+
++
+image:images/kie-remote-json-installation.png[Kie Remote JSON installation format]
+
 == Import and Browse the project contents
 
 In this section we will import and overview the contents of the client applications source code.
@@ -90,42 +126,6 @@ cd $HOME/lab/hiring-app-public
 yarn
 yarn build
 ----
-
-=== Create a RHSSO client
-
-In this section we will prepare an authentication and authorization client in *Red Hat SSO* so we can authenticate using the same `realm` that we use to authenticate kie-server and business central RHPAM elements.
-
-. Browse to *Red Hat SSO*, remember, from your `opentlc lab ssh` you can execute the following command to retrieve the *Red Hat SSO route*:
-
-+
-----
-echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
-----
-
-. Use the `admin/admin1234` credentials to authenticate into *Red Hat SSO*.
-
-+
-image:images/sso_login_home.png[SSO Login Home]
-
-. Navigate to the *Clients* section, and click the image:images/create-button.png[] button in the top right corner of the Clients list.
-
-+
-image:images/sso-clients-list.png[RH SSO initial clients list]
-
-. Set the name of the new client as `kie-remote` and *Save* it.
-
-+
-image:images/kie-remote-add.png[Add Kie-remote client]
-
-. From the settings for the `kie-remote` client: [red]#Switch off# the *Standard Flow Enabled* and *Save* the changes.
-
-+
-image:images/kie-remote-standard-flow.png[Switch off standard flow]
-
-. From the *Kie-remote* client settings, keep handy the *JSON* format for the *Installation Tab*, specially the *auth-server-url*, we will use it when installing the client applications.
-
-+
-image:images/kie-remote-json-installation.png[Kie Remote JSON installation format]
 
 === Create containers and upload them to OCP
 In this section we will create Docker containers and push them to Openshift so we can create containers from them.
