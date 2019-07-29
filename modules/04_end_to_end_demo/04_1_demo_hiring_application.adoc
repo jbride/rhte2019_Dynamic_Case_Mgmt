@@ -27,6 +27,7 @@ image::images/all_process.png[Hiring Case Diagram]
 
 == Department request for jobs
 Using the back office application (hiring_app_internal),
+
 == HR define job requirements
 == Candidate Apply for jobs
 == The interview Process
