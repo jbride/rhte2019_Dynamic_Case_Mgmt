@@ -35,7 +35,7 @@ In this section we will import the source code for the case management project i
 To execute this section you will need the Business Central Route. Retrieve the Business Central Route by entering by ssh protocol to the provisioned workstation in last lab, and running the following command:
 
 ----
-$ echo -en "\n\nhttps://$bc_url/*\n\n"
+$ echo -en "\n\nhttps://$bc_url\n\n"
 ----
 
 
@@ -50,12 +50,14 @@ Business Central uses git file system to persist more than only the source code 
 To import the repository in Business Central:
 
 . Navigate to Business Central route.
+
 . Login to Business Central using `adminuser/admin1!` credentials.
 
 +
 image:images/business-central-home.png[Business Central Home Page]
 
 . Navigate to the `Design` page.
+
 . As this will be our first project we will see an image:images/import-project-button.png[import project button] in the home page of our `Design` option. Click this image:images/import-project-button.png[import project button].
 
 +
