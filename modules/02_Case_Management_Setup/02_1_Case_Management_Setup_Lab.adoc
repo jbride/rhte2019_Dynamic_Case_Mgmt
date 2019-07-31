@@ -59,15 +59,12 @@ image:images/business-central-home.png[Business Central Home Page]
 . Navigate to the `Design` page.
 
 . As this will be our first project we will see an image:images/import-project-button.png[import project button] in the home page of our `Design` option. Click this image:images/import-project-button.png[import project button].
-
 +
 image:images/empty-projects-view.png[Empty projects view]
 
 . Provide the following repository URL: https://github.com/barhte2019/hr-hiring.git and click *Import*
-
 +
 image:images/import-project.png[Import project window]
-
 +
 [NOTE]
 ====
@@ -75,12 +72,10 @@ When you need to import a *private* repository you can provide the credentials t
 ====
 
 . From the repository contents, Business Central will list the available kjar projects, in our case we only have 1 project; select this only project (hr-hiring), and click ok from the top right corner.
-
 +
 image:images/hr-hiring-project-select.png[Select project to import]
 
 . Wait for the indexing process to finish
-
 +
 [NOTE]
 ====
@@ -106,15 +101,12 @@ image:images/assets-type-options.png[Assets type options]
 Let's start with the `job-vacancy-lifecycle` Business Process:
 
 . Select the `job-vacancy-lifecycle` Business Process from the Library Assets.
-
 +
 image:images/hr-hiring-process-list.png[hr-hiring Process List]
 
 . Once the process loads in the screen, from the right edge of the diagram, search for the image:images/toggle-properties-button.png[Toggle properties button] (Toggle Properties Button) so you can access the Case Diagram properties.
-
 +
 image:images/job-vacancy-lifecycle-properties.png[Job Vacancy Lifecycle Properties]
-
 +
 [NOTE]
 ====
@@ -122,24 +114,20 @@ When you click in any of the diagram elements you will see the properties of the
 ====
 
 . Open the *Variable Definitions* drop-down from the *Core Properties*, the drop-down arrow will trigger a modal window with the list of available variables for the case definition. Notice that most of those variables are useful for the *Case File*, we only have 1 variable that is not used in the *Case File*, but it is used for the *Process Instance*.
-
 +
 image:images/job-vacancy-lifecycle-vardef.png[Case definition variables]
 
 . The *Case File* variable values can affect the activation of _milestones_ and _stages_. Identify the *Benefits and Compensation* stage, and look at its properties
-
 +
 image:images/benefits-compensation-props.png[Benefits and compensation properties]
 
 . Notice the *AdhocActivationCondition* and the *AdhocCompletionCondition*
-
 +
 .AdhockActivationCondition
 [source,java]
 ----
 org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") != true)
 ----
-
 +
 .AdhocCompletionCondition
 [source,java]
@@ -150,7 +138,6 @@ org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") == true)
 . At any time during the life-cycle of a *Case Instance* that is based in this *Case Definition*, if some external or internal event changes the given values for this conditions to be met, the *Case Instance* will react to that information change and either activate or complete stages or milestones. Examine the _completion_ and _activation_ conditions of the remaining stages.
 
 . _Milestones_ also have a condition that will cause the milestone to be *Achieved*. In order to see the condition for a _milestone_: Select the *Assignments* property of the milestone.
-
 +
 image:images/milestone-condition.png[Milestone condition]
 
@@ -158,7 +145,6 @@ Remember, any time you can change the values that cause those milestones and sta
 
 . Close the `job-vacancy-lifecycle`
 . Analyze the `hiring-case-definition` case diagram
-
 +
 image:images/hiring-case-definition.png[Hiring Case Definition]
 
@@ -168,19 +154,16 @@ Now is time to deploy our case management project to the kie-server run-time so 
 
 . Close any open assets (processes or classes that you were analizing)
 . From the library view, locate the image:images/deploy-button.png[Deploy button]
-
 +
 image:images/deploy-button-location.png[Deploy button location]
 
 . Click the image:images/deploy-button.png[Deploy Button] and wait for the *Success* message.
-
 +
 image:images/hr-hiring-deploy.png[HR Hiring Deploy Success]
 
 . Navigate to *Menu > Deploy > Execution Servers*
 
 . Confirm that the deployment unit is in started (green) status
-
 +
 image:images/hr-hiring-deployed.png[Hr-hiring deployed]
 
@@ -195,7 +178,6 @@ $ echo -en "\n\nhttps://$ks_url/\n\n"
 The swagger API for kie-server provides endpoint test tools and some documentation about the different operations that can be performed in the kie-server run-time; including: Start Case Instances, Change data in the case instances and work in Human Tasks, among more operations regarding the engine, processes, rules, case managemet and more.
 
 . Navigate to the kie-server route: `https://{route}/docs`, for instance: https://rhpam-kieserver-rhpam-dev-user1.apps-8735.generic.opentlc.com/docs
-
 +
 [NOTE]
 ====
@@ -203,10 +185,8 @@ In the example above I am using the route given by [green]#My current environmen
 ====
 
 . In the Swagger API, locate the *KIE Server and KIE containers* section.
-
 +
 image:images/swagger-ks-containers.png[Swagger: kie-server containers]
-
 +
 [NOTE]
 ====
@@ -214,15 +194,12 @@ Notice that you can fold or unfold the sections by clicking in their title.
 ====
 
 . Use the [blue]#GET# button to open the testint tool for the */server* endpoint.
-
 +
 image:images/swagger-get-server.png[Swagger Get Server]
 
 . Use the *Try it out* button in the top right *Parameters* header to have access to the *Parameters* and the *Execute* button.
-
 +
 image:images/try-out-get-server.png[Try it out - Get Server]
-
 +
 [NOTE]
 ====
@@ -230,10 +207,8 @@ The *GET /server* endpoint does not require any parameters, other operations req
 ====
 
 . Click the *Execute* button to send the operation to the server. The server will process the parameters (if any), will execute the proper operation for the endpoint and come back with a result for us. In this case is the server status.
-
 +
 image:images/swagger-get-server-response.png[Swagger get server response]
-
 +
 [WARNING]
 ====
@@ -268,13 +243,11 @@ The endpoint to start a case instance is:
 |===
 
 . Generate a token of authentication with Red Hat SSO: Remember that the kie-server is secured behind Red Hat SSO, if we want to consume secured operations (like starting a case instance), we are ought to generate a token first; then we will use that token in one of the request headers over HTTP. To generate an authentication token execute the following command (Pay attention to the rh_sso url, you must use your own):
-
 +
 ----
 RESULT=`curl -k --data "grant_type=password&client_id=kie-server&username=adminuser&password=admin1%21&client_secret=252793ed-7118-4ca8-8dab-5622fa97d892" https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth/realms/kie-realm/protocol/openid-connect/token`
 echo $RESULT
 ----
-
 +
 [NOTE]
 ====
@@ -283,7 +256,6 @@ Note that we are "encoding" the exclamation mark for the password ( ! `is equiva
 
 
 . As you can see, the `$RESULT` contains more than just the `token` that we need, so we are about to isolate that token from the response so we can use it:
-
 +
 ----
 TOKEN=`echo $RESULT | sed 's/.*access_token":"//g' | sed 's/".*//g'`
@@ -298,12 +270,10 @@ The expiration date for the tokens depends on the Red Hat SSO configuration, by 
 ====
 
 . Now we can use the `token` to execute our endpoint in the kie-server url (Mind the kie-server url, use your own):
-
 +
 ----
 $ curl -k -H "Authorization: bearer $TOKEN" -H "content-type: application/json" -H "accept: application/json" https://rhpam-kieserver-rhpam-dev-user1.apps-8735.generic.opentlc.com/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\"} }, \"case-group-assignments\": { \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"talent-acquisition\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"adminUser\" }}"
 ----
-
 +
 [NOTE]
 ====
@@ -323,22 +293,18 @@ Notice that these *{containerId}* and *{caseDefId}* are bits of information that
 ==== Confirm the current state of the case instance
 
 . Using *Business Central* navigate to *Menu > Manage > Process Instances*, you will see 1 instance
-
 +
 image:images/manage-process-instances.png[Manage Process Instances]
 
 . Click the existing process instance to see its details.
-
 +
 image:images/instance-details.png[Instance Details]
 
 . In the *Process Variables* tab, confirm the *CaseId* to match the result from your `curl` command.
-
 +
 image:images/process-variables.png[Process Variables]
 
 . In the *Diagram* tab notice that all milestones and stages for this case are enabled, some human tasks are also waiting for response (the ones highlighted in red). Once we complete some of these tasks you will see them in gray color (this means that they were executed), when they have a black border in colorful state that means that the given node has not been activated yet.
-
 +
 image:images/process-picture.png[Process Picture]
 
