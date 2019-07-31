@@ -24,7 +24,6 @@ One of the departments in our organization wants to hire a new person, so the de
 image::images/all_process.png[Hiring Case Diagram]
 
 == Department request for jobs
-<<<<<<< HEAD:modules/04_end_to_end_demo/04_1_demo_hiring_application_Lab.adoc
 Using the back office application (hiring_app_internal)
 
 . Login as `Tina/Password1!` to the back office application (hiring-app-internal). To remember the route required to navigate to the back office application run the following command in the `ssh workstation`:
@@ -123,9 +122,6 @@ return api.jobs.create(job).then(...).catch(...)
 . Find the API configuration for `jobs.create`
 
 . The `hiring petition` reaches the configured *kie-server* and creates a *Case Instance* based in the received information.
-=======
-Using the back office application (hiring_app_internal),
->>>>>>> 43eec5a06c5e9c957063e35d7b43f515d410cc33:modules/04_end_to_end_demo/04_1_demo_hiring_application.adoc
 
 == HR define job requirements
 == Candidate Apply for jobs
