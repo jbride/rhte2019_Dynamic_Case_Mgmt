@@ -271,8 +271,8 @@ The endpoint to start a case instance is:
 
 +
 ----
-$ RESULT=`curl -k --data "grant_type=password&client_id=kie-remote&username=adminuser&password=admin1%21" https://sso-rhsso-sso0.apps-8735.generic.opentlc.com/auth/realms/kie-realm/protocol/openid-connect/token`
-$ echo $RESULT
+RESULT=`curl -k --data "grant_type=password&client_id=kie-server&username=adminuser&password=admin1%21&client_secret=252793ed-7118-4ca8-8dab-5622fa97d892" https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth/realms/kie-realm/protocol/openid-connect/token`
+echo $RESULT
 ----
 
 +
@@ -286,8 +286,8 @@ Note that we are "encoding" the exclamation mark for the password ( ! `is equiva
 
 +
 ----
-$ TOKEN=`echo $RESULT | sed 's/.*access_token":"//g' | sed 's/".*//g'`
-$ echo $TOKEN
+TOKEN=`echo $RESULT | sed 's/.*access_token":"//g' | sed 's/".*//g'`
+echo $TOKEN
 ----
 
 +
