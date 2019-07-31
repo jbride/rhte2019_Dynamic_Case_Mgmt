@@ -28,6 +28,257 @@ image::images/all_process.png[Case Diagram]
 == Change the UI for Dynamic tasks creation
 === The current UI analysis
 === Implementing and deploying the change
+=== Deploy client applications to Openshift
+In this section we will create Docker containers and push them to Openshift so we can create containers from them.
+The ssh workstation has all the software components required for the following steps to work, if you want to execute this section locally you will need:
+
+* *buildah*: for building an image.
+* *OCP Client Utility*: (`oc`) for pushing the image to our openshift environment.
+* A good internet band-width for uploading the image to Openshift.
+
+To prepare for pushing these images to Openshift:
+
+. Create a namespace in openshift to receive the images and create containers in it:
+
+----
+oc login https://master00.example.com -u user1 -p r3dh4t1!
+oc new-project client-app
+----
+
+. Switch to openshift administrator access:
+
++
+----
+sudo -i
+----
+
+. Switch to the `default` project
+
++
+----
+oc project default
+----
+
+. Create an openshift route to the internal registry of your Openshift cluster
+
++
+----
+oc create route passthrough docker-registry-demo --service=docker-registry
+----
+
+. Setup an environment variable for the `docker-registry-demo` remote URL
+
++
+----
+export DOCKER_REGISTRY_HOSTNAME=$(oc get route docker-registry-demo -n default -o template --template='{{.spec.host}}')
+----
+
+. Use the `client-app` project
+
++
+----
+oc project client-app
+----
+
+. Create a pusher service account
+
++
+----
+oc create serviceaccount pusher
+----
+
+. Add `system:image-builder` and `edit` to `pusher` service account
+
++
+----
+oc policy add-role-to-user system:image-builder system:serviceaccount:client-app:pusher
+oc policy add-role-to-user edit system:serviceaccount:client-app:pusher
+----
+
+. Exit the use of `root`
+
++
+----
+exit
+----
+
+==== The back office application
+. Prepare the values that you will use in the client application configuration, take note (copy them to an available text editor so you can retrieve them in a later step) of the following variable values in the `workstation ssh`, we will use them in the next step:
+
++
+----
+echo -en "\n\nhttps://$rhsso_url/auth\n\n
+echo -en "\n\nhttps://$ks_url\n\n
+----
+
+. Use the `workshop ssh` terminal to configure the environment variables inside the Dockerfile that will be used to build the `hiring-app-internal` image.
+
++
+----
+cd $HOME/lab/hiring-app-internal
+vi Dockerfile
+----
+
+. Using the vi editor, set the proper values to the ENV values:
+
++
+|===
+|Get The Value From|Assign to ENV in file|Example
+|`echo -en "\n\nhttps://$rhsso_url/auth\n\n"`| REACT_APP_RHSSO_URL |`ENV REACT_APP_RHSSO_URL=https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth`
+|`echo -en "\n\nhttps://$ks_url\n\n"`| REACT_APP_KIE_SERVER_URL |`ENV REACT_APP_KIE_SERVER_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-af16.generic.opentlc.com`
+|===
+
++
+[NOTE]
+====
+`REACT_APP_RHSSO_REALM` and `REACT_APP_RHSSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `kie-remote` in the `kie-realm`. If you perform a different operation in previous sections changing any of these names, please also perform the appropriate changes in the respective environment entry.
+====
+
+. Build the `hiring-app-internal` image using *buildah*:
+
++
+----
+cd $HOME/lab/hiring-app-internal
+sudo buildah bud -t hiring-app-internal:1.0 .
+----
+
+. Get the token id for the `pusher` service account in openshift and save it in an environment variable.
+
++
+----
+export SA_TOKEN_ID=$(oc describe sa pusher -n client-app | grep Tokens | awk '{print $2}')
+echo $SA_TOKEN_ID
+----
+
+. Discover the value of the `pusher` service account token and store that value in an environment variable
+
++
+----
+export SA_TOKEN=$(oc describe secret $SA_TOKEN_ID -n client-app | grep token: | awk '{print $2}')
+echo $SA_TOKEN
+----
+
+. Push the image to the openshift registry
+
++
+----
+sudo buildah push --tls-verify=false --creds=pusher:$SA_TOKEN hiring-app-internal:1.0 docker-registry-demo-default.apps-8735.generic.opentlc.com/client-app/hiring-app-internal:1.0
+----
+
+. In openshift, create a container based in the pushed image.
+
++
+----
+oc new-app hiring-app-internal:1.0 -n client-app
+----
+
+. Expose the external route to be able to navigate to the `hiring-app-internal`
+
++
+----
+oc expose hiring-app-internal -n client-app
+----
+
+. Retrieve and navigate using a browser to the newly created back office web application.
+
++
+----
+oc get route -n client-app
+----
+
+. Login to the client application as *adminuser/admin1!*
+
+. Congratulations you have installed the back office application.
+
+==== The public web application
+In this section you repeat almost the same steps than in previous section, to create a container based in the git repository for the `hiring-app-public`: https://github.com/barhte2019/hiring-app-public
+
+. Prepare the values that you will use in the client application configuration, take note (copy them to an available text editor so you can retrieve them in a later step) of the following variable values in the `workstation ssh`, we will use them in the next step:
+
++
+----
+echo -en "\n\nhttps://$rhsso_url/auth\n\n
+echo -en "\n\nhttps://$ks_url\n\n
+----
+
+. Use the `workshop ssh` terminal to configure the environment variables inside the Dockerfile that will be used to build the `hiring-app-internal` image.
+
++
+----
+cd $HOME/lab/hiring-app-public
+vi Dockerfile
+----
+
+. Using the vi editor, set the proper values to the ENV values:
+
++
+|===
+|Get The Value From|Assign to ENV in file|Example
+|`echo -en "\n\nhttps://$rhsso_url/auth\n\n"`| REACT_APP_RHSSO_URL |`ENV REACT_APP_RHSSO_URL=https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth`
+|`echo -en "\n\nhttps://$ks_url\n\n"`| REACT_APP_KIE_SERVER_URL |`ENV REACT_APP_KIE_SERVER_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-af16.generic.opentlc.com`
+|===
+
++
+[NOTE]
+====
+`REACT_APP_RHSSO_REALM` and `REACT_APP_RHSSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `kie-remote` in the `kie-realm`. If you perform a different operation in previous sections changing any of these names, please also perform the appropriate changes in the respective environment entry.
+====
+
+. Build the `hiring-app-public` image using *buildah*:
+
++
+----
+cd $HOME/lab/hiring-app-public
+sudo buildah bud -t hiring-app-public:1.0 .
+----
+
+. Get the token id for the `pusher` service account in openshift and save it in an environment variable.
+
++
+----
+export SA_TOKEN_ID=$(oc describe sa pusher -n client-app | grep Tokens | awk '{print $2}')
+echo $SA_TOKEN_ID
+----
+
+. Discover the value of the `pusher` service account token and store that value in an environment variable
+
++
+----
+export SA_TOKEN=$(oc describe secret $SA_TOKEN_ID -n client-app | grep token: | awk '{print $2}')
+echo $SA_TOKEN
+----
+
+. Push the image to the openshift registry
+
++
+----
+sudo buildah push --tls-verify=false --creds=pusher:$SA_TOKEN hiring-app-public:1.0 docker-registry-demo-default.apps-8735.generic.opentlc.com/client-app/hiring-app-public:1.0
+----
+
+. In openshift, create a container based in the pushed image.
+
++
+----
+oc new-app hiring-app-public:1.0 -n client-app
+----
+
+. Expose the external route to be able to navigate to the `hiring-app-internal`
+
++
+----
+oc expose hiring-app-public -n client-app
+----
+
+. Retrieve and navigate using a browser to the newly created back office web application.
+
++
+----
+oc get route -n client-app
+----
+
+. Login to the client application as *bill/Password1!*
+
+. Congratulations you have installed the public web application.
 == Department request for jobs
 == HR define job requirements
 == Candidate Apply for jobs
