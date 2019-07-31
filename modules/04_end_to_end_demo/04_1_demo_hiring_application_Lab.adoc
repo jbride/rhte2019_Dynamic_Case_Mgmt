@@ -4,7 +4,7 @@
 :toc2:
 :linkattrs:
 
-= Lab Setup
+= End to End Demo
 
 .Prerequisites
 .. Environment setup with all infrastructure components mentioned in lab 01 (setup lab): Kie-Server, Business Central, Red Hat SSO and client applications.

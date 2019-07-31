@@ -4,7 +4,7 @@
 :toc2:
 :linkattrs:
 
-= Lab Setup
+= Case Management Project Deployment
 
 .Prerequisites
 .. Module 01 Overview completion

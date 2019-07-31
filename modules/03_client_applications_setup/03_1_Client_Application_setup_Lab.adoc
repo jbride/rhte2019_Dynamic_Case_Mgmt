@@ -4,7 +4,7 @@
 :toc2:
 :linkattrs:
 
-= Lab Setup
+= Client Applications Deployment
 
 .Prerequisites
 .. Module 01 Overview completion

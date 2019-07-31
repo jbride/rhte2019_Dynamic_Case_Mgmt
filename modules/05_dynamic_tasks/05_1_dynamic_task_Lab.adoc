@@ -4,7 +4,7 @@
 :toc2:
 :linkattrs:
 
-= Lab Setup
+= Case Management Dynamic Tasks
 
 .Prerequisites
 .. Execute Setup Lab.
