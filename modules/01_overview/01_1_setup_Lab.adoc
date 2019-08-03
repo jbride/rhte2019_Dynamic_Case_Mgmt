@@ -424,13 +424,11 @@ This _business-central_ SSO client comes pre-configured to implement the _Author
 . View log statements regarding SSO integration in KIE-Server:
 +
 -----
-$ oc logs `oc get pod -n $RHPAM_PROJECT | grep "rhpam-kieserver" | awk '{print $1}'` -n $RHPAM_PROJECT | head -n 15
+$ oc logs -c rhpam-kieserver `oc get pod -n $RHPAM_PROJECT | grep "rhpam-kieserver" | awk '{print $1}'` -n $RHPAM_PROJECT | head -n 15 | grep rhsso
 
 ...
 
-INFO Obtained auth token from https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth for realm kie-realm
-WARN ERROR: Unable to register openid-connect client for module root in realm kie-realm on : {"errorMessage":"Client kie-server already exists"}
-INFO Configured keycloak subsystem for openid-connect module root from ROOT.war
+INFO Obtained auth token from https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth for realm kie-realm
 -----
 +
 The log statements above allude to an integration with an SSO _realm_ called: _kie-realm_ using an SSO _client_ called:  _kie-server_.

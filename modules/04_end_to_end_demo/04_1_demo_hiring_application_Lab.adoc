@@ -4,13 +4,11 @@
 :toc2:
 :linkattrs:
 
-= Lab Setup
+= End to End Demo
 
 .Prerequisites
-.. Execute Setup Lab.
-.. Web browser installed on your laptop.
-.. Broadband internet connectivity.
-.. link:https://account.opentlc.com/account/[Red Hat GPTE _Opentlc_ userId]
+.. Environment setup with all infrastructure components mentioned in lab 01 (setup lab): Kie-Server, Business Central, Red Hat SSO and client applications.
+.. Web browser able to login to client applications: hiring-app-internal and hiring-app-public.
 
 :numbered:
 
@@ -26,7 +24,104 @@ One of the departments in our organization wants to hire a new person, so the de
 image::images/all_process.png[Hiring Case Diagram]
 
 == Department request for jobs
-Using the back office application (hiring_app_internal),
+Using the back office application (hiring_app_internal)
+
+. Login as `Tina/Password1!` to the back office application (hiring-app-internal). To remember the route required to navigate to the back office application run the following command in the `ssh workstation`:
+
+----
+oc get route -n client-app | grep internal
+----
+
+. From the *Dashboard* web page, select the image:images/blue-plus-button.png[Blue plus button] button.
+
+. Fill the *Add Job* form, they are text fields only, it is preferable that you fill all of them.
+
+. Submit the form.
+
+=== What did just happen?
+
+image:images/information-flow-diagram.png[Information flow diagram]
+
+. Open the source code for the hiring-public-app: https://github.com/barhte2019/hiring-app-internal
+
++
+[NOTE]
+====
+You have multiple options for this:
+
+. You can navigate the source code in gitHub.
+
+. In our previous lab we had cloned this repository to `$HOME/lab` directory in the `remote ssh workstation`, you can also explore the source code there.
+
+. You can also download the source code from gitHub by cloning it to your local environment or by downloading a zip file from gitHub and decompresing it in your local machine. (Although I will strongly suggest this method, we should mind the current available bandwidth)
+
+Im am using this option and navigating the source code using a local installation of link:https://code.visualstudio.com/download[VSCode], use your favorite method and editor.
+====
+
+. The `form submit` event can be found at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx[`src/jobs/add-job/index.tsx`] you can notice that the form is using a class method `this.submit` at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx#L35[line 35].
+
++
+----
+<form onSubmit={this.submit}>
+----
+
+. The method `submit` from the `AddJobForm` class at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx#L85[line 85], prevents default and sets the shared state for other components to take care of storing the data in the back end.
+
++
+----
+private submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    this.props.onCreateJob(this.props.jobState.newJob);
+}
+----
+
+. The `onCreateJob` method is injected by `react-redux connect`, this configuration is done at lines:
+.. link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx#L3[line 3]: import `connect` from `react-redux`
+.. link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx#L15[line 15]: import the `createJob` method definition (we will navigate to this definition later in this section), also observe its injection in link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx#L23[line 23].
+
+. Find the implementation for the `onCreateJob` method at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/actions.ts#L91[`src/store/jobs/actions.ts`]
+
++
+----
+export function createJob(job: IJob) {
+    return dispatch => {
+        dispatch({ type: JOB_SUBMIT });
+        return api.jobs.create(job).then(resp => {
+            dispatch(push('/'));
+            return dispatch({ type: JOB_CREATED, jobId: resp.data });
+        }).catch(err => {
+            return dispatch({ type: JOB_CREATED_ERROR, serverErrors: err })
+        });
+    }
+}
+----
+
+. The `createJob` method makes use of the redux `dispatch` that invokes the `reducer` to change the state. For example, the reducer for `JOB_SUBMIT` can be found at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/reducers.ts#L124[`src/store/jobs/reducers.ts`]
+
++
+----
+...
+case JOB_SUBMIT: {
+   return {
+       ...state,
+       loading: true
+   }
+}
+...
+----
+
+. In order to talk to the back end, the `onCreateJob` method defined in link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/actions.ts#L94[`src/store/jobs/actions.ts`] uses the `api`. [red]#This is a very important asset#
+
++
+----
+return api.jobs.create(job).then(...).catch(...)
+----
+
+. The `api` definition can be found at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/api.ts[`src/store/api.ts`]. Observe that every action that is requested to the API is built here. Information about the `Base URL`, formed with the *kie-server* URL and the `Token` for authentication and authorization with *Red Hat SSO* can be found around link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/api.ts#L5[line 5], when defining the *Axios instance*. Then after link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/api.ts#L29[line 29] we can find interactions and endpoints with the kie-server REST API.
+
+. Find the API configuration for `jobs.create`
+
+. The `hiring petition` reaches the configured *kie-server* and creates a *Case Instance* based in the received information.
 
 == HR define job requirements
 == Candidate Apply for jobs
