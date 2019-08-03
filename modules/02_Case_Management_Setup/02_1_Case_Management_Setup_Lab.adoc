@@ -143,9 +143,9 @@ image:images/hiring-case-definition.png[Hiring Case Definition]
 
 === Deploy the project to kie-server
 
-Now is time to deploy our case management project to the kie-server run-time so we can start testing its functionality.
+In this section of the lab, you deploy the case management project to the kie-server run-time.
 
-. Close any open assets (processes or classes that you were analizing)
+. Close any open assets (processes or classes that you were analyzing)
 . From the library view, locate the image:images/deploy-button.png[Deploy button]
 +
 image:images/deploy-button-location.png[Deploy button location]
@@ -160,24 +160,24 @@ image:images/hr-hiring-deploy.png[HR Hiring Deploy Success]
 +
 image:images/hr-hiring-deployed.png[Hr-hiring deployed]
 
-== Test the run-time
-In this section we will use the kie-server run-time to interact with the project we had just deployed.
-First we need the kie-server route, get the kie-server route from the openshift web console, under the RHPAM-dev project; or using the workstation ssh:
 
-----
-$ echo -en "\n\nhttps://$ks_url/\n\n"
-----
+== Browse and test the run-time
+In this section you will test the hiring application deployed to your kie-server run-time.
 
-The swagger API for kie-server provides endpoint test tools and some documentation about the different operations that can be performed in the kie-server run-time; including: Start Case Instances, Change data in the case instances and work in Human Tasks, among more operations regarding the engine, processes, rules, case managemet and more.
+=== Browse KIE-Server RESTful endpoints
 
-. Navigate to the kie-server route: `https://{route}/docs`, for instance: https://rhpam-kieserver-rhpam-dev-user1.apps-8735.generic.opentlc.com/docs
+Your kie-server exposes an extensive RESTful API that external services can interact with.
+This RESTful API is documented using the OpenAPI Specification.
+
+In this section, you review this API documentation.
+
+. Point your browser to the output of the following:
 +
-[NOTE]
-====
-In the example above I am using the route given by [green]#My current environment#, more likely your environment will change the ${GUID} (8735)
-====
+----
+$ echo -en "\n\nhttps://$ks_url/docs\n\n"
+----
 
-. In the Swagger API, locate the *KIE Server and KIE containers* section.
+. In this OpenAPI documentation, locate the *KIE Server and KIE containers* section.
 +
 image:images/swagger-ks-containers.png[Swagger: kie-server containers]
 +
@@ -186,47 +186,16 @@ image:images/swagger-ks-containers.png[Swagger: kie-server containers]
 Notice that you can fold or unfold the sections by clicking in their title.
 ====
 
-. Use the [blue]#GET# button to open the testint tool for the */server* endpoint.
+. TO-DO: Provide a listing of the primary endpoints that will be invoked by external clients in this application.
+
+. At this time, do not attempt to invoke any of the endpoints via this OpenAPI documentation:
 +
-image:images/swagger-get-server.png[Swagger Get Server]
-
-. Use the *Try it out* button in the top right *Parameters* header to have access to the *Parameters* and the *Execute* button.
+The current configuration of Red Hat SSO is not allowing authentication for the secured endpoints
+Take for instance the endpoint for starting case instances (*POST* endpoint for */server/containers/{containerId}/cases/{caseDefId}/instances*); if you try to execute this endpoint and give the proper parameters for execution you will see a Swagger response as `TypeError: Failed to fetch`.
 +
-image:images/try-out-get-server.png[Try it out - Get Server]
-+
-[NOTE]
-====
-The *GET /server* endpoint does not require any parameters, other operations require some information for the execution, some of those parameters will be optional and some required. In this case, because no parameters are expected to execute this operation we only see the *Execute* button.
-====
+As an alternative to using the OpenAPI documentation to test the hiring application, you will instead use `curl` in the next section of the lab.
 
-. Click the *Execute* button to send the operation to the server. The server will process the parameters (if any), will execute the proper operation for the endpoint and come back with a result for us. In this case is the server status.
-+
-image:images/swagger-get-server-response.png[Swagger get server response]
-+
-[WARNING]
-====
-*Swagger not available in our Red Hat SSO Configuration.*
-The current configuration of Red Hat SSO is not allowing authentication for the secured endpoints, take for instance the endpoint for starting case instances (*POST* endpoint for */server/containers/{containerId}/cases/{caseDefId}/instances*); if you try to execute this endpoint and give the proper parameters for execution you will see a Swagger response as `TypeError: Failed to fetch`.
-Not to worry: we will use `curl` as a client to interact with the kie-server runtime, then we will observe how our ReactJs client applications also interact usin the REST APIs over HTTP.
-====
-
-=== Use curl client to interact with the case management project
-
-In this section we will use the `curl` client. If you are using an OS-X is more likely that your laptop has the `curl` client, you can confirm its existence by executing a simple `curl` command:
-
-----
-$ curl https://httpstat.us/200
-----
-
-The response of the previous command is a simple:
-
-----
-200 OK
-----
-
-If you receive any other response, you can opt to use the workstation ssh, where the `curl` command is available.
-
-==== Start a case instance
+=== Start a case instance
 
 The endpoint to start a case instance is:
 
@@ -235,18 +204,15 @@ The endpoint to start a case instance is:
 |POST|/server/containers/{containerId}/cases/{caseDefId}/instances
 |===
 
-. Generate a token of authentication with Red Hat SSO: Remember that the kie-server is secured behind Red Hat SSO, if we want to consume secured operations (like starting a case instance), we are ought to generate a token first; then we will use that token in one of the request headers over HTTP. To generate an authentication token execute the following command (Pay attention to the rh_sso url, you must use your own):
+. Retrieve an OpenID Connect access token from Red Hat SSO using the pre-configured _kie-server_ SSO client.
 +
 ----
-RESULT=`curl -k --data "grant_type=password&client_id=kie-server&username=adminuser&password=admin1%21&client_secret=252793ed-7118-4ca8-8dab-5622fa97d892" https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth/realms/kie-realm/protocol/openid-connect/token`
+RESULT=`curl -k --data "grant_type=password&client_id=kie-server&username=adminuser&password=admin1%21&client_secret=252793ed-7118-4ca8-8dab-5622fa97d892" https://$rhsso_url/auth/realms/kie-realm/protocol/openid-connect/token`
 echo $RESULT
 ----
 +
-[NOTE]
-====
-Note that we are "encoding" the exclamation mark for the password ( ! `is equivalent to` %21). Other characters in the password like ampersand (&) or at (@) should also be encoded if they are part of the password.
-====
-
+NOTE: The _kie-server_ SSO client can generate access tokens via the _Resource Owner Password Credentials_ flow of OpenID Connect.
+For this reason, the userName and password of a end-user (called: _adminuser_) is included in this request.
 
 . As you can see, the `$RESULT` contains more than just the `token` that we need, so we are about to isolate that token from the response so we can use it:
 +
@@ -254,32 +220,26 @@ Note that we are "encoding" the exclamation mark for the password ( ! `is equiva
 TOKEN=`echo $RESULT | sed 's/.*access_token":"//g' | sed 's/".*//g'`
 echo $TOKEN
 ----
-
 +
 [NOTE]
 ====
 Tokens have an expiration date, if you provide a token that has expired you will get an `unauthorized` result from the API, when this happens, repeat the steps to generate a brand new token.
-The expiration date for the tokens depends on the Red Hat SSO configuration, by default in our environment is *5 minutes*, you can change that in the *KIE-REALM* settings in Red Hat SSO.
+The expiration date for the tokens depends on the Red Hat SSO configuration which by default is *5 minutes*.
 ====
 
 . Now we can use the `token` to execute our endpoint in the kie-server url (Mind the kie-server url, use your own):
 +
 ----
-$ curl -k -H "Authorization: bearer $TOKEN" -H "content-type: application/json" -H "accept: application/json" https://rhpam-kieserver-rhpam-dev-user1.apps-8735.generic.opentlc.com/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\"} }, \"case-group-assignments\": { \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"talent-acquisition\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"adminUser\" }}"
+$ curl -k -H "Authorization: bearer $TOKEN" -H "content-type: application/json" -H "accept: application/json" https://$ks_url/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\"} }, \"case-group-assignments\": { \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"talent-acquisition\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"adminUser\" }}"
 ----
+
+.. Note the replacement of the `{containerId}` and `{caseDefId}` parameters in the URL.
+*** For the `{containerId}` we can either use the deployment-unit *alias* or the *id*, this information can be retrieved from *Business Central*, under the *Menu > Deploy > Execution Servers*.
+*** For the `{caseDefId}` we use one of the properties of our case definition, if you look at the properties for the case definition that you want to create an instance from:
 +
-[NOTE]
-====
-Note the replacement of the `{containerId}` and `{caseDefId}` parameters in the URL.
-
-* For the `{containerId}` we can either use the deployment-unit *alias* or the *id*, this information can be retrieved from *Business Central*, under the *Menu > Deploy > Execution Servers*.
-
-* For the `{caseDefId}` we use one of the properties of our case definition, if you look at the properties for the case definition that you want to create an instance from:
-
 image:images/locate-definition-id.png[Locate Definition Id]
 
-Notice that these *{containerId}* and *{caseDefId}* are bits of information that we want to keep handy for when we integrate our solution with external tools.
-====
+.. The *{containerId}* and *{caseDefId}* are bits of information that we want to keep handy for when we integrate our solution with external tools.
 
 . The result of executing the `curl` command successfully you will see a Job Id like the following *"JOB-0000000001"*.
 
