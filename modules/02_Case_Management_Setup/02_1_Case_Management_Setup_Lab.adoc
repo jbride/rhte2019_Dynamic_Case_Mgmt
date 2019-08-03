@@ -12,11 +12,10 @@
 :numbered:
 
 
-
 == Overview
 
 === Background
-The objective of this lab is to use the _dynamic case management_ capabilities of Red Hat's Process Automation Management (RH-PAM) product to represent an employee hiring business process. 
+The objective of this lab is to use the _dynamic case management_ capabilities of Red Hat's Process Automation Management (RH-PAM) product to manage an employee hiring business process. 
 
 RH-PAM will be used to maintain the _wait state_ of the hiring processes and allow for in-flight changes to those processes.
 
@@ -32,33 +31,30 @@ With a dynamic case management project, the flow of execution is changed by the 
 
 image:images/managed-topology.png[Managed Topology Usage]
 
-When we use Red Hat Process Automation Manager as a solution for authoring and hosting the services that empower case management we have the option to either go for an link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-unmanaged-server-config-proc[un-managed] topology or a link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-managed-kie-server-con[managed] topology.
-In this workshop we will use a managed topology, this means that the Kie-server that works as a run-time server will request for its configuration to a controller. The Business Central will work as the controller for the Kie-server.
-This topology also will facilitate our infrastructure with an authoring environment from which we will be able to analyze and change our case definition.
+RH-PAM offers both an link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-unmanaged-server-config-proc[un-managed] topology and a link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-managed-kie-server-con[managed] topology.
+In this lab, you will use a _managed_ topology.
+With a managed topology, the RH-PAM kie-server (which is the run-time server of the RH-PAM product)  will request its configuration from a controller. 
+The Business Central web application of the RH-PAM product will serve as this controller for the Kie-server.
+This topology also will provide an authoring environment to analyze and change our case definition.
 
 == Browse and Deploy project
-In this section we will import the source code for the case management project into Business Central, and use Business Central to deploy the project to the kie-server run-time.
-To execute this section you will need the Business Central Route. Retrieve the Business Central Route by entering by ssh protocol to the provisioned workstation in last lab, and running the following command:
-
-----
-$ echo -en "\n\nhttps://$bc_url\n\n"
-----
-
 
 === Import and Browse the project contents
 
 We will import the following project to our Business Central: https://github.com/barhte2019/hr-hiring
 
-Red Hat Process Automation Manager uses git as source code repository. Each project in Business Central is also a git repository. When you create a new Project in Business Central you are creating also a git repository.
-Git repositories can be imported to business central from remote repositories, but be aware that they don't keep their remote reference when you import them, instead they are copied to the Business Central's file system.
+Red Hat Process Automation Manager uses git as source code repository. 
+Each project in Business Central (aka: kie-project) is also a git repository. 
+When you create a new Project in Business Central you are creating also a git repository.
+Git repositories can be imported to business central from remote repositories
+However, be aware that these imported repositories don't keep their remote reference.  Instead they are copied to the Business Central's file system.
 Business Central uses git file system to persist more than only the source code for your projects: All user preferences, configurations and any other internal information that Business Central requires to persist it will be persisted in git repositories; hence Business Central does not need a Database (DBMS), it will use the File System and git instead.
 
 To import the repository in Business Central:
 
-. Navigate to Business Central route.
+. In your web browser, navigate to Business Central route (as you did in the previous lab).
 
-. Login to Business Central using `adminuser/admin1!` credentials.
-
+. Log into Business Central using `adminuser/admin1!` credentials.
 +
 image:images/business-central-home.png[Business Central Home Page]
 
@@ -77,7 +73,8 @@ image:images/import-project.png[Import project window]
 When you need to import a *private* repository you can provide the credentials to authenticate with your git repository in the `advanced` section of the import pop-up.
 ====
 
-. From the repository contents, Business Central will list the available kjar projects, in our case we only have 1 project; select this only project (hr-hiring), and click ok from the top right corner.
+. From the repository contents, Business Central will list the available _kjar_ projects
+The _hr-hiring_ kie-project contains only have 1 project (called: hr-hiring); select this project and click ok from the top right corner.
 +
 image:images/hr-hiring-project-select.png[Select project to import]
 
@@ -85,26 +82,16 @@ image:images/hr-hiring-project-select.png[Select project to import]
 +
 [NOTE]
 ====
-The indexing process classifies our assets to be _Data Objects_, _Rules_, _Busines Processes_, etc., enabling easier search and organization of the project in Business Central.
+The indexing process enables quicker search of the various _Data Objects_, _Rules_ and _Business Processes_ of the newly imported kie-project.
 ====
 
 === Browse the project contents
-The main assets that we will explore to understand how our project works are *Processes*, use the "Assets Type Drop-down" to select *Process* instead of *All*.
+The main assets to help better understand our business scenario are: *Processes*
 
-[NOTE]
-====
-For descriptive purposes I am naming here "Assets Type Drop-down" to the drop-down control in the top-left corner of the *Assets* tab in this Library Perspective.
-Identify the control because initially it is selected as All:
-
-image:images/assets-type-location.png[Assets Type Location]
-
-You have more options to select here, at this point we are selecting *Process*
-
+. In the top-left corner of the `Assets` tab, select *Process*.
++
 image:images/assets-type-options.png[Assets type options]
 
-====
-
-Let's start with the `job-vacancy-lifecycle` Business Process:
 
 . Select the `job-vacancy-lifecycle` Business Process from the Library Assets.
 +
@@ -116,10 +103,10 @@ image:images/job-vacancy-lifecycle-properties.png[Job Vacancy Lifecycle Properti
 +
 [NOTE]
 ====
-When you click in any of the diagram elements you will see the properties of the selected element, if you click in the canvas you will see the diagram properties.
+When you click in any of the diagram elements you will see the properties of the selected element. If you click in the canvas you will see the diagram properties.
 ====
 
-. Open the *Variable Definitions* drop-down from the *Core Properties*, the drop-down arrow will trigger a modal window with the list of available variables for the case definition. Notice that most of those variables are useful for the *Case File*, we only have 1 variable that is not used in the *Case File*, but it is used for the *Process Instance*.
+. Open the *Variable Definitions* drop-down from the *Core Properties*, the drop-down arrow will trigger a modal window with the list of available variables for the case definition. Notice that most of those variables are used for the *Case File*.  There is only 1 variable (_candidateSelected_) that is not used in the *Case File*, but it is used for the *Process Instance*.
 +
 image:images/job-vacancy-lifecycle-vardef.png[Case definition variables]
 
@@ -141,12 +128,12 @@ org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") != true)
 org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") == true)
 ----
 
-. At any time during the life-cycle of a *Case Instance* that is based in this *Case Definition*, if some external or internal event changes the given values for this conditions to be met, the *Case Instance* will react to that information change and either activate or complete stages or milestones. Examine the _completion_ and _activation_ conditions of the remaining stages.
+. At any time during the life-cycle of a *Case Instance* that is based on this *Case Definition*, if state changes of this Case Instance occur that result in one or more of its conditions to be met, the *Case Instance* will react to that information change and either activate or complete stages or milestones. Examine the _completion_ and _activation_ conditions of the remaining stages.
 
 . _Milestones_ also have a condition that will cause the milestone to be *Achieved*. In order to see the condition for a _milestone_: Select the *Assignments* property of the milestone.
 +
 image:images/milestone-condition.png[Milestone condition]
-
++
 Remember, any time you can change the values that cause those milestones and stages to be completed or activated, and when this completion or activation is triggered, the flow in the milestone or the stage is followed, in the next sections we will play with the data to cause different flows in the case instances.
 
 . Close the `job-vacancy-lifecycle`
