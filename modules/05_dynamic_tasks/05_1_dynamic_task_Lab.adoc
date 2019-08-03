@@ -25,6 +25,40 @@ During the interview process one of the interviewers detects that this user can 
 
 image::images/all_process.png[Case Diagram]
 
+== Import and Browse the project contents
+
+In this section we will import and overview the contents of the client applications source code.
+Then we will create a container with a pre-created image in a new project in Openshift; in a later exercise we will make changes to these applications and deploy to openshift, for now let's see them in action.
+
+=== Import the client applications source code.
+
+We will import the code from the following repositories:
+
+* https://github.com/barhte2019/hiring-app-internal
+* https://github.com/barhte2019/hiring-app-public
+
+We will use `git clone` to import the repositories. It is recommended to use the `ssh workshop environment`, because it has `git` installed and in a later lab we will modify the source code and deploy our modification to Openshift. If you locally have `git` installed, you can perform the source code analysis locally.
+
+==== Import and build the client applications
+
+. In the `ssh workshop terminal`, use the `$HOME/lab` directory
++
+----
+cd $HOME/lab
+----
+
+. Run the `git clone` command for importing the hiring-app-internal:
++
+----
+git clone https://github.com/barhte2019/hiring-app-internal.git
+----
+
+. Clone the `hiring-app-public` application:
++
+----
+cd $HOME/lab
+git clone https://github.com/barhte2019/hiring-app-public.git
+----
 == Change the UI for Dynamic tasks creation
 === The current UI analysis
 === Implementing and deploying the change

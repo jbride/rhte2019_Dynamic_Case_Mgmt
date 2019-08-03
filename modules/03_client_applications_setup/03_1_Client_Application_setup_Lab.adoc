@@ -33,61 +33,20 @@ image:images/client-apps-topology.png[Client Apps Topology]
 
 Web applications interact with the kie-server run-time using REST API over HTTP. For this purpose they will need to carry a token in the request header; Red Hat SSO will be used to request and renew the token (recall the `curl` command from previous lab).
 
-== Import and Browse the project contents
-
-In this section we will import and overview the contents of the client applications source code.
-Then we will create a container with a pre-created image in a new project in Openshift; in a later exercise we will make changes to these applications and deploy to openshift, for now let's see them in action.
-
-=== Import the client applications source code.
-
-We will import the code from the following repositories:
-
-* https://github.com/barhte2019/hiring-app-internal
-* https://github.com/barhte2019/hiring-app-public
-
-We will use `git clone` to import the repositories. It is recommended to use the `ssh workshop environment`, because it has `git` installed and in a later lab we will modify the source code and deploy our modification to Openshift. If you locally have `git` installed, you can perform the source code analysis locally.
-
-==== Import and build the client applications
-
-. In the `ssh workshop terminal`, use the `$HOME/lab` directory
-
-+
-----
-cd $HOME/lab
-----
-
-. Run the `git clone` command for importing the hiring-app-internal:
-
-+
-----
-git clone https://github.com/barhte2019/hiring-app-internal.git
-----
-
-. Clone the `hiring-app-public` application:
-
-+
-----
-cd $HOME/lab
-git clone https://github.com/barhte2019/hiring-app-public.git
-----
-
-=== Deploy client applications to Openshift
+== Deploy client applications to Openshift
 In this section we will use pre-existing images in a public registry to deploy the client applications to openshift.
 
 Client applications will be deployed to a new project in openshift: the `client-app` project.
 
 . Create the `client-app` project in openshift:
-
 +
-[source]
 ----
 oc login https://master00.example.com -u user1 -p r3dh4t1!
 oc new-project client-app
 ----
 
-==== The back office application
+=== The back office application
 . Prepare the values that you will use in the client application configuration, take note (copy them to an available text editor so you can retrieve them in a later step) of the following variable values in the `workstation ssh`, we will use them in the next step:
-
 +
 ----
 echo -en "\n\nhttps://$rhsso_url/auth\n\n"
@@ -95,12 +54,10 @@ echo -en "\n\nhttps://$ks_url\n\n"
 ----
 
 . Create a new container based in the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-internal[react-hiring-app-internal] image.
-
 +
 ----
 oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-internal:1.0 -e SSO_URL=https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth -e KIE_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-be98.generic.opentlc.com
 ----
-
 +
 [NOTE]
 ====
@@ -108,14 +65,12 @@ Mind the endpoints given to the `SSO_URL` and `KIE_URL` environment variables. Y
 ====
 
 . Expose the external route to be able to navigate to the `react-hiring-app-internal`
-
 +
 ----
-oc expose react-hiring-app-internal -n client-app
+oc expose svc/react-hiring-app-internal -n client-app --port=8080
 ----
 
 . Retrieve and navigate using a browser to the newly created back office web application.
-
 +
 ----
 oc get route -n client-app
@@ -123,16 +78,14 @@ oc get route -n client-app
 
 . Take note of the route for the `react-hiring-app-internal` application, we will use it for the *Red Hat SSO* client configuration.
 
-==== The public web application
+=== The public web application
 In this section you repeat almost the same steps than in previous section, to create a container based in the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-public[react-hiring-app-public] image.
 
 . Create a new container based in the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-public[react-hiring-app-public] image.
-
 +
 ----
 oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-public:1.0 -e SSO_URL=https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth -e KIE_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-be98.generic.opentlc.com
 ----
-
 +
 [NOTE]
 ====
@@ -140,14 +93,12 @@ Mind the endpoints given to the `SSO_URL` and `KIE_URL` environment variables. Y
 ====
 
 . Expose the external route to be able to navigate to the `react-hiring-app-public`
-
 +
 ----
-oc expose react-hiring-app-public -n client-app
+oc expose svc/react-hiring-app-public -n client-app --port=8080
 ----
 
 . Retrieve and navigate using a browser to the newly created back office web application.
-
 +
 ----
 oc get route -n client-app
@@ -163,35 +114,51 @@ In this section we will prepare two authentication and authorization clients in 
 The main reason for doing this is the `Valid Redirect URIs` required for a Red Hat SSO Client configuration to allow certain applications to consume a _client_. We are allowed to use the same client for all of our applications, but is a good practice to keep them separated, in case you need a slight different configuration for a given application.
 
 . Browse to *Red Hat SSO*, remember, from your `opentlc lab ssh` you can execute the following command to retrieve the *Red Hat SSO route*:
-
 +
 ----
 echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
 ----
 
 . Use the `admin/admin1234` credentials to authenticate into *Red Hat SSO*.
-
 +
 image:images/sso_login_home.png[SSO Login Home]
 
 === Back Office Application RH-SSO client.
 
 . Navigate to the *Clients* section, and click the image:images/create-button.png[] button in the top right corner of the Clients list.
-
 +
 image:images/sso-clients-list.png[RH SSO initial clients list]
 
-. Set the name of the new client as `hiring-internal` and *Save* it.
-
+. Set the name of the new client as `hiring-internal`
 +
 image:images/hiring-internal-add.png[Add Kie-remote client]
 
-. From the settings for the `hiring-internal` client: [red]#Switch off# the *Standard Flow Enabled* and *Save* the changes.
-
+. Set the *Root URL* of the `hiring-internal` as the route for the back office application:
 +
-image:images/kie-remote-standard-flow.png[Switch off standard flow]
-
-. From the *Kie-remote* client settings, keep handy the *JSON* format for the *Installation Tab*, specially the *auth-server-url*, we will use it when installing the client applications.
-
+----
+echo http://$(oc get route -n client-app | grep internal | awk '{print $2}')
+----
 +
-image:images/kie-remote-json-installation.png[Kie Remote JSON installation format]
+image:images/hiring-internal-add-root-url.png[Root URL for public client]
+
+. *Save* the `hiring-internal` client.
+
+When saving the `hiring-internal` client you will be able to login to the back office application.
+
+. Navigate to the back office web application route, that you can retrieve from the `ssh console`:
++
+----
+echo http://$(oc get route -n client-app | grep internal | awk '{print $2}')
+----
+
+. From the *home screen* select the image:images/internal-login-button.png[Login Button]
++
+image:images/hiring-internal-home.png[Hiring Internal Home]
+
+. Log in to the internal Application using `adminuser/admin1!` credentials
++
+image:images/kie-realm-login.png[kie-realm login]
+
+. Congratulations! you had just installed and integrated the back office application with RH-PAM and RH-SSO.
++
+image:images/hiring-internal-dashboard.png[Hiring internal dashboard]
