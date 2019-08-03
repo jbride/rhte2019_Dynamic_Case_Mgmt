@@ -14,13 +14,19 @@
 
 
 == Overview
-In this module we will import the case management project, analyze its contents and interact with the run-time using Business Central and the Kie-Server.
 
 === Background
-The objective of the case management project is to depict the process that should be executed when launching a new hiring request. The more information we drive to the RH PAM engine, the best; we will avoid to use a database directly from the applications, centralizing the business rules, flows and data that drive the hiring process.
-Any application that is integrated in the system will then have to use the case management project that we design to request and change information.
-The data that is changed by different applications in our organization's portfolio will have an effect in the *Case File*. The *Case File* holds information that affects the flow of execution, based in _milestones_ and _stages_.
-Pay attention to the conditions that trigger the _milestones_ and _stages_ completion, notice that is not as intuitive as if we were using a regular BPMN project, in which the flow is strictly handled by the flow connectors, in "case-management-land" the flow of execution is changed by the data that is received in the _Case File_.
+The objective of this lab is to use the _dynamic case management_ capabilities of Red Hat's Process Automation Management (RH-PAM) product to represent an employee hiring business process. 
+
+RH-PAM will be used to maintain the _wait state_ of the hiring processes and allow for in-flight changes to those processes.
+
+Via the RESTful API exposed by RH-PAM, other services can change the state of the in-flight hiring business processes.
+In particular, a *Case File* associated with the hiring process will be modified. 
+The *Case File* holds information that affects the flow of execution, based in _milestones_ and _stages_.
+
+Throughout this lab, pay attention to the conditions that trigger completions of the _milestones_ and _stages_ in the hiring process.
+In particular, notice that these state changes are not as obvious as when depicted using conventional BPMN where the flow is strictly handled by the flow connectors
+With a dynamic case management project, the flow of execution is changed by the data associated to the _Case File_.
 
 === Topology
 

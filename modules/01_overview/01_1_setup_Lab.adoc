@@ -20,44 +20,61 @@ NOTE: If your network connection is intermittent, consider installing the https:
 
 
 == Overview
-In this workshop we will deploy, manage and develop a platform that assist with the *Hiring request process*. The *Hiring request process* is the process that consists in receiving a *Hiring Petition*, evaluate the *Candidate skills* and other *Hiring requirements* to fulfill the *Job Position*.
-The scope of the solution is from the *Hiring Petition* to the *Job Offer Acceptance*; this means that any process after the *Candidate* has been selected is out of the scope of our current platform.
+In this workshop you will deploy, manage and develop a platform that assists with the *Hiring request process*. 
+The *Hiring request process* is the business process that consists of :
+
+. Receiving a *Hiring Petition*
+. Evaluation of the *Candidate skills* 
+. Execution of other *Hiring requirements* to fulfill the *Job Position*.
+. Job Offer Acceptance by the candidate
+
+The scope of the solution is from the *Hiring Petition* to the *Job Offer Acceptance*.
+In particular, any business processes after the *Candidate* has been selected is out of the scope of our current platform.
 
 image::images/milestones-overview.png[Milestones Overview]
 
-During the workshop we will perform the following activities:
+During the workshop, you will perform the following activities:
 
 * Deploy and configure the most representative parts of the platform, paying attention to the bending and connection points of their infrastructure.
 * Execute an end to end demo of the most common cases, specially the happy path.
 * Analyze the client applications to find the integration points with the back end components.
 * Modify one of the client applications to allow some dynamicity allowed by *Red Hat Process Automation Manager* when working with *Case Management* projects.
 
-The scope of the workshop includes the analysis of an existing platform that integrates *Case Management* with modern Javascript frameworks like *ReactJs* over *NodeJs*. CI/CD methodologies, case management 1-0-1, Decision Manager rules execution and Resource Planner (along with lot of other topics) are out of scope.
+The scope of the workshop includes the analysis of an existing platform that integrates *Case Management* with modern Javascript frameworks like *ReactJs* over *NodeJs*. 
 
 === Background
 This workshop is inspired in the original demo created in March 2019 (link:https://gitlab.consulting.redhat.com/uki-sa/pam-demo[PAM Demo]) by link:https://gitlab.consulting.redhat.com/bholmes[Ben Holmes] and his team. Thank you for the inspiration received by a well done project.
 
-In this workshop we will see another example of this implementation, but now using a more data-driven case management solution and a different UI approach using ReactJs instead of Angular with a similar usability flow.
+In this workshop we will see another example of this implementation with similar flows, but now using a more data-driven case management solution and a different UI approach based on ReactJs (instead of Angular).
 
 === Deployment Topology
 
+The architecture of your _Dynamic Case Management_ solution will be as depicted below:
+
 image::images/arch_topology.png[]
 
-During the workshop we will work around the topology in the picture above. I will refer to them by their short name to describe their contents, hence the `pam7-tools-$guid` is the `Tools` namespace, the `rhpam-dev-$guid` is the `RHPAM-DEV` namespace and the `rhsso-sso0` is the `RHSSO` namespace.
-We have a `Tools` namespace with `pgadmin4` and `Nexus`. With `pgadmin4` we have a tool to navigate databases in our environment with a web tool. With `Nexus` we have an online repository for Maven projects.
+. `pam7-tools-$guid` 
++
+Consists of `pgadmin4` and `Nexus`. 
+`pgadmin4` is a web tool to navigate the databases used in the solution. 
+`Nexus` is a online repository for binary Maven artifacts.
+
+. `rhpam-dev-$guid` 
++
 In the `RHPAM-DEV` namespace we have the Red Hat Process Automation Manager components for authoring, runtime, database and email.
+. `rhsso-sso0` 
++
 In the `RHSSO` namespace we have Red Hat SSO for authentication and authorization across our environment.
-The `client-app` namespace with its containers will be deployed and modified during the workshop to demonstrate its integration with RHPAM.
+
+`client-app` 
++
+The `reactjs` based web application deployed in this namespace will be modified during the workshop to demonstrate its integration with RHPAM.
+
 
 == Course Virtual Machine
 
-Your lab environment is remote and consists of the following:
+Your lab environment is remote and can be accessed via ssh as well as through your local browser.
 
-. *OpenShift Container Platform* (OCP)
-. *Red Hat Process Automation Manager* (RH-PAM)
-. *Red Hat Single Sign-On* (RH-SSO)
-
-This lab environment can be accessed via ssh as well as through your local browser.
 
 === Order Virtual Machine
 This section guides you through the procedure to order a virtual machine (VM) for this course.
@@ -151,7 +168,6 @@ $ ssh <opentlc-userId>@workstation-$GUID.rhpds.opentlc.com
 -----
 $ oc login https://master00.example.com -u user1 -p r3dh4t1!
 -----
-
 
 
 === Refresh Process Automation Manager state
@@ -349,7 +365,8 @@ image:images/valid-redirect-uris.png[Valid Redirect URIs example]
 
 == Process Automation Manager
 
-Your lab environment includes a common authoring installation for Red Hat Process Automation Manager. The common Authoring installation includes: A database, Business Central and Kie Server.
+Your lab environment includes a common authoring installation for Red Hat Process Automation Manager. 
+The common Authoring installation includes: A database, Business Central and Kie Server.
 Red Hat Process Automation Manager containers operate in the namespace:  _$RHPAM_PROJECT_.
 
 === RH-PAM resources
