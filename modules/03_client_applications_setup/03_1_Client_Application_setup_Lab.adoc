@@ -162,3 +162,49 @@ image:images/kie-realm-login.png[kie-realm login]
 . Congratulations! you had just installed and integrated the back office application with RH-PAM and RH-SSO.
 +
 image:images/hiring-internal-dashboard.png[Hiring internal dashboard]
+
+=== Public Web Application RH-SSO client.
+
+. Login to Red Hat SSO_URL
++
+----
+echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
+----
+
+. Navigate to the *Clients* section, and click the image:images/create-button.png[] button in the top right corner of the Clients list.
++
+image:images/sso-clients-list.png[RH SSO initial clients list]
+
+. Set the name of the new client as `hiring-public`
++
+image:images/hiring-public-add.png[Add hiring public client]
+
+. Set the *Root URL* of the `hiring-internal` as the route for the public web application:
++
+----
+echo http://$(oc get route -n client-app | grep public | awk '{print $2}')
+----
++
+image:images/hiring-public-add-root-url.png[Root URL for public client]
+
+. *Save* the `hiring-public` client.
+
+When saving the `hiring-public` client you will be able to login to the public web application.
+
+. Navigate to the public web application route, that you can retrieve from the `ssh console`:
++
+----
+echo http://$(oc get route -n client-app | grep public | awk '{print $2}')
+----
+
+. From the *home screen* select the image:images/public-login-button.png[Login Button]
++
+image:images/hiring-public-home.png[Public Hiring Home]
+
+. Log in to the public web Application using `adminuser/admin1!` credentials
++
+image:images/kie-realm-login.png[kie-realm login]
+
+. Congratulations! you had just installed and integrated the back office application with RH-PAM and RH-SSO.
++
+image:images/hiring-public-protected.png[Hiring public protected]
