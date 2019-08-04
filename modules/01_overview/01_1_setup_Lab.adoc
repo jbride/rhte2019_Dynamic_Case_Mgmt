@@ -65,7 +65,7 @@ In the `RHPAM-DEV` namespace we have the Red Hat Process Automation Manager comp
 +
 In the `RHSSO` namespace we have Red Hat SSO for authentication and authorization across our environment.
 
-`client-app` 
+. `client-app` 
 +
 The `reactjs` based web application deployed in this namespace will be modified during the workshop to demonstrate its integration with RHPAM.
 
@@ -230,7 +230,7 @@ $ mkdir -p $HOME/lab && \
        wget https://raw.githubusercontent.com/barhte2019/ansible-deployer/master/set_env_vars.sh -O $HOME/lab/set_env_vars.sh \
        && chmod 755 $HOME/lab/set_env_vars.sh \
        && $HOME/lab/set_env_vars.sh \
-       source $HOME/.bashrc
+       && source $HOME/.bashrc
 -----
 
 . Review the environment variables that have been set:
@@ -254,6 +254,7 @@ $ oc get projects
 
 pam-7-tools-user1   Tools          Active
 rhpam-dev-user1     RHPAM-dev      Active
+rhsso-sso0                         Active
 -----
 
 . *pam-7-tools-user1*
@@ -265,6 +266,10 @@ This OCP project contains a _Nexus_ server as well as a web tool to execute admi
 This OCP project contains both the RH-PAM Business Central and KIE-Server applications.
 +
 Both of these applications are secured using the OpenID Connect protocol via an integration with a Red Hat SSO server.
+
+. *rhsso-sso0*
++
+This OCP project contains an installation of Red Hat Single Sign-On (RH-SSO) pre-configured with a SSO _realm_ (called: kie-realm) used to secure both RH-PAM Business Central and KieServer.
 
 === OCP Web Console
 
@@ -306,6 +311,8 @@ In this section of the lab, you view pre-existing SSO clients and modify one of 
 +
 SSO client leveraged by the KIE-Server.  Enabled with the following flows:
 
+.. _Authorization Code Flow_
+
 .. _Resource Owner Password Credentials_
 +
 Supports liveness and readiness probes of kie-server using the user: _adminUser_.
@@ -328,9 +335,10 @@ image:images/valid-redirect-uris.png[Valid Redirect URIs example]
 
 
 === Users
-. View pre-configured users in *Red Hat SSO*
-.. In the left panel, navigate to: `Users -> View all users`.
-.. The following table provides details of each pre-configured user:
+View pre-configured users in *Red Hat SSO*
+
+. In the left panel of _kie-realm_, navigate to: `Users -> View all users`.
+. The following table is reference only.  The table provides details of each pre-configured user:
 +
 [cols="1,1,5",options="header"]
 |==============================
