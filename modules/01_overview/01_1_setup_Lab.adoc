@@ -289,7 +289,7 @@ We use Red Hat SSO to manage the authentication and authorization across our sol
 By using RH-SSO we will be able to allow external users to register and track their job applications, and we will also handle the authorization of internal users to manage and track their hiring requests.
 Business Central, Kie-Server and the client applications will use Red Hat SSO to authenticate and authorize their operations.
 
-In this section you will navigate the current configuration in your Red Hat SSO Realm:
+In this section you will review the current configurations of the _kie-realm_ and modify it to enable authentication of your RH-PAM Business Central web application:
 
 . Log into the pre-configured _kie-realm_:
 +
@@ -335,29 +335,8 @@ image:images/valid-redirect-uris.png[Valid Redirect URIs example]
 
 
 === Users
-View pre-configured users in *Red Hat SSO*
 
-. In the left panel of _kie-realm_, navigate to: `Users -> View all users`.
-. The following table is reference only.  The table provides details of each pre-configured user:
-+
-[cols="1,1,5",options="header"]
-|==============================
-|Username|Password|Description
-|adminuser|admin1!|Admin user assigned to the roles: Administrators, admin, kie-server, kiemgmt, rest-all
-|controlleruser|controller1!|Used by kie-server when accessing KIE controller embedded in Business Central
-|casemanager|r3dh4t1!| Generic case manager user.
-|casesupplier|r3dh4t1!| Generic case supplier user.
-|caseuser|r3dh4t1!| Generic case user.
-|Super|Password1!|An administrative user with access to all cases and tasks.
-|Ava|Password1!|Ava is an out of the box applicant user type for our Hiring process. Ava is able to apply for jobs, she is not able to login to business central, but is able to login into the public client application.
-|Bill|Password1!|Bill is an out of the box applicant user type for our Hiring process. Bill is able to apply for jobs, he is not able to login to business central, but is able to login into the public client application.
-|Tina|Password1!|Tina is a `Talent-acquisition` user for our Hiring process. Tina is able to create hiring requests using the internal client application, although is not able to access business central.
-|Tom|Password1!|Tom is a `Talent-acquisition` user for our Hiring process. Tom is able to create hiring requests using the internal client application, although is not able to access business central.
-|Eve|Password1!|Eve is an `Interviewer` user for our hiring process. Eve is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
-|Ann|Password1!|Eve is an `Interviewer` user for our hiring process. Ann is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
-|Bob|Password1!|Eve is an `Interviewer` user for our hiring process. Bob is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
-|==============================
-
+<<users>>
 
 == Process Automation Manager
 
@@ -452,6 +431,30 @@ Your lab environment is now ready to use.  Please proceed to the next lab.
 
 
 == Appendix
+
+[[users]]
+=== Optional: View pre-configured users in *Red Hat SSO*
+
+. In the left panel of _kie-realm_, navigate to: `Users -> View all users`.
+. The following table is reference only.  The table provides details of each pre-configured user:
++
+[cols="1,1,5",options="header"]
+|==============================
+|Username|Password|Description
+|adminuser|admin1!|Admin user assigned to the roles: Administrators, admin, kie-server, kiemgmt, rest-all
+|controlleruser|controller1!|Used by kie-server when accessing KIE controller embedded in Business Central
+|casemanager|r3dh4t1!| Generic case manager user.
+|casesupplier|r3dh4t1!| Generic case supplier user.
+|caseuser|r3dh4t1!| Generic case user.
+|Super|Password1!|An administrative user with access to all cases and tasks.
+|Ava|Password1!|Ava is an out of the box applicant user type for our Hiring process. Ava is able to apply for jobs, she is not able to login to business central, but is able to login into the public client application.
+|Bill|Password1!|Bill is an out of the box applicant user type for our Hiring process. Bill is able to apply for jobs, he is not able to login to business central, but is able to login into the public client application.
+|Tina|Password1!|Tina is a `Talent-acquisition` user for our Hiring process. Tina is able to create hiring requests using the internal client application, although is not able to access business central.
+|Tom|Password1!|Tom is a `Talent-acquisition` user for our Hiring process. Tom is able to create hiring requests using the internal client application, although is not able to access business central.
+|Eve|Password1!|Eve is an `Interviewer` user for our hiring process. Eve is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
+|Ann|Password1!|Eve is an `Interviewer` user for our hiring process. Ann is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
+|Bob|Password1!|Eve is an `Interviewer` user for our hiring process. Bob is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
+|==============================
 
 === Optional: OCP cluster admin related tasks
 
