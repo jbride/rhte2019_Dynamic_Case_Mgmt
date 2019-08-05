@@ -377,6 +377,34 @@ rhpam-postgresql-1-nks5f   1/1       Running   2          23h
 
 === Validate Integration with RH-SSO
 
+<<bc_rhsso>>
+
+
+=== Access Business Central
+
+For the purpose of this lab, you will serve as the administrator of your own RH-PAM Business Central.
+
+Log into the administration portal of your Business Central web app as follows:
+
+. Point your browser to the URL of your Business Central web app as provided in the output of the following command:
++
+-----
+$ echo -en "\n\nhttps://$bc_url\n\n"
+-----
+
+. Authenticate using:  adminuser / admin1!
++
+image::images/bc_login_home.png[]
+
+
+[blue]#Congratulations!#
+Your lab environment is now ready to use.  Please proceed to the next lab.
+
+
+== Appendix
+
+[[bc_rhsso]]
+=== Optional: Validate Integration with RH-SSO
 The Business Central and KIE-Server components of RH-PAM are secured by integrating with a RH-SSO server using the OpenID Connect Protocol (OIDC).
 You can verify this via the logs of both RH-PAM applications.
 
@@ -407,30 +435,6 @@ INFO Obtained auth token from https://sso-rhsso-sso0.apps-be98.generic.opentlc.c
 +
 The log statements above allude to an integration with an SSO _realm_ called: _kie-realm_ using an SSO _client_ called:  _kie-server_.
 This _business-central_ SSO client is of type _bearer-only_.
-
-
-=== Access Business Central
-
-For the purpose of this lab, you will serve as the administrator of your own RH-PAM Business Central.
-
-Log into the administration portal of your Business Central web app as follows:
-
-. Point your browser to the URL of your Business Central web app as provided in the output of the following command:
-+
------
-$ echo -en "\n\nhttps://$bc_url\n\n"
------
-
-. Authenticate using:  adminuser / admin1!
-+
-image::images/bc_login_home.png[]
-
-
-[blue]#Congratulations!#
-Your lab environment is now ready to use.  Please proceed to the next lab.
-
-
-== Appendix
 
 [[users]]
 === Optional: View pre-configured users in *Red Hat SSO*

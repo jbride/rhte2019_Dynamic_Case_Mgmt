@@ -54,11 +54,7 @@ To import the repository in Business Central:
 
 . In your web browser, navigate to Business Central route (as you did in the previous lab).
 
-. Log into Business Central using `adminuser/admin1!` credentials.
-+
-image:images/business-central-home.png[Business Central Home Page]
-
-. Navigate to the `Design` page.
+. In Business Central, navigate to the `Design` page.
 
 . As this will be our first project we will see an image:images/import-project-button.png[import project button] in the home page of our `Design` option. Click this image:images/import-project-button.png[import project button].
 +
