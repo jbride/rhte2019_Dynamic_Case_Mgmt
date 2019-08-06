@@ -6,35 +6,31 @@
 
 = Client Applications Deployment
 
-.Prerequisites
-.. Module 01 Overview completion
-
 :numbered:
 
 
 == Overview
-In this module we will create containers that host the client applications that will interact with the kie-server.
+In this module we will deploy web applications that support a human reosurce department's _employee hiring_ business processes.
 
-Client applications for this lab are ReactJs websites over a NodeJs server that interact with the kie-server deployed in Openshift during the previous lab.
-To install the web sites be sure to have at reach:
-
-* The *RH-SSO KIE-REALM* route.
-* The *KIE-SERVER* route.
-
-=== Background
-Client applications interact with the Red Hat Process Automation Manager using REST API over HTTP. Other approaches also includes the interaction of client applications through Java API or Messaging Queues.
-In this lab we will analyze an application that uses HTTP to interact with RHPAM; this application will help us understand how different client applications can be connected.
-We had selected ReactJs as the javascript framework for this workshop, as you can see, given the flexibility of REST APIs, one can consume these services from a variety of different frameworks and clients.
+These web applications are built using _ReactJs_ and run in Linux container images layered with NodeJs.  They interact with the RESTful API of the RH-PAM kie-server.  Recall from the previous lab that the RESTful API of RH-PAM kie-server are secured using _OpenID Connect_.  Subsequently, these web applications will need to acquire an OIDC access token from RH-SSO and use this token to invoke the kie-server API.
 
 === Topology
-In this lab we will create OCP containers for 2 javascript applications. There will be a "Back Office" and a "Public" web application.
 
 image:images/client-apps-topology.png[Client Apps Topology]
 
-Web applications interact with the kie-server run-time using REST API over HTTP. For this purpose they will need to carry a token in the request header; Red Hat SSO will be used to request and renew the token (recall the `curl` command from previous lab).
+As depicted in the diagram, 2 javascript web apps support the _employee hiring_ business processes:
+
+* *Backoffice web app*
++
+The _Backoffice_  web application allows a hiring manager to initiate a hiring request, define job requirements, review job statuses, and resolve tasks across the entire hiring process.
+
+* *Public web app*
++
+The _Public_ web application allows an applicant to search and apply for jobs and review a job application status.
+
 
 == Deploy client applications to Openshift
-In this section we will use pre-existing images in a public registry to deploy the client applications to openshift.
+In this section you deploy pre-built Linux container images of these two web applications to Openshift.
 
 Client applications will be deployed to a new project in openshift: the `client-app` project.
 
@@ -53,16 +49,12 @@ echo -en "\n\nhttps://$rhsso_url/auth\n\n"
 echo -en "\n\nhttps://$ks_url\n\n"
 ----
 
-. Create a new container based in the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-internal[react-hiring-app-internal] image.
+. Create a new OpenShift DeploymentConfiguration based on the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-internal[react-hiring-app-internal] image.
 +
 ----
-oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-internal:1.0 -e SSO_URL=https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth -e KIE_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-be98.generic.opentlc.com
+oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-internal:1.0 -e SSO_URL=https://$rhsso_url/auth -e KIE_URL=https://$ks_url
 ----
-+
-[NOTE]
-====
-Mind the endpoints given to the `SSO_URL` and `KIE_URL` environment variables. You want to change the `${GUI_ID}` to your own. These values are taken from previous step.
-====
+
 
 . Expose the external route to be able to navigate to the `react-hiring-app-internal`
 +
@@ -76,21 +68,14 @@ oc expose svc/react-hiring-app-internal -n client-app --port=8080
 oc get route -n client-app
 ----
 
-. Take note of the route for the `react-hiring-app-internal` application, we will use it for the *Red Hat SSO* client configuration.
-
 === The public web application
-In this section you repeat almost the same steps than in previous section, to create a container based in the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-public[react-hiring-app-public] image.
+In this section, you create an OpenShift DeploymentConfiguration of the _Public_ web application.
 
-. Create a new container based in the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-public[react-hiring-app-public] image.
+. Create a new DeploymentConfiguration based on the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-public[react-hiring-app-public] image.
 +
 ----
-oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-public:1.0 -e SSO_URL=https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth -e KIE_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-be98.generic.opentlc.com
+oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-public:1.0 -e SSO_URL=https://$rhsso_url/auth -e KIE_URL=https://$ks_url
 ----
-+
-[NOTE]
-====
-Mind the endpoints given to the `SSO_URL` and `KIE_URL` environment variables. You want to change the `${GUI_ID}` to your own. These values are taken from previous step.
-====
 
 . Expose the external route to be able to navigate to the `react-hiring-app-public`
 +
@@ -104,22 +89,18 @@ oc expose svc/react-hiring-app-public -n client-app --port=8080
 oc get route -n client-app
 ----
 
-. Take note of the route for the `react-hiring-app-public` application, we will use it for the *Red Hat SSO* client configuration.
 
+== Create RH-SSO clients
 
-== Create a RHSSO clients
+In this section you create two additional _SSO clients_ in the existing _kie-realm_ of your *Red Hat SSO*.  The purpose of these two additional _SSO clients_ are to secure the two hiring related web applications.
 
-In this section we will prepare two authentication and authorization clients in *Red Hat SSO* so we can authenticate using the same `realm` that we use to authenticate kie-server and business central RHPAM elements.
-
-The main reason for doing this is the `Valid Redirect URIs` required for a Red Hat SSO Client configuration to allow certain applications to consume a _client_. We are allowed to use the same client for all of our applications, but is a good practice to keep them separated, in case you need a slight different configuration for a given application.
-
-. Browse to *Red Hat SSO*, remember, from your `opentlc lab ssh` you can execute the following command to retrieve the *Red Hat SSO route*:
+. Navigate your browser to the _kie-realm_ of *Red Hat SSO* available at the following URL:
 +
 ----
 echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
 ----
 
-. Use the `admin/admin1234` credentials to authenticate into *Red Hat SSO*.
+. Use the `admin/admin1234` credentials to authenticate into this SSO realm.
 +
 image:images/sso_login_home.png[SSO Login Home]
 
