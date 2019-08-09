@@ -179,9 +179,9 @@ For this purpose, a script has been provided as follows:
 -----
 
 $ mkdir -p $HOME/lab && \
-       wget https://bit.ly/2YhG0eA -O $HOME/lab/pam_rhsso_state_update.sh \
-       && chmod 755 $HOME/lab/pam_rhsso_state_update.sh \
-       && $HOME/lab/pam_rhsso_state_update.sh da7e
+       wget https://raw.githubusercontent.com/barhte2019/ansible-deployer/master/casemgmt_state_refresh.sh -O $HOME/lab/casemgmt_state_refresh.sh \
+       && chmod 755 $HOME/lab/casemgmt_state_refresh.sh \
+       && $HOME/lab/casemgmt_state_refresh.sh
 -----
 
 . You should see a response similar to the following:
@@ -202,7 +202,7 @@ deploymentconfig.apps.openshift.io/rhpam-kieserver patched
 deploymentconfig.apps.openshift.io/rhpam-kieserver scaled
 -----
 +
-If you are curious as to what exactly is getting modified in the Process Automation Manager, you can review link:https://bit.ly/2YhG0eA[the script].
+If you are curious as to what exactly is getting modified in the Process Automation Manager, you can review link:https://raw.githubusercontent.com/barhte2019/ansible-deployer/master/casemgmt_state_refresh.sh[the script].
 +
 In particular, notice that the wildcard DNS of RH-SSO URLs used in the Process Automation Manager are modified.
 
