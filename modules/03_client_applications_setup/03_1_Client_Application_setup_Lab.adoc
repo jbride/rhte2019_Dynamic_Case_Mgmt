@@ -10,7 +10,7 @@
 
 
 == Overview
-In this module we will deploy web applications that support a human reosurce department's _employee hiring_ business processes.
+In this module you will deploy web applications that support a human reosurce department's _employee hiring_ business processes.
 
 These web applications are built using _ReactJs_ and run in Linux container images layered with NodeJs.  They interact with the RESTful API of the RH-PAM kie-server.  Recall from the previous lab that the RESTful API of RH-PAM kie-server are secured using _OpenID Connect_.  Subsequently, these web applications will need to acquire an OIDC access token from RH-SSO and use this token to invoke the kie-server API.
 
