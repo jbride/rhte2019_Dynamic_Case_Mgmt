@@ -27,7 +27,7 @@ image::images/all_process.png[Hiring Case Diagram]
 Using the back office application (hiring_app_internal)
 
 . Login as `Tina/Password1!` to the back office application (hiring-app-internal). To remember the route required to navigate to the back office application run the following command in the `ssh workstation`:
-
++
 ----
 oc get route -n client-app | grep internal
 ----
@@ -35,12 +35,14 @@ oc get route -n client-app | grep internal
 . From the *Dashboard* web page, select the image:images/blue-plus-button.png[Blue plus button] button.
 
 . Fill the *Add Job* form, they are text fields only, it is preferable that you fill all of them.
++
+image:images/add-job-form.png[Add Job Form]
 
 . Submit the form.
 
 === What did just happen?
 
-image:images/information-flow-diagram.png[Information flow diagram]
+image:images/add-jobs-information-flow.png[Information flow diagram]
 
 . Open the source code for the hiring-public-app: https://github.com/barhte2019/hiring-app-internal
 
@@ -110,7 +112,7 @@ case JOB_SUBMIT: {
 ...
 ----
 
-. In order to talk to the back end, the `onCreateJob` method defined in link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/actions.ts#L94[`src/store/jobs/actions.ts`] uses the `api`. [red]#This is a very important asset#
+. In order to talk to the back end, the `onCreateJob` method defined in link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/actions.ts#L94[`src/store/jobs/actions.ts`] uses the `api`. [red]#Api is a very relevant asset for the RHPAM configuration#
 
 +
 ----
