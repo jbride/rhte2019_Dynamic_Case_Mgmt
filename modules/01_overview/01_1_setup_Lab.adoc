@@ -400,6 +400,14 @@ image::images/bc_login_home.png[]
 [blue]#Congratulations!#
 Your lab environment is now ready to use.  Please proceed to the next lab.
 
+== Fuse Document Management Service
+A Fuse Camel route has been built in order to support the storage of offer letters documents. The Fuse route uses an Openstack Swift backend for document storage and retreival. 
+
+=== Openstack Swift document service [W.I.P]
+Openstack Swift provides a REST-based object API for storage and retrieval of documents. Clients are authenticated using the X-Auth-Token method, where a userid and password is initially provided to obtain the token. Subsequently, the token is used by curl or programmatic clients to access the services.
+
+=== Fuse Camel route for document management
+The Fuse route exposes a REST API to the PAM process. This API provides 2 methods: a PUT and a GET to store and retrieve the document respectively. The Camel route makes uses of processors which allow the user to develop custom code (in this case in Java). The Apache HTTP client API is used within the processors to make get and put requests to the Openstack Swift API. The Swift-specific parameters such as host, username, password and container name are specified in a configmap and added to the namespace.
 
 == Appendix
 
