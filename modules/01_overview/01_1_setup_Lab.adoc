@@ -321,11 +321,6 @@ rhpam-postgresql-1-nks5f   1/1       Running   2          23h
 -----
 
 
-=== Validate Integration with RH-SSO
-
-<<bc_rhsso>>
-
-
 === Access Business Central
 
 For the purpose of this lab, you will serve as the administrator of your own RH-PAM Business Central.
@@ -436,7 +431,7 @@ Supports liveness and readiness probes of kie-server using the user: _adminUser_
 
 
 [[bc_rhsso]]
-=== Optional: Validate Integration with RH-SSO
+=== Optional: Validate integration between RH-PAM and RH-SSO
 The Business Central and KIE-Server components of RH-PAM are secured by integrating with a RH-SSO server using the OpenID Connect Protocol (OIDC).
 You can verify this via the logs of both RH-PAM applications.
 
