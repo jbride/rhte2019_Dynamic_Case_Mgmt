@@ -284,60 +284,6 @@ $ echo -en "\nhttps://master00-$OCP_REGION.generic.opentlc.com\n\n"
 .. Password:    r3dh4t1!
 
 
-== RH-SSO
-We use Red Hat SSO to manage the authentication and authorization across our solution.
-By using RH-SSO we will be able to allow external users to register and track their job applications, and we will also handle the authorization of internal users to manage and track their hiring requests.
-Business Central, Kie-Server and the client applications will use Red Hat SSO to authenticate and authorize their operations.
-
-In this section you will review the current configurations of the _kie-realm_ and modify it to enable authentication of your RH-PAM Business Central web application:
-
-. Log into the pre-configured _kie-realm_:
-+
------
-$ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
------
-
-. Authenticate using the following credentials:  admin / admin1234
-+
-image::images/sso_login_home.png[]
-
-=== SSO Clients
-In this section of the lab, you view pre-existing SSO clients and modify one of them (the _business-central_ SSO Client).
-
-. In the left panel, navigate to:  `Clients`.
-. Notice the existence of two SSO Clients of importance for this lab: _kie-server_ and _business-central_.
-
-. *kie-server*
-+
-SSO client leveraged by the KIE-Server.  Enabled with the following flows:
-
-.. _Authorization Code Flow_
-
-.. _Resource Owner Password Credentials_
-+
-Supports liveness and readiness probes of kie-server using the user: _adminUser_.
-
-. *business-central*
-+
-_Authorization Code_ flow client leveraged by the Business Central web application.
-+
-You will need to add a _redirect_uri_ of your Business Central web application to this SSO Client.  Do so as follows:
-
-.. Retrieve the remote URL for your business central from the ssh console by running:
-+
-----
-$ echo -en "\n\nhttps://$bc_url/*\n\n"
-----
-.. *Edit* the `business-central` client in *Red Hat SSO* to specify the *Valid Redirect URIs* to the value retrieved in previous step; note the appending "/*" to the end of it. This means that all URIs sharing the same domain will be secured by this client.
-+
-image:images/valid-redirect-uris.png[Valid Redirect URIs example]
-.. *Save* the changes to the client
-
-
-=== Users
-
-<<users>>
-
 == Process Automation Manager
 
 Your lab environment includes a common authoring installation for Red Hat Process Automation Manager. 
@@ -397,19 +343,97 @@ $ echo -en "\n\nhttps://$bc_url\n\n"
 image::images/bc_login_home.png[]
 
 
+== Fuse Document Management Service
+A Fuse Camel route has been built in order to support the storage of offer letters documents. 
+The Fuse route uses an Openstack Swift backend for document storage and retreival. 
+
+=== Openstack Swift document service [W.I.P]
+Openstack Swift provides a REST-based object API for storage and retrieval of documents. 
+Clients are authenticated using the X-Auth-Token method, where a userid and password is initially provided to obtain the token. 
+Subsequently, the token is used by curl or programmatic clients to access the services.
+
+=== Fuse Camel route for document management
+The Fuse route exposes a REST API to the PAM process. 
+This API provides 2 methods: a PUT and a GET to store and retrieve the document respectively. 
+The Camel route makes uses of processors which allow the user to develop custom code (in this case in Java). 
+The Apache HTTP client API is used within the processors to make get and put requests to the Openstack Swift API. 
+The Swift-specific parameters such as host, username, password and container name are specified in a configmap and added to the namespace.
+
 [blue]#Congratulations!#
 Your lab environment is now ready to use.  Please proceed to the next lab.
 
-== Fuse Document Management Service
-A Fuse Camel route has been built in order to support the storage of offer letters documents. The Fuse route uses an Openstack Swift backend for document storage and retreival. 
-
-=== Openstack Swift document service [W.I.P]
-Openstack Swift provides a REST-based object API for storage and retrieval of documents. Clients are authenticated using the X-Auth-Token method, where a userid and password is initially provided to obtain the token. Subsequently, the token is used by curl or programmatic clients to access the services.
-
-=== Fuse Camel route for document management
-The Fuse route exposes a REST API to the PAM process. This API provides 2 methods: a PUT and a GET to store and retrieve the document respectively. The Camel route makes uses of processors which allow the user to develop custom code (in this case in Java). The Apache HTTP client API is used within the processors to make get and put requests to the Openstack Swift API. The Swift-specific parameters such as host, username, password and container name are specified in a configmap and added to the namespace.
-
 == Appendix
+
+=== Optional: Review RH-SSO
+
+The lab environment includes a Red Hat SSO installation to manage the authentication and authorization across the solution.
+In particular, RH-SSO will :
+
+. Allow external users to register and track their job applications.
+. Assist in the handling of the authorization of internal users to manage and track their hiring requests.
+. Serve as the Identity Provider for Business Central, Kie-Server and the client applications.
+
+In this section you will review the current configurations of the SSO realm called: _kie-realm_ :
+
+. Log into the pre-configured _kie-realm_:
++
+-----
+$ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
+-----
+
+. Authenticate using the following credentials:  admin / admin1234
++
+image::images/sso_login_home.png[]
+
+==== SSO Clients
+
+. In the left panel, navigate to:  `Clients`.
+. Notice the existence of two SSO Clients of importance for this lab: _kie-server_ and _business-central_.
+
+. *kie-server*
++
+SSO client leveraged by the KIE-Server.  Enabled with the following flows:
+
+.. _Authorization Code_ flow client leveraged by the kie-server web application.
+
+.. _Resource Owner Password Credentials_
++
+Supports liveness and readiness probes of kie-server using the user: _adminUser_.
+
+. *business-central*
++
+SSO client leveraged by Business Central.  Enabled with the following flows:
+
+.. _Authorization Code_ flow client leveraged by the Business Central web application.
+
+.. _Resource Owner Password Credentials_
++
+Supports liveness and readiness probes of kie-server using the user: _adminUser_.
+
+==== View pre-configured users in *Red Hat SSO*
+
+. In the left panel of _kie-realm_, navigate to: `Users -> View all users`.
+. The following table is reference only.  The table provides details of each pre-configured user:
++
+[cols="1,1,5",options="header"]
+|==============================
+|Username|Password|Description
+|adminuser|admin1!|Admin user assigned to the roles: Administrators, admin, kie-server, kiemgmt, rest-all
+|controlleruser|controller1!|Used by kie-server when accessing KIE controller embedded in Business Central
+|casemanager|r3dh4t1!| Generic case manager user.
+|casesupplier|r3dh4t1!| Generic case supplier user.
+|caseuser|r3dh4t1!| Generic case user.
+|Super|Password1!|An administrative user with access to all cases and tasks.
+|Ava|Password1!|Ava is an out of the box applicant user type for our Hiring process. Ava is able to apply for jobs, she is not able to login to business central, but is able to login into the public client application.
+|Bill|Password1!|Bill is an out of the box applicant user type for our Hiring process. Bill is able to apply for jobs, he is not able to login to business central, but is able to login into the public client application.
+|Tina|Password1!|Tina is a `Talent-acquisition` user for our Hiring process. Tina is able to create hiring requests using the internal client application, although is not able to access business central.
+|Tom|Password1!|Tom is a `Talent-acquisition` user for our Hiring process. Tom is able to create hiring requests using the internal client application, although is not able to access business central.
+|Eve|Password1!|Eve is an `Interviewer` user for our hiring process. Eve is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
+|Ann|Password1!|Eve is an `Interviewer` user for our hiring process. Ann is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
+|Bob|Password1!|Eve is an `Interviewer` user for our hiring process. Bob is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
+|==============================
+
+
 
 [[bc_rhsso]]
 === Optional: Validate Integration with RH-SSO
@@ -443,30 +467,6 @@ INFO Obtained auth token from https://sso-rhsso-sso0.apps-be98.generic.opentlc.c
 +
 The log statements above allude to an integration with an SSO _realm_ called: _kie-realm_ using an SSO _client_ called:  _kie-server_.
 This _business-central_ SSO client is of type _bearer-only_.
-
-[[users]]
-=== Optional: View pre-configured users in *Red Hat SSO*
-
-. In the left panel of _kie-realm_, navigate to: `Users -> View all users`.
-. The following table is reference only.  The table provides details of each pre-configured user:
-+
-[cols="1,1,5",options="header"]
-|==============================
-|Username|Password|Description
-|adminuser|admin1!|Admin user assigned to the roles: Administrators, admin, kie-server, kiemgmt, rest-all
-|controlleruser|controller1!|Used by kie-server when accessing KIE controller embedded in Business Central
-|casemanager|r3dh4t1!| Generic case manager user.
-|casesupplier|r3dh4t1!| Generic case supplier user.
-|caseuser|r3dh4t1!| Generic case user.
-|Super|Password1!|An administrative user with access to all cases and tasks.
-|Ava|Password1!|Ava is an out of the box applicant user type for our Hiring process. Ava is able to apply for jobs, she is not able to login to business central, but is able to login into the public client application.
-|Bill|Password1!|Bill is an out of the box applicant user type for our Hiring process. Bill is able to apply for jobs, he is not able to login to business central, but is able to login into the public client application.
-|Tina|Password1!|Tina is a `Talent-acquisition` user for our Hiring process. Tina is able to create hiring requests using the internal client application, although is not able to access business central.
-|Tom|Password1!|Tom is a `Talent-acquisition` user for our Hiring process. Tom is able to create hiring requests using the internal client application, although is not able to access business central.
-|Eve|Password1!|Eve is an `Interviewer` user for our hiring process. Eve is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
-|Ann|Password1!|Eve is an `Interviewer` user for our hiring process. Ann is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
-|Bob|Password1!|Eve is an `Interviewer` user for our hiring process. Bob is able to be assigned human tasks for interview and she is able to provide feedback, although is not able to login business central is able to login into the internal application to contribute in the interview process of the applicants.
-|==============================
 
 === Optional: OCP cluster admin related tasks
 
