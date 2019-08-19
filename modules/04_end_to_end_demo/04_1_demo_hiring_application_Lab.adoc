@@ -126,6 +126,30 @@ return api.jobs.create(job).then(...).catch(...)
 . The `hiring petition` reaches the configured *kie-server* and creates a *Case Instance* based in the received information.
 
 == HR define job requirements
+By creating a case instance in the previous section, 3 Human Tasks have been initiated that define the job requirement:
+
+* Benefits and compensation
+* Define Candidate Skills
+* Interviewer team
+
+Confirm the creation of those tasks by using the back office application and navigating to the *Tasks* menu, under the *Group Tasks* tab:
+
+image:images/group-tasks.png[Group Tasks]
+
+The order in which you work in the tasks does not matter, in this section you will work in these 3 tasks and leave the case ready for candidates to apply for jobs.
+
+=== Interviewer team task
+. From the *Group Tasks*, locate the *Interviewer Team* task name.
+
+. Using the kebab menu, select the *claim* option.
++
+image:images/kebab-interviewer-team.png[Kebab Menu Interviewer Team]
+
+. The previous step will make the *Interviewer Team* task available for the *User Tasks* tab, from the kebab menu of the *Interviewer Team*, select the *modify/complete* option.
++
+image:images/kebab-claimed-interviewer-team.png[Kebab Menu Claimed Interviewer Team]
+
+
 == Candidate Apply for jobs
 == The interview Process
 == Job offer acceptance
