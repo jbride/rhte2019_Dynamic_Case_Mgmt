@@ -174,11 +174,17 @@ $ oc login https://master00.example.com -u user1 -p r3dh4t1!
 Your Process Automation Manager needs to be refreshed with the URL of the Red Hat SSO specific to your lab environment.
 For this purpose, a script has been provided as follows:
 
-. Execute the following:
+. Change to the operating system root user with OCP cluster admin privledges:
++
+-----
+$ sudo -i
+-----
+
+. Execute the following refresh script:
 +
 -----
 
-$ mkdir -p $HOME/lab && \
+# mkdir -p $HOME/lab && \
        wget https://raw.githubusercontent.com/barhte2019/ansible-deployer/master/casemgmt_state_refresh.sh -O $HOME/lab/casemgmt_state_refresh.sh \
        && chmod 755 $HOME/lab/casemgmt_state_refresh.sh \
        && $HOME/lab/casemgmt_state_refresh.sh
@@ -214,6 +220,12 @@ $ oc get pods -n rhpam-dev-user1
 rhpam-bc-3-rvwtn           1/1       Running   1          2m
 rhpam-kieserver-4-5f97q    2/2       Running   0          2m
 rhpam-postgresql-1-nks5f   1/1       Running   1          20h
+-----
+
+. Exit out of the root user
++
+-----
+# exit
 -----
 
 [[env_vars]]
