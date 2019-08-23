@@ -27,7 +27,7 @@ image::images/all_process.png[Hiring Case Diagram]
 Using the back office application (hiring_app_internal)
 
 . Login as `Tina/Password1!` to the back office application (hiring-app-internal). To remember the route required to navigate to the back office application run the following command in the `ssh workstation`:
-
++
 ----
 oc get route -n client-app | grep internal
 ----
@@ -35,12 +35,14 @@ oc get route -n client-app | grep internal
 . From the *Dashboard* web page, select the image:images/blue-plus-button.png[Blue plus button] button.
 
 . Fill the *Add Job* form, they are text fields only, it is preferable that you fill all of them.
++
+image:images/add-job-form.png[Add Job Form]
 
 . Submit the form.
 
 === What did just happen?
 
-image:images/information-flow-diagram.png[Information flow diagram]
+image:images/add-jobs-information-flow.png[Information flow diagram]
 
 . Open the source code for the hiring-public-app: https://github.com/barhte2019/hiring-app-internal
 
@@ -110,7 +112,7 @@ case JOB_SUBMIT: {
 ...
 ----
 
-. In order to talk to the back end, the `onCreateJob` method defined in link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/actions.ts#L94[`src/store/jobs/actions.ts`] uses the `api`. [red]#This is a very important asset#
+. In order to talk to the back end, the `onCreateJob` method defined in link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/actions.ts#L94[`src/store/jobs/actions.ts`] uses the `api`. [red]#Api is a very relevant asset for the RHPAM configuration#
 
 +
 ----
@@ -124,114 +126,30 @@ return api.jobs.create(job).then(...).catch(...)
 . The `hiring petition` reaches the configured *kie-server* and creates a *Case Instance* based in the received information.
 
 == HR define job requirements
+By creating a case instance in the previous section, 3 Human Tasks have been initiated that define the job requirement:
+
+* Benefits and compensation
+* Define Candidate Skills
+* Interviewer team
+
+Confirm the creation of those tasks by using the back office application and navigating to the *Tasks* menu, under the *Group Tasks* tab:
+
+image:images/group-tasks.png[Group Tasks]
+
+The order in which you work in the tasks does not matter, in this section you will work in these 3 tasks and leave the case ready for candidates to apply for jobs.
+
+=== Interviewer team task
+. From the *Group Tasks*, locate the *Interviewer Team* task name.
+
+. Using the kebab menu, select the *claim* option.
++
+image:images/kebab-interviewer-team.png[Kebab Menu Interviewer Team]
+
+. The previous step will make the *Interviewer Team* task available for the *User Tasks* tab, from the kebab menu of the *Interviewer Team*, select the *modify/complete* option.
++
+image:images/kebab-claimed-interviewer-team.png[Kebab Menu Claimed Interviewer Team]
+
+
 == Candidate Apply for jobs
 == The interview Process
 == Job offer acceptance
-
-== OpenStack _Swift_ node for Document Storage
-
-One of the nodes in the environment you have ordered runs an Openstack Swift instance which provides object storage. A container is created in this environment which can store objects. In the lab, offer letters will be stored and retrieved from this storage using a Fuse route. In this section, you will verify that you have access to the Swift object store by running a few curl commands to test it. A cotnainer called TEST and a user called test has been pre-created with a password testing. You will obtain an OAuth token to access the object store API, using the user and password information provided.
-
-. Switch to root user using `sudo -i`
-. ssh into the Swift node
-+
------
-$ ssh swift.example.com
------
-
-. Look-up the IP and user information by viewing the /etc/swift/proxy.conf file on the Swift node.
-+
------
-$ cat /etc/swift/proxy-server.conf
-.....
-[DEFAULT]
-bind_ip = 192.168.0.20
-bind_port = 8080
-workers = 8
-user = swift
-
-
-# This is a sample used for functional tests in SAIO. Contains well-known
-# passwords.
-[filter:tempauth]
-use = egg:swift#tempauth
-user_admin_admin = ***** .admin .reseller_admin
-user_test_tester = testing .admin
-user_test2_tester2 = testing2 .admin
-user_test_tester3 = testing3
-user_test5_tester5 = testing5 service
-....
------
-
-. Issue a swift command to obtain information on the container created for you.
-+
------
-$ swift --info --debug  -A http://192.168.0.20:8080/auth/v1.0 -U test:tester -K testing list TEST
-
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.0.20
-DEBUG:urllib3.connectionpool:http://192.168.0.20:8080 "GET /auth/v1.0 HTTP/1.1" 200 0
-DEBUG:swiftclient:REQ: curl -i http://192.168.0.20:8080/auth/v1.0 -X GET
-DEBUG:swiftclient:RESP STATUS: 200 OK
-......
------
-
-. Use the IP obtained in the swift command or from proxy.conf to issue a GET request to obtain the OAuth token
-+
------
-$ curl -v -H 'X-Storage-User: test:tester' -H 'X-Storage-Pass: testing' http://192.168.0.20:8080/auth/v1.0
-
-* About to connect() to 192.168.0.20 port 8080 (#0)
-*   Trying 192.168.0.20...
-* Connected to 192.168.0.20 (192.168.0.20) port 8080 (#0)
-> GET /auth/v1.0 HTTP/1.1
-> User-Agent: curl/7.29.0
-> Host: 192.168.0.20:8080
-> Accept: */*
-> X-Storage-User: test:tester
-> X-Storage-Pass: testing
->
-< HTTP/1.1 200 OK
-< X-Storage-Url: http://192.168.0.20:8080/v1/AUTH_test
-< X-Auth-Token-Expires: 75389
-< X-Auth-Token: AUTH_tkbca12e00c544400abe044fd7e4639c1b
-< Content-Type: text/html; charset=UTF-8
-< X-Storage-Token: AUTH_tkbca12e00c544400abe044fd7e4639c1b
-< Content-Length: 0
-< X-Trans-Id: txff48655287f6427cbcec7-005d1b8f94
-< X-Openstack-Request-Id: txff48655287f6427cbcec7-005d1b8f94
-< Date: Tue, 02 Jul 2019 17:08:36 GMT
-<
------
-
-. Create a simple text file under the /tmp directory and issue curl PUT and GET commands to verify that the document can be saved and retrieved. Use the OAuth token output from the previous command here. The x-object-meta-mtime parameter is optional.
-+
------
-$ curl -i http://192.168.0.20:8080/v1/AUTH_test/TEST/tmp/nandantestfile1 -T /tmp/nandantestfile1 -X PUT -H "Content-Length: 13" -H "x-object-meta-mtime: 1562086115.848627" -H "X-Auth-Token: AUTH_tkbca12e00c544400abe044fd7e4639c1b"
-HTTP/1.1 100 Continue
-
-HTTP/1.1 201 Created
-Last-Modified: Tue, 02 Jul 2019 16:56:54 GMT
-Content-Length: 0
-Etag: a13413187c04bd0022037c783b1d4be4
-Content-Type: text/html; charset=UTF-8
-X-Trans-Id: tx84fee81b8f97400da889a-005d1b8cd5
-X-Openstack-Request-Id: tx84fee81b8f97400da889a-005d1b8cd5
-Date: Tue, 02 Jul 2019 16:56:53 GMT
-
-[root@swift-repl ~]# curl -X GET -H "X-Auth-Token:AUTH_tkbca12e00c544400abe044fd7e4639c1b" -i http://192.168.0.20:8080/v1/AUTH_test/TEST/tmp/nandantestfile1
-HTTP/1.1 200 OK
-Content-Length: 13
-Content-Type: application/octet-stream
-Accept-Ranges: bytes
-Last-Modified: Tue, 02 Jul 2019 16:56:54 GMT
-Etag: a13413187c04bd0022037c783b1d4be4
-X-Timestamp: 1562086613.61380
-X-Object-Meta-Mtime: 1562086115.848627
-X-Trans-Id: tx0054a426a3014ea2bf173-005d1b8cde
-X-Openstack-Request-Id: tx0054a426a3014ea2bf173-005d1b8cde
-Date: Tue, 02 Jul 2019 16:57:02 GMT
-
-abcracadabra
------
-
-You have verified that in your environment you can access the Swift object storage and store and retrieve files.
