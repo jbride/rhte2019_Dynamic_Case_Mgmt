@@ -149,6 +149,33 @@ image:images/kebab-interviewer-team.png[Kebab Menu Interviewer Team]
 +
 image:images/kebab-claimed-interviewer-team.png[Kebab Menu Claimed Interviewer Team]
 
+. In the *Define Interviewer Team* emerging screen, type a couple names and a comment stating the skills they should validate.
++
+image:images/interviewers-setup.png[Interviewers setup]
+
+. You will notice that the task is completed once you define the interviewer team and click *OK*.
+
+=== Define Candidate skills
+. From the *Group Tasks*, locate the *Define Candidate Skills* task name.
+
+. Using the kebab menu, select the *claim* option.
++
+image:images/kebab-skills.png[Kebab Menu Candidate Skills]
+
+. The previous step will make the *Interviewer Team* task available for the *User Tasks* tab, from the kebab menu of the *Define Candidate Skills*, select the *modify/complete* option.
++
+image:images/kebab-claimed-skills.png[Kebab Menu Claimed Candidate Skills]
+
+. In the *Define Candidate Skills form* emerging screen, type a couple skills with years of experience and knowledge level.
++
+image:images/skills-setup.png[Skills setup]
++
+[NOTE]
+====
+There is a duplicate validation for the skill name.
+====
+
+. You will notice that the task is completed once you define the candidate skills and click *OK*.
 
 == Candidate Apply for jobs
 == The interview Process
