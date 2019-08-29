@@ -177,6 +177,24 @@ There is a duplicate validation for the skill name.
 
 . You will notice that the task is completed once you define the candidate skills and click *OK*.
 
+=== Benefits and compensation
+. Like in the previous steps, _claim_ and _modify/complete_ the *Benefits and compensation* task.
++
+image:images/kebab-claimed-benefits.png[Modify Benefits Task]
+
+. Define a few compensation benefits and select a manager to review the skills before making the job available to applicants. You will login as this manager in the next section and perform the benefits and compensation validation task.
++
+image:images/benefits-setup.png[Setup Benefits]
+
+=== Benefits and compensation approval
+. Logout from the internal hiring application.
+
+. Login back to the internal hiring application as the user you selected as the Benefits *manager*, (Bob in this example)
+
+. You'll notice that in the *User Tasks* the *Benefits and compensation approval* task is available. Modify/complete the *Benefits and compensation approval task*. By completing this tasks, if the other tasks have been completed (Interviewer team definition and Candidate Skills), then the job will be published for candidates to apply.
++
+image:images/benefits-approval.png[Benefits approval available]
+
 == Candidate Apply for jobs
 == The interview Process
 == Job offer acceptance
