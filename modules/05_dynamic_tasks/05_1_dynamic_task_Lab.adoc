@@ -16,7 +16,7 @@
 
 
 == Overview
-In this lab we will experiment with the dynamic tasks creation: An administrative user wants to create a Human Task that was not initially defined during the case design. Case Management is very flexible, it allows the knowledge worker to change the case usage during run time including: permissions, tasks, case information, documents and comments.
+In this lab you will experiment with the dynamic tasks creation: An administrative user wants to create a Human Task that was not initially defined during the case design. Case Management is very flexible, it allows the knowledge worker to change the case usage during run time including: permissions, tasks, case information, documents and comments.
 
 === Background
 During the interview process one of the interviewers detects that this user can be a good fit for a different position, so asks another user to interview the candidate; the new assigned group or user realizes that this is a good fit and changes the interviewer team and the job to which this user is applying to.
@@ -27,17 +27,17 @@ image::images/all_process.png[Case Diagram]
 
 == Import and Browse the project contents
 
-In this section we will import and overview the contents of the client applications source code.
-Then we will create a container with a pre-created image in a new project in Openshift; in a later exercise we will make changes to these applications and deploy to openshift, for now let's see them in action.
+In this section you will import and overview the contents of the client applications source code.
+Then we will create a container with a pre-created image in a new project in Openshift.
 
 === Import the client applications source code.
 
-We will import the code from the following repositories:
+You will import the code from the following repositories:
 
 * https://github.com/barhte2019/hiring-app-internal
 * https://github.com/barhte2019/hiring-app-public
 
-We will use `git clone` to import the repositories. It is recommended to use the `ssh workshop environment`, because it has `git` installed and in a later lab we will modify the source code and deploy our modification to Openshift. If you locally have `git` installed, you can perform the source code analysis locally.
+You will use `git clone` to import the repositories. It is recommended to use the `ssh workshop environment`, because it has `git` installed and in a later lab we will modify the source code and deploy our modification to Openshift. If you locally have `git` installed, you can perform the source code analysis locally.
 
 ==== Import and build the client applications
 
@@ -59,11 +59,21 @@ git clone https://github.com/barhte2019/hiring-app-internal.git
 cd $HOME/lab
 git clone https://github.com/barhte2019/hiring-app-public.git
 ----
+
+
 == Change the UI for Dynamic tasks creation
-=== The current UI analysis
-=== Implementing and deploying the change
+
+. Add a `createDynamic` method to the `Api` handler.
+. Add a button to the `Tasks` component.
+. Add a dynamic task form (email like) to describe the dynamic task.
+. Add types to support the dynamic task creation.
+. Add actions to interact with the API and bridge the events of the form and buttons in the components.
+. Add reducer to communicate the state changes after the action `dispatches`.
+. Register the reducer in the `store`.
+. Validate that your code builds.
+
 === Deploy client applications to Openshift
-In this section we will create Docker containers and push them to Openshift so we can create containers from them.
+In this section you create Docker images and push them to Openshift so you can create containers from them.
 The ssh workstation has all the software components required for the following steps to work, if you want to execute this section locally you will need:
 
 * *buildah*: for building an image.
@@ -71,13 +81,6 @@ The ssh workstation has all the software components required for the following s
 * A good internet band-width for uploading the image to Openshift.
 
 To prepare for pushing these images to Openshift:
-
-. Create a namespace in openshift to receive the images and create containers in it:
-
-----
-oc login https://master00.example.com -u user1 -p r3dh4t1!
-oc new-project client-app
-----
 
 . Switch to openshift administrator access:
 
@@ -158,14 +161,14 @@ vi Dockerfile
 +
 |===
 |Get The Value From|Assign to ENV in file|Example
-|`echo -en "\n\nhttps://$rhsso_url/auth\n\n"`| REACT_APP_RHSSO_URL |`ENV REACT_APP_RHSSO_URL=https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth`
-|`echo -en "\n\nhttps://$ks_url\n\n"`| REACT_APP_KIE_SERVER_URL |`ENV REACT_APP_KIE_SERVER_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-af16.generic.opentlc.com`
+|`echo -en "\n\nhttps://$rhsso_url/auth\n\n"`| SSO_URL |`ENV SSO_URL=https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth`
+|`echo -en "\n\nhttps://$ks_url\n\n"`| KIE_URL |`ENV KIE_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-af16.generic.opentlc.com`
 |===
 
 +
 [NOTE]
 ====
-`REACT_APP_RHSSO_REALM` and `REACT_APP_RHSSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `kie-remote` in the `kie-realm`. If you perform a different operation in previous sections changing any of these names, please also perform the appropriate changes in the respective environment entry.
+`SSO_REALM` and `SSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `hiring-internal` in the `kie-realm`. If you perform a different operation in previous sections changing any of these names, please also perform the appropriate changes in the respective environment entry.
 ====
 
 . Build the `hiring-app-internal` image using *buildah*:
@@ -248,14 +251,14 @@ vi Dockerfile
 +
 |===
 |Get The Value From|Assign to ENV in file|Example
-|`echo -en "\n\nhttps://$rhsso_url/auth\n\n"`| REACT_APP_RHSSO_URL |`ENV REACT_APP_RHSSO_URL=https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth`
-|`echo -en "\n\nhttps://$ks_url\n\n"`| REACT_APP_KIE_SERVER_URL |`ENV REACT_APP_KIE_SERVER_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-af16.generic.opentlc.com`
+|`echo -en "\n\nhttps://$rhsso_url/auth\n\n"`| SSO_URL |`ENV SSO_URL=https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth`
+|`echo -en "\n\nhttps://$ks_url\n\n"`| KIE_URL |`ENV KIE_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-af16.generic.opentlc.com`
 |===
 
 +
 [NOTE]
 ====
-`REACT_APP_RHSSO_REALM` and `REACT_APP_RHSSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `kie-remote` in the `kie-realm`. If you perform a different operation in previous sections changing any of these names, please also perform the appropriate changes in the respective environment entry.
+`SSO_REALM` and `SSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `hiring-public` in the `kie-realm`. If you perform a different operation in previous sections changing any of these names, please also perform the appropriate changes in the respective environment entry.
 ====
 
 . Build the `hiring-app-public` image using *buildah*:
@@ -313,10 +316,14 @@ oc get route -n client-app
 . Login to the client application as *bill/Password1!*
 
 . Congratulations you have installed the public web application.
-== Department request for jobs
-== HR define job requirements
-== Candidate Apply for jobs
-== The interview Process
+
 == Switching the candidate for another job
-== The new interview process
-== Job offer acceptance
+. Perform an end-to-end job case; creating a new job, defining its interviewer team, skills and benefits; and make a user to apply for that job using the `public-application`
+
+. Once the user applies, approve the documentation and schedule the interviews.
+
+. Login as one of the interviewers and using the newly created *Add Task* button, assign a task to an additional interviewer.
+
+. Login as the additional interviewer and notice the listing of the new task.
+
+Congratulations, you have created a dynamic task. As an *additional challenge*: Can you make an internal application app change that completes the newly created task?
