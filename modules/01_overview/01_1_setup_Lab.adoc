@@ -460,9 +460,9 @@ Optional: Review
 
 
 === Optional:  Lab Environment Provisioning
-This section provides an overview of the ansible used to provision your own lab environment.
+This section provides an overview of the ansible used to provision your own lab environment. 
 
-ok-up the IP and user information by viewing the /etc/swift/proxy.conf file on the Swift node.
+. Look-up the IP and user information by viewing the /etc/swift/proxy.conf file on the Swift node.
 +
 -----
 $ cat /etc/swift/proxy-server.conf
