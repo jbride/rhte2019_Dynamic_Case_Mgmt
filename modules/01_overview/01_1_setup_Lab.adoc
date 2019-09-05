@@ -561,7 +561,7 @@ You have verified that in your environment you can access the Swift object stora
 ==== Deployment of the Fuse Swift integration
 A Fuse REST service is deployed in the Openshift environment to connect to the Openstack Swift node for document storage and retreival. This section explains how the Fuse service is deployed.
 
-. Using `oc` client, login into your OpenShift envr
+. Using `oc` client, login into your OpenShift environment
 . Create a namespace for the application
 +
 ----
@@ -574,7 +574,7 @@ $ oc new-project swift-integration
 $ oc adm policy add-role-to-user view -z default
 ----
 
-. Create a file ``application.properties``` in a local directory
+. Create a file ``application.properties`` in a local directory
 +
 ----
 swift.host=swift.example.com:8080
@@ -597,7 +597,47 @@ $ mvn clean package fabric8:deploy -Popenshift
 . Examine the OpenAPI specification of the API using the following curl command:
 +
 ----
-$ curl http://$APP_ROUTE_HOST/api-docs
+$ curl http://$APP_ROUTE_HOST/api/api-docs
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "1.0.0",
+    "title" : "Document Service API"
+  },
+  "host" : "0.0.0.0",
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/get" : {
+      "get" : {
+        "operationId" : "route1",
+        "produces" : [ "application/octet-stream" ],
+        "parameters" : [ {
+          "name" : "object",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    },
+    "/put" : {
+      "put" : {
+        "operationId" : "route2",
+        "parameters" : [ {
+          "name" : "object",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    }
+  }
+}
 ----
 
 . Create a local file under the /tmp directory and put an object in Swift:
