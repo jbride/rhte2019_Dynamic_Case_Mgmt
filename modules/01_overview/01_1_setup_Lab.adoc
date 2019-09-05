@@ -594,6 +594,12 @@ $ oc create configmap swift-integration --from-file=application.properties
 $ mvn clean package fabric8:deploy -Popenshift
 ----
 
+. Examine the OpenAPI specification of the API using the following curl command:
++
+----
+$ curl http://$APP_ROUTE_HOST/api-docs
+----
+
 . Create a local file under the /tmp directory and put an object in Swift:
 +
 ----
