@@ -62,12 +62,6 @@ oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-internal:1.0 -
 oc expose svc/react-hiring-app-internal -n client-app --port=8080
 ----
 
-. Retrieve and navigate using a browser to the newly created back office web application.
-+
-----
-oc get route -n client-app
-----
-
 === The public web application
 In this section, you create an OpenShift DeploymentConfiguration of the _Public_ web application.
 
