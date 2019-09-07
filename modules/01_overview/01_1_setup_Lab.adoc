@@ -23,11 +23,11 @@ NOTE: If your network connection is intermittent, consider installing the https:
 :numbered:
 
 == Overview
-In this workshop you will deploy, manage and develop a platform that assists with a hiring request business process. 
+In this workshop you will deploy, manage and develop a platform that assists with a hiring request business process.
 This business process consists of :
 
 . Receiving a *Hiring Petition*
-. Evaluation of the *Candidate skills* 
+. Evaluation of the *Candidate skills*
 . Execution of other *Hiring requirements* to fulfill the *Job Position*.
 . Job Offer Acceptance by the candidate
 
@@ -43,7 +43,7 @@ During the workshop, you will perform the following activities:
 * Analyze the client applications to find the integration points with the back end components.
 * Modify one of the client applications to allow some dynamicity allowed by *Red Hat Process Automation Manager* when working with *Case Management* projects.
 
-The scope of the workshop includes the analysis of an existing platform that integrates *Case Management* with modern Javascript frameworks like *ReactJs* over *NodeJs*. 
+The scope of the workshop includes the analysis of an existing platform that integrates *Case Management* with modern Javascript frameworks like *ReactJs* over *NodeJs*.
 
 === Background
 This workshop is inspired in the original demo created in March 2019 (link:https://gitlab.consulting.redhat.com/uki-sa/pam-demo[PAM Demo]) by link:https://gitlab.consulting.redhat.com/bholmes[Ben Holmes] and his team. Thank you for the inspiration received by a well done project.
@@ -56,21 +56,25 @@ The deployment topology of your _Dynamic Case Management_ solution will be as de
 
 image::images/arch_topology.png[]
 
-. `pam-7-tools-$guid` 
+. `pam-7-tools-$guid`
 +
-Consists of `pgadmin4` and `Nexus`. 
-`pgadmin4` is a web tool used to navigate the databases used in this lab. 
+Consists of `pgadmin4` and `Nexus`.
+`pgadmin4` is a web tool used to navigate the databases used in this lab.
 `Nexus` is a online repository for binary Maven artifacts.
 
-. `rhpam-dev-$guid` 
+. `rhpam-dev-$guid`
 +
-In the `RHPAM-DEV` namespace we have the Red Hat Process Automation Manager components for authoring, runtime, database and email.
+In the `RHPAM-DEV` namespace you have the Red Hat Process Automation Manager components for authoring, runtime, database and email.
 
-. `rhsso-sso0` 
+. `rhsso-sso0`
 +
-In the `RHSSO` namespace we have Red Hat SSO for authentication and authorization across our environment.
+In the `RHSSO` namespace you have Red Hat SSO for authentication and authorization across your environment.
 
-. `client-app` 
+. `swift-integration`
++
+In the `SWIFT INTEGRATION` namespace you will deploy a Fuse route to integrate RHPAM with external systems. In this case the integration will grab information about the interviewing process results for a candidate and create a job offer document that will be stored in the OpenStack SWIFT appliance.
+
+. `client-app`
 +
 The `reactjs` based web application deployed in this namespace will be modified during the workshop to demonstrate its integration with RHPAM.
 
@@ -167,6 +171,105 @@ $ mkdir -p $HOME/lab && \
 $ cat $HOME/.bashrc
 -----
 
+== Deploy the Fuse Swift Integration
+In order to demonstrate integration between RHPAM and external systems, your case management project will consume a REST web service provided by Spring Boot and empowered by Fuse routes to enable communication with Documents stored in the Openstack SWIFT appliance.
+
+=== Deployment of the Fuse Swift integration
+A Fuse REST service is deployed in the Openshift environment to connect to the Openstack Swift node for document storage and retrieval. This section explains how the Fuse service is deployed.
+
+. Using `oc` client, login into your OpenShift environment
+. Create a namespace for the application
++
+----
+$ oc new-project swift-integration
+----
+
+. Give the default systemaccount in the namespace cluster view permissions
++
+----
+$ oc adm policy add-role-to-user view -z default
+----
+
+. Create a file ``application.properties`` in a local directory
++
+----
+swift.host=swift.example.com:8080
+swift.username=test:tester
+swift.password=testing
+swift.container=TEST
+----
+. Create a configmap ```swift-integration``` in the namespace
++
+----
+$ oc create configmap swift-integration --from-file=application.properties
+----
+
+. Deploy the application with the Fabric8 maven plugin:
++
+----
+$ mvn clean package fabric8:deploy -Popenshift
+----
+
+. Examine the OpenAPI specification of the API using the following curl command:
++
+----
+$ curl http://$APP_ROUTE_HOST/api/api-docs
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "1.0.0",
+    "title" : "Document Service API"
+  },
+  "host" : "0.0.0.0",
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/get" : {
+      "get" : {
+        "operationId" : "route1",
+        "produces" : [ "application/octet-stream" ],
+        "parameters" : [ {
+          "name" : "object",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    },
+    "/put" : {
+      "put" : {
+        "operationId" : "route2",
+        "parameters" : [ {
+          "name" : "object",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    }
+  }
+}
+----
+
+. Create a local file under the /tmp directory and put an object in Swift:
++
+----
+$ curl -X PUT -T /tmp/swifttest.txt http://$APP_ROUTE_HOST/api/put?object=test/swifttest.txt
+----
+
+. Retrieve an object from Swift:
++
+----
+$ curl http://$APP_ROUTE_HOST/api/get?object=test/swifttest.txt
+----
+
+. Expect to see the contents of the object you inserted in the previous command to be echoed by the get request. You have verified that the Fuse service can successfully interact with the Swift node.
+
 == OpenShift Container Platform
 
 Your lab environment is built on Red Hat's OpenShift Container Platform (OCP).
@@ -214,7 +317,7 @@ $ echo -en "\nhttps://master00-$OCP_REGION.generic.opentlc.com\n\n"
 
 == Process Automation Manager
 
-Your lab environment includes a common authoring installation for Red Hat Process Automation Manager. 
+Your lab environment includes a common authoring installation for Red Hat Process Automation Manager.
 The common Authoring installation includes: A database, Business Central and Kie Server.
 Red Hat Process Automation Manager containers operate in the namespace:  _$RHPAM_PROJECT_.
 
@@ -247,7 +350,6 @@ rhpam-postgresql-1-nks5f   1/1       Running   2          23h
 
 ...
 -----
-
 
 === Access Business Central
 
@@ -427,19 +529,19 @@ $ oc adm policy add-role-to-user view user1 -n rhsso-sso0 --as=system:admin
 -----
 
 === Optional: Review Fuse Document Management Service
-A Fuse Camel route has been built in order to support the storage of offer letters documents. 
-The Fuse route uses an Openstack Swift backend for document storage and retreival. 
+A Fuse Camel route has been built in order to support the storage of offer letters documents.
+The Fuse route uses an Openstack Swift backend for document storage and retreival.
 
-==== Openstack Swift document service [W.I.P]
-Openstack Swift provides a REST-based object API for storage and retrieval of documents. 
-Clients are authenticated using the X-Auth-Token method, where a userid and password is initially provided to obtain the token. 
+==== Openstack Swift document service
+Openstack Swift provides a REST-based object API for storage and retrieval of documents.
+Clients are authenticated using the X-Auth-Token method, where a userid and password is initially provided to obtain the token.
 Subsequently, the token is used by curl or programmatic clients to access the services.
 
 ==== Fuse Camel route for document management
-The Fuse route exposes a REST API to the PAM process. 
-This API provides 2 methods: a PUT and a GET to store and retrieve the document respectively. 
-The Camel route makes uses of processors which allow the user to develop custom code (in this case in Java). 
-The Apache HTTP client API is used within the processors to make get and put requests to the Openstack Swift API. 
+The Fuse route exposes a REST API to the PAM process.
+This API provides 2 methods: a PUT and a GET to store and retrieve the document respectively.
+The Camel route makes uses of processors which allow the user to develop custom code (in this case in Java).
+The Apache HTTP client API is used within the processors to make get and put requests to the Openstack Swift API.
 The Swift-specific parameters such as host, username, password and container name are specified in a configmap and added to the namespace.
 
 
@@ -455,12 +557,10 @@ One of the nodes in the environment you have ordered runs an Openstack Swift ins
 $ ssh swift.example.com
 -----
 
-Optional: Review 
 
 
-
-=== Optional:  Lab Environment Provisioning
-This section provides an overview of the ansible used to provision your own lab environment. 
+==== Optional:  Review document upload (Swift `CURL`)
+This section provides an overview of the ansible used to provision your own lab environment.
 
 . Look-up the IP and user information by viewing the /etc/swift/proxy.conf file on the Swift node.
 +
@@ -558,102 +658,7 @@ abcracadabra
 
 You have verified that in your environment you can access the Swift object storage and store and retrieve files.
 
-==== Deployment of the Fuse Swift integration
-A Fuse REST service is deployed in the Openshift environment to connect to the Openstack Swift node for document storage and retreival. This section explains how the Fuse service is deployed.
-
-. Using `oc` client, login into your OpenShift environment
-. Create a namespace for the application
-+
-----
-$ oc new-project swift-integration
-----
-
-. Give the default systemaccount in the namespace cluster view permissions
-+
-----
-$ oc adm policy add-role-to-user view -z default
-----
-
-. Create a file ``application.properties`` in a local directory
-+
-----
-swift.host=swift.example.com:8080
-swift.username=test:tester
-swift.password=testing
-swift.container=TEST
-----
-. Create a configmap ```swift-integration``` in the namespace
-+
-----
-$ oc create configmap swift-integration --from-file=application.properties
-----
-
-. Deploy the application with the Fabric8 maven plugin:
-+
-----
-$ mvn clean package fabric8:deploy -Popenshift
-----
-
-. Examine the OpenAPI specification of the API using the following curl command:
-+
-----
-$ curl http://$APP_ROUTE_HOST/api/api-docs
-{
-  "swagger" : "2.0",
-  "info" : {
-    "version" : "1.0.0",
-    "title" : "Document Service API"
-  },
-  "host" : "0.0.0.0",
-  "schemes" : [ "http" ],
-  "paths" : {
-    "/get" : {
-      "get" : {
-        "operationId" : "route1",
-        "produces" : [ "application/octet-stream" ],
-        "parameters" : [ {
-          "name" : "object",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : { }
-        }
-      }
-    },
-    "/put" : {
-      "put" : {
-        "operationId" : "route2",
-        "parameters" : [ {
-          "name" : "object",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : { }
-        }
-      }
-    }
-  }
-}
-----
-
-. Create a local file under the /tmp directory and put an object in Swift:
-+
-----
-$ curl -X PUT -T /tmp/swifttest.txt http://$APP_ROUTE_HOST/api/put?object=test/swifttest.txt
-----
-
-. Retrieve an object from Swift:
-+
-----
-$ curl http://$APP_ROUTE_HOST/api/get?object=test/swifttest.txt
-----
-
-. Expect to see the contents of the object you inserted in the previous command to be echoes by the get request. You have verified that the Fuse service can successfully interact with the Swift node.
-
+==== Optional: Provision Lab environment in your own openshift
 
 It is offered to those that are interested in provisioning an environment to support this lab using their own resources.
 
@@ -661,7 +666,7 @@ The lab environment assumes an existing OCP 3.11 installation with cluster admin
 
 The lab environment can be provisioned via the following Ansible:
 
-==== link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm[rh-sso-multi-realm]
+link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm[rh-sso-multi-realm]
 
 . login into your OCP lab environment as a cluster admin
 
