@@ -77,13 +77,6 @@ oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-public:1.0 -e 
 oc expose svc/react-hiring-app-public -n client-app --port=8080
 ----
 
-. Retrieve and navigate using a browser to the newly created back office web application.
-+
-----
-oc get route -n client-app
-----
-
-
 == Create RH-SSO clients
 
 In this section you create two additional _SSO clients_ in the existing _kie-realm_ of your *Red Hat SSO*.  The purpose of these two additional _SSO clients_ are to secure the two hiring related web applications.
