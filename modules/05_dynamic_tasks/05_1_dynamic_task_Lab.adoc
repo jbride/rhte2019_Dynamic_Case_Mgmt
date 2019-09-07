@@ -82,35 +82,14 @@ The ssh workstation has all the software components required for the following s
 
 To prepare for pushing these images to Openshift:
 
-. Switch to openshift administrator access:
+. Setup an environment variable for the `docker-registry` route in the _default_ namespace: 
 
 +
 ----
-sudo -i
+export DOCKER_REGISTRY_HOSTNAME=$(oc get route docker-registry -n default -o template --template='{{.spec.host}}')
 ----
 
-. Switch to the `default` project
-
-+
-----
-oc project default
-----
-
-. Create an openshift route to the internal registry of your Openshift cluster
-
-+
-----
-oc create route passthrough docker-registry-demo --service=docker-registry
-----
-
-. Setup an environment variable for the `docker-registry-demo` remote URL
-
-+
-----
-export DOCKER_REGISTRY_HOSTNAME=$(oc get route docker-registry-demo -n default -o template --template='{{.spec.host}}')
-----
-
-. Use the `client-app` project
+. Switch to the `client-app` project
 
 +
 ----
@@ -130,13 +109,6 @@ oc create serviceaccount pusher
 ----
 oc policy add-role-to-user system:image-builder system:serviceaccount:client-app:pusher
 oc policy add-role-to-user edit system:serviceaccount:client-app:pusher
-----
-
-. Exit the use of `root`
-
-+
-----
-exit
 ----
 
 ==== The back office application
