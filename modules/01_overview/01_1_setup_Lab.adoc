@@ -39,7 +39,7 @@ image::images/milestones-overview.png[Milestones Overview]
 During the workshop, you will perform the following activities:
 
 * Deploy and configure the most representative parts of the platform, paying attention to the bending and connection points of their infrastructure.
-* Execute an end to end demo of the most common cases, specially the happy path.
+* Execute an end to end demo of the most common cases.
 * Analyze the client applications to find the integration points with the back end components.
 * Modify one of the client applications to allow some dynamicity allowed by *Red Hat Process Automation Manager* when working with *Case Management* projects.
 
@@ -190,18 +190,29 @@ $ oc new-project swift-integration
 $ oc adm policy add-role-to-user view -z default
 ----
 
-. Create a file ``application.properties`` in a local directory
+. clone the link:https://github.com/barhte2019/hiring-documents-integration[hiring-documents-integration] github project in the `~/lab` directory.
 +
 ----
+cd ~/lab
+git clone https://github.com/barhte2019/hiring-documents-integration.git
+cd hiring-documents-integration
+----
+
+. Create a file `application.properties` in the 'hiring-documents-integration' directory
++
+----
+cat << EOF > ~/lab/hiring-documents-integration/application.properties
 swift.host=swift.example.com:8080
 swift.username=test:tester
 swift.password=testing
 swift.container=TEST
+EOF
 ----
-. Create a configmap ```swift-integration``` in the namespace
+. Create a configmap `swift-integration` in the namespace
 +
 ----
-$ oc create configmap swift-integration --from-file=application.properties
+cd ~/lab/hiring-documents-integration
+oc create configmap swift-integration --from-file=application.properties
 ----
 
 . Deploy the application with the Fabric8 maven plugin:
