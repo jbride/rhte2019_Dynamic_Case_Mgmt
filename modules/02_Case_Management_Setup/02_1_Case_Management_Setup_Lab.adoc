@@ -15,12 +15,12 @@
 == Overview
 
 === Background
-The objective of this lab is to use the _dynamic case management_ capabilities of Red Hat's Process Automation Management (RH-PAM) product to manage an employee hiring business process. 
+The objective of this lab is to use the _dynamic case management_ capabilities of Red Hat's Process Automation Management (RH-PAM) product to manage an employee hiring business process.
 
 RH-PAM will be used to maintain the _wait state_ of the hiring processes and allow for in-flight changes to those processes.
 
 Via the RESTful API exposed by RH-PAM, other services can change the state of the in-flight hiring business processes.
-In particular, a *Case File* associated with the hiring process will be modified. 
+In particular, a *Case File* associated with the hiring process will be modified.
 The *Case File* holds information that affects the flow of execution, based in _milestones_ and _stages_.
 
 Throughout this lab, pay attention to the conditions that trigger completions of the _milestones_ and _stages_ in the hiring process.
@@ -33,7 +33,7 @@ image:images/managed-topology.png[Managed Topology Usage]
 
 RH-PAM offers both an link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-unmanaged-server-config-proc[un-managed] topology and a link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-managed-kie-server-con[managed] topology.
 In this lab, you will use a _managed_ topology.
-With a managed topology, the RH-PAM kie-server (which is the run-time server of the RH-PAM product)  will request its configuration from a controller. 
+With a managed topology, the RH-PAM kie-server (which is the run-time server of the RH-PAM product)  will request its configuration from a controller.
 The Business Central web application of the RH-PAM product will serve as this controller for the Kie-server.
 This topology also will provide an authoring environment to analyze and change our case definition.
 
@@ -43,8 +43,8 @@ This topology also will provide an authoring environment to analyze and change o
 
 We will import the following project to our Business Central: https://github.com/barhte2019/hr-hiring
 
-Red Hat Process Automation Manager uses git as source code repository. 
-Each project in Business Central (aka: kie-project) is also a git repository. 
+Red Hat Process Automation Manager uses git as source code repository.
+Each project in Business Central (aka: kie-project) is also a git repository.
 When you create a new Project in Business Central you are creating also a git repository.
 Git repositories can be imported to business central from remote repositories
 However, be aware that these imported repositories don't keep their remote reference.  Instead they are copied to the Business Central's file system.
@@ -226,7 +226,7 @@ The expiration date for the tokens depends on the Red Hat SSO configuration whic
 . Now we can use the `token` to execute our endpoint in the kie-server url (Mind the kie-server url, use your own):
 +
 ----
-$ curl -k -H "Authorization: bearer $TOKEN" -H "content-type: application/json" -H "accept: application/json" https://$ks_url/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\"} }, \"case-group-assignments\": { \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"talent-acquisition\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"adminUser\" }}"
+$ curl -k -H "Authorization: bearer $TOKEN" -H "content-type: application/json" -H "accept: application/json" https://$ks_url/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\", \"salaryMin\": 50000, \"salaryMax\": 60000, \"jobType\": \"Full Time\", \"jobCategory\": \"Operations\"} }, \"case-group-assignments\": { \"applicant\":\"applicant\", \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"talent-acquisition\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"adminUser\" }}"
 ----
 
 .. Note the replacement of the `{containerId}` and `{caseDefId}` parameters in the URL.
