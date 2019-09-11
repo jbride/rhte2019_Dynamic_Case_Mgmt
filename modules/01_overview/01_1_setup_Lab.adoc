@@ -281,6 +281,44 @@ $ curl http://$APP_ROUTE_HOST/api/get?object=test/swifttest.txt
 
 . Expect to see the contents of the object you inserted in the previous command to be echoed by the get request. You have verified that the Fuse service can successfully interact with the Swift node.
 
+
+=== Deployment of the Fuse Swift integration [alternate method]
+A Fuse REST service is deployed in the Openshift environment to connect to the Openstack Swift node for document storage and retrieval. This section explains how the Fuse service is deployed.
+
+. Using `oc` client, login into your OpenShift environment
+. Create a namespace for the application
++
+----
+$ oc new-project swift-integration
+----
+
+. Give the default systemaccount in the namespace cluster view permissions
++
+----
+$ oc adm policy add-role-to-user view -z default
+----
+
+. clone the link:https://github.com/barhte2019/hiring-documents-integration[hiring-documents-integration] github project in the `~/lab` directory.
++
+----
+cd ~/lab
+git clone https://github.com/barhte2019/hiring-documents-integration.git
+cd hiring-documents-integration
+----
+
+. [Only for review] Using Skopeo the application image has been copied to the Quay repository, as follows:
++
+----
+$ skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds=openshift:$(oc whoami -t) --dest-creds=<quay userid>:<quay password> docker://docker-registry-default.apps-a8b2.generic.opentlc.com/swift-integration/document-integration docker://quay.io/nandanj/initialtest
+----
+
+. Deploy the Fuse document service using the following commands:
++
+----
+$ cd src/main/resources
+$ oc apply -f ./document-integration-deployment.yml
+----
+
 == OpenShift Container Platform
 
 Your lab environment is built on Red Hat's OpenShift Container Platform (OCP).
