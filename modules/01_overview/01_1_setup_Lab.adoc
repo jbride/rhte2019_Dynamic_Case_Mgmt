@@ -309,7 +309,7 @@ cd hiring-documents-integration
 . [Only for review] Using Skopeo the application image has been copied to the Quay repository, as follows:
 +
 ----
-$ skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds=openshift:$(oc whoami -t) --dest-creds=<quay userid>:<quay password> docker://docker-registry-default.apps-a8b2.generic.opentlc.com/swift-integration/document-integration docker://quay.io/nandanj/initialtest
+$ skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds=openshift:$(oc whoami -t) --dest-creds=<quay userid>:<quay password> docker://docker-registry-default.apps-a8b2.generic.opentlc.com/swift-integration/document-integration docker://quay.io/rhtgptetraining/document-service
 ----
 
 . Create a file `application.properties` in the 'hiring-documents-integration' directory
