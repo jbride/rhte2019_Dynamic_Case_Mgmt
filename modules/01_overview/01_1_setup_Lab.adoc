@@ -215,121 +215,6 @@ cd ~/lab/hiring-documents-integration
 oc create configmap swift-integration --from-file=application.properties
 ----
 
-. Deploy the application with the Fabric8 maven plugin:
-+
-----
-cd ~/lab/hiring-documents-integration
-mvn clean package fabric8:deploy -Popenshift
-----
-
-. Examine the OpenAPI specification of the API using the following curl command:
-+
-----
-$ curl http://$APP_ROUTE_HOST/api/api-docs
-{
-  "swagger" : "2.0",
-  "info" : {
-    "version" : "1.0.0",
-    "title" : "Document Service API"
-  },
-  "host" : "0.0.0.0",
-  "schemes" : [ "http" ],
-  "paths" : {
-    "/get" : {
-      "get" : {
-        "operationId" : "route1",
-        "produces" : [ "application/octet-stream" ],
-        "parameters" : [ {
-          "name" : "object",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : { }
-        }
-      }
-    },
-    "/put" : {
-      "put" : {
-        "operationId" : "route2",
-        "parameters" : [ {
-          "name" : "object",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : { }
-        }
-      }
-    }
-  }
-}
-----
-
-. Create a local file under the /tmp directory and put an object in Swift:
-+
-----
-$ curl -X PUT -T /tmp/swifttest.txt http://$APP_ROUTE_HOST/api/put?object=test/swifttest.txt
-----
-
-. Retrieve an object from Swift:
-+
-----
-$ curl http://$APP_ROUTE_HOST/api/get?object=test/swifttest.txt
-----
-
-. Expect to see the contents of the object you inserted in the previous command to be echoed by the get request. You have verified that the Fuse service can successfully interact with the Swift node.
-
-
-=== Deployment of the Fuse Swift integration [alternate method]
-A Fuse REST service is deployed in the Openshift environment to connect to the Openstack Swift node for document storage and retrieval. This section explains how the Fuse service is deployed.
-
-. Using `oc` client, login into your OpenShift environment
-. Create a namespace for the application
-+
-----
-$ oc new-project swift-integration
-----
-
-. Give the default systemaccount in the namespace cluster view permissions
-+
-----
-$ oc adm policy add-role-to-user view -z default
-----
-
-. clone the link:https://github.com/barhte2019/hiring-documents-integration[hiring-documents-integration] github project in the `~/lab` directory.
-+
-----
-cd ~/lab
-git clone https://github.com/barhte2019/hiring-documents-integration.git
-cd hiring-documents-integration
-----
-
-. [Only for review] Using Skopeo the application image has been copied to the Quay repository, as follows:
-+
-----
-$ skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds=openshift:$(oc whoami -t) --dest-creds=<quay userid>:<quay password> docker://docker-registry-default.apps-a8b2.generic.opentlc.com/swift-integration/document-integration docker://quay.io/rhtgptetraining/document-service
-----
-
-. Create a file `application.properties` in the 'hiring-documents-integration' directory
-+
-----
-cat << EOF > ~/lab/hiring-documents-integration/application.properties
-swift.host=swift.example.com:8080
-swift.username=test:tester
-swift.password=testing
-swift.container=TEST
-EOF
-----
-. Create a configmap `swift-integration` in the namespace
-+
-----
-cd ~/lab/hiring-documents-integration
-oc create configmap swift-integration --from-file=application.properties
-----
-
 . Deploy the Fuse document service using the following commands:
 +
 ----
@@ -341,7 +226,7 @@ $ oc apply -f ./document-integration-deployment.yml
 +
 ----
 $ oc expose deploy/document-integration
-$ oc expose svc/document-integration 
+$ oc expose svc/document-integration
 $ oc get route
 $ APP_ROUTE_HOST=<route name of Fuse application>
 ----
@@ -392,7 +277,13 @@ $ curl http://$APP_ROUTE_HOST/api/api-docs
 }
 ----
 
-. Create a local file under the /tmp directory and put an object in Swift:
+. Create a local file under the /tmp directory
++
+----
+$ echo "Thanos is purple" > /tmp/swifttest.txt
+----
+
+. and put the newly created object object in Swift:
 +
 ----
 $ curl -X PUT -T /tmp/swifttest.txt http://$APP_ROUTE_HOST/api/put?object=test/swifttest.txt
@@ -404,7 +295,9 @@ $ curl -X PUT -T /tmp/swifttest.txt http://$APP_ROUTE_HOST/api/put?object=test/s
 $ curl http://$APP_ROUTE_HOST/api/get?object=test/swifttest.txt
 ----
 
-. Expect to see the contents of the object you inserted in the previous command to be echoed by the get request. You have verified that the Fuse service can successfully interact with the Swift node.
+. Expect to see the contents of the object you inserted in the previous command to be echoed by the get request.
+
+You have verified that the Fuse service can successfully interact with the Swift node.
 
 == OpenShift Container Platform
 
@@ -579,7 +472,6 @@ Supports liveness and readiness probes of kie-server using the user: _adminUser_
 |==============================
 
 
-
 [[bc_rhsso]]
 === Optional: Validate integration between RH-PAM and RH-SSO
 The Business Central and KIE-Server components of RH-PAM are secured by integrating with a RH-SSO server using the OpenID Connect Protocol (OIDC).
@@ -693,8 +585,6 @@ One of the nodes in the environment you have ordered runs an Openstack Swift ins
 $ ssh swift.example.com
 -----
 
-
-
 ==== Optional:  Review document upload (Swift `CURL`)
 This section provides an overview of the ansible used to provision your own lab environment.
 
@@ -793,6 +683,125 @@ abcracadabra
 -----
 
 You have verified that in your environment you can access the Swift object storage and store and retrieve files.
+
+==== Optional: Deployment of the Fuse Swift integration (Alternate Method)
+A Fuse REST service is deployed in the Openshift environment to connect to the Openstack Swift node for document storage and retrieval. This section explains how the Fuse service is deployed.
+
+[NOTE]
+====
+[Only for review] Using Skopeo the application image has been copied to the Quay repository, as follows:
+
+----
+$ skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds=openshift:$(oc whoami -t) --dest-creds=<quay userid>:<quay password> docker://docker-registry-default.apps-a8b2.generic.opentlc.com/swift-integration/document-integration docker://quay.io/rhtgptetraining/document-service
+----
+
+====
+
+
+. Using `oc` client, login into your OpenShift environment
+. Create a namespace for the application
++
+----
+$ oc new-project swift-integration
+----
+
+. Give the default systemaccount in the namespace cluster view permissions
++
+----
+$ oc adm policy add-role-to-user view -z default
+----
+
+. clone the link:https://github.com/barhte2019/hiring-documents-integration[hiring-documents-integration] github project in the `~/lab` directory.
++
+----
+cd ~/lab
+git clone https://github.com/barhte2019/hiring-documents-integration.git
+cd hiring-documents-integration
+----
+
+. Create a file `application.properties` in the 'hiring-documents-integration' directory
++
+----
+cat << EOF > ~/lab/hiring-documents-integration/application.properties
+swift.host=swift.example.com:8080
+swift.username=test:tester
+swift.password=testing
+swift.container=TEST
+EOF
+----
+. Create a configmap `swift-integration` in the namespace
++
+----
+cd ~/lab/hiring-documents-integration
+oc create configmap swift-integration --from-file=application.properties
+----
+
+. Deploy the application with the Fabric8 maven plugin:
++
+----
+cd ~/lab/hiring-documents-integration
+mvn clean package fabric8:deploy -Popenshift
+----
+
+. Examine the OpenAPI specification of the API using the following curl command:
++
+----
+$ curl http://$APP_ROUTE_HOST/api/api-docs
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "1.0.0",
+    "title" : "Document Service API"
+  },
+  "host" : "0.0.0.0",
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/get" : {
+      "get" : {
+        "operationId" : "route1",
+        "produces" : [ "application/octet-stream" ],
+        "parameters" : [ {
+          "name" : "object",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    },
+    "/put" : {
+      "put" : {
+        "operationId" : "route2",
+        "parameters" : [ {
+          "name" : "object",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    }
+  }
+}
+----
+
+. Create a local file under the /tmp directory and put an object in Swift:
++
+----
+$ curl -X PUT -T /tmp/swifttest.txt http://$APP_ROUTE_HOST/api/put?object=test/swifttest.txt
+----
+
+. Retrieve an object from Swift:
++
+----
+$ curl http://$APP_ROUTE_HOST/api/get?object=test/swifttest.txt
+----
+
+. Expect to see the contents of the object you inserted in the previous command to be echoed by the get request. You have verified that the Fuse service can successfully interact with the Swift node.
 
 ==== Optional: Provision Lab environment in your own openshift
 
