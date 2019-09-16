@@ -228,13 +228,12 @@ $ oc apply -f ./document-integration-deployment.yml
 $ oc expose deploy/document-integration
 $ oc expose svc/document-integration
 $ oc get route
-$ APP_ROUTE_HOST=<route name of Fuse application>
 ----
 
 . Examine the OpenAPI specification of the API using the following curl command:
 +
 ----
-$ curl http://$APP_ROUTE_HOST/api/api-docs
+$ curl http://$fuse_url/api/api-docs
 {
   "swagger" : "2.0",
   "info" : {
@@ -286,13 +285,13 @@ $ echo "Thanos is purple" > /tmp/swifttest.txt
 . and put the newly created object object in Swift:
 +
 ----
-$ curl -X PUT -T /tmp/swifttest.txt http://$APP_ROUTE_HOST/api/put?object=test/swifttest.txt
+$ curl -X PUT -T /tmp/swifttest.txt http://$fuse_url/api/put?object=test/swifttest.txt
 ----
 
 . Retrieve an object from Swift:
 +
 ----
-$ curl http://$APP_ROUTE_HOST/api/get?object=test/swifttest.txt
+$ curl http://$fuse_url/api/get?object=test/swifttest.txt
 ----
 
 . Expect to see the contents of the object you inserted in the previous command to be echoed by the get request.
