@@ -315,6 +315,7 @@ $ oc get projects
 pam-7-tools-user1   Tools          Active
 rhpam-dev-user1     RHPAM-dev      Active
 rhsso-sso0                         Active
+swift-integration                  Active
 -----
 
 . *pam-7-tools-user1*
