@@ -81,6 +81,13 @@ oc expose svc/react-hiring-app-public -n client-app --port=8080
 
 In this section you create two additional _SSO clients_ in the existing _kie-realm_ of your *Red Hat SSO*.  The purpose of these two additional _SSO clients_ are to secure the two hiring related web applications.
 
+. Be sure to log out from *Business Central*
++
+[NOTE]
+====
+During the labs in this workshop is very probable that you will be using the same browser to perform different activities secured behind the same realm in *Red Hat SSO*, for purposes of sanitizing the OpenId web sessions you will be required to log out from previous applications before entering to another.
+====
+
 . Navigate your browser to the _kie-realm_ of *Red Hat SSO* available at the following URL:
 +
 ----
@@ -113,6 +120,8 @@ image:images/hiring-internal-add-root-url.png[Root URL for public client]
 
 When saving the `hiring-internal` client you will be able to login to the back office application.
 
+. Log out from *Red Hat SSO*
+
 . Navigate to the back office web application route, that you can retrieve from the `ssh console`:
 +
 ----
@@ -127,11 +136,13 @@ image:images/hiring-internal-home.png[Hiring Internal Home]
 +
 image:images/kie-realm-login.png[kie-realm login]
 
-. Congratulations! you had just installed and integrated the back office application with RH-PAM and RH-SSO.
+. Congratulations! you had just installed and integrated the back office application with RH-PAM and RH-SSO. Be sure to log out from the back office application.
 +
 image:images/hiring-internal-dashboard.png[Hiring internal dashboard]
 
 === Public Web Application RH-SSO client.
+
+. Log out from the back office application.
 
 . Login to Red Hat SSO_URL
 +
@@ -159,6 +170,8 @@ image:images/hiring-public-add-root-url.png[Root URL for public client]
 
 When saving the `hiring-public` client you will be able to login to the public web application.
 
+. Log out from *Red Hat SSO*
+
 . Navigate to the public web application route, that you can retrieve from the `ssh console`:
 +
 ----
@@ -173,6 +186,6 @@ image:images/hiring-public-home.png[Public Hiring Home]
 +
 image:images/kie-realm-login.png[kie-realm login]
 
-. Congratulations! you had just installed and integrated the back office application with RH-PAM and RH-SSO.
+. Congratulations! you had just installed and integrated the public web application with RH-PAM and RH-SSO. Be sure to log out from the public web application. 
 +
 image:images/hiring-public-protected.png[Hiring public protected]
