@@ -206,38 +206,48 @@ As the public hiring application uses the same RH-SSO instance, hence the need t
 ====
 
 . Log in into the `hiring-public-application` using `Ava/Password1!` credentials.
-. Search for the job title that you just created.
-. Hit the *Apply* button, fill and submit the application form.
-. Look at your application form status in the *My Applications* menu.
+
+. Click the image:images/search-button.png[Search button] from the top banner.
+
+. From the *Search Result*, click the job record or click the image:images/apply-button.png[apply now button] from the *Features Job Method*, this will open the *application form*.
+
+. Fill the skills information, note that the skills matrix is based in the skills defined for the job:
++
+image:images/skills-matrix.png[]
+
+. Submit the job application and look at your application form status in the *My Applications* menu.
 
 == The interview Process
 
 . Log out from the `public-hiring` application.
 
-. Log in into the `hiring-internal` application using `Eve/Password1!` credentials.
-
-. From the `Applicants` menu review *Ava's* application status.
-
-. From the *Tasks > Group Tasks* section, claim the *Talent Acquisition Documents Review* task.
-
-. *Modify/complete* the *Talent Acquisition Documents Review* task, approving the documentation.
+. Log in into the `hiring-internal` application using `Tom/Password1!` credentials.
 
 . From the *Task  > Group Tasks* section, claim the *Schedule Interviews*
 
-. *Modify/complete* the *Schedule Interviews* task and enter a comment with time and place information for the interview to take place, like "@phone bridge (555) 555-5555; monday, 3PM".
+. *Modify/complete* the *Schedule Interviews* task and enter a start time-slot and duration for each interviewer, for instance:
++
+image:images/schedule-interviews-setup.png[]
 
 . Login to the `internal application` as the interviewers, and work in the *Interviewers Feedback* tasks, approving the candidate.
 +
 [NOTE]
 ====
 You will need to log out and log in multiple times, depending on how many interviewers where defined during the *Interviewer team definition*
+
+image:images/interviewer-feedback-eve.png[]
 ====
 
-. Login to the `internal application` as the *Job Request Manager* (see the job details to confirm the user name).
+. Log in to the `internal application` as `Tina/Password1!`
++
+[NOTE]
+====
+Tina was the person creating the job application, in the case of the CURL operation in lab 02, Tina was hard-coded as the *case-owner*
+====
 
-. As the *Job Request Manager*, work in the *Interviewer Feedback Review*, accepting the candidate.
-
-. Login to the `internal application` as `Bob` and work in the **
+. Work in the *Interviewer Feedback Review*, accepting the candidate.
++
+image:images/accept-candidate.png[]
 
 == Job offer acceptance
 
