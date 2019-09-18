@@ -25,21 +25,17 @@ During the interview process one of the interviewers detects that this user can 
 
 image::images/all_process.png[Case Diagram]
 
-== Import and Browse the project contents
+== Development environment preparation
 
-In this section you will import and overview the contents of the client applications source code.
-Then we will create a container with a pre-created image in a new project in Openshift.
+In this section you will import the contents of the back office client application source code and will prepare the Openshift Registry to receive new images when the source code is modified and a new image created.
 
-=== Import the client applications source code.
+=== Import the back office client application source code.
 
-You will import the code from the following repositories:
+You will import the code from the following repository:
 
 * https://github.com/barhte2019/hiring-app-internal
-* https://github.com/barhte2019/hiring-app-public
 
-You will use `git clone` to import the repositories. It is recommended to use the `ssh workshop environment`, because it has `git` installed and in a later lab we will modify the source code and deploy our modification to Openshift. If you locally have `git` installed, you can perform the source code analysis locally.
-
-==== Import and build the client applications
+You will use `git clone` to import the repository. It is recommended to use the `ssh workshop environment`, because it has `git` installed and in a later lab we will modify the source code and deploy our modification to Openshift. If you locally have `git` installed, you can perform the source code analysis locally.
 
 . In the `ssh workshop terminal`, use the `$HOME/lab` directory
 +
@@ -53,18 +49,219 @@ cd $HOME/lab
 git clone https://github.com/barhte2019/hiring-app-internal.git
 ----
 
-. Clone the `hiring-app-public` application:
+=== Prepare for Openshift Registry push operations
+
+. Using the ssh terminal, switch to root user
 +
 ----
-cd $HOME/lab
-git clone https://github.com/barhte2019/hiring-app-public.git
+sudo -i
 ----
 
+. Create a pusher service account in the client-app namespace
++
+----
+oc create serviceaccount pusher -n client-app
+----
+
+. Add `system:image-builder` and `edit` to `pusher` service account
++
+----
+oc policy add-role-to-user system:image-builder system:serviceaccount:client-app:pusher -n client-app
+oc policy add-role-to-user edit system:serviceaccount:client-app:pusher -n client-app
+----
+
+. Exit the root session at the ssh terminal
++
+----
+exit
+----
+
+. Patch the `react-hiring-app-internal` build config to be updated when a _latest_ image is found
++
+----
+oc patch dc react-hiring-app-internal --patch '{"spec": { "triggers": [ { "type": "ImageChange", "imageChangeParams": { "containerNames": [ "react-hiring-app-internal" ], "from": { "kind": "ImageStreamTag", "namespace": "react-hiring-app-internal", "name": "react-hiring-app-internal:latest"}}}]}}' -n client-app
+----
 
 == Change the UI for Dynamic tasks creation
 
-. Add a `createDynamic` method to the `Api` handler.
-. Add a button to the `Tasks` component.
+In this section you will change the back office client application to create dynamic tasks using the kie-server REST API.
+You can opt to use your local environment to make these changes, and you will need to find a way to have those changes reach the remote environment, here some options if you want to work locally:
+
+* You can modify locally, and then upload to a public git repository (like gitHub). By doing this, in the later steps where you build a container based in your changes you will need to take care of pull/push activities.
+* You can modify locally, and then upload through ssh to the remote ssh terminal. You can accomplish this with the `scp` tool.
+* You can modify and build the image locally, this will require you to have locally a *buildah* or *podman* installation available in your machine. Later you will need to _push_ the modified image to the *Openshift Registry*
+
+The following instructions will use the `vi` editor installed in the remote environment to modify the source code.
+
+=== Add a `createDynamic` method to the `api.ts`
+
+. Locate the `api.ts` component under `hiring-app-internal/src/store` directory:
++
+----
+$ cd ~/lab/hiring-app-internal/src/store
+$ ls
+api.ts  index.ts  jobs  system  tasks
+----
+
+. Open the `api.ts` component using `vi`
++
+----
+vi ~/lab/hiring-app-internal/src/store/api.ts
+----
+
+. In the `vi` editor, enable line numbers by typing the command [: set nu]
++
+image:images/vi_set_nu.png[Set line numbers]
+
+. Scroll to line 109 using [:109] vi command
++
+image:images/vi_line_109.png[]
+
+. after the `complete` function, but before the `detail` function, add a `createDynamic` method that uses the `/server/containers/{containerId}/cases/instances/{caseId}/tasks` *POST* endpoint from the kie_server.
++
+----
+createDynamic: (
+     caseId: string,
+     taskDescription: string,
+     actor: string,
+     data: any) => api().post(
+     '/server/containers/hr-hiring/cases/instances/' + caseId + '/tasks',
+     {
+       actors: actor,
+       data,
+       description: 'Dynamic task created by system, looking for additional interviewer',
+       groups: '',
+       name: 'AdditionalInterviewer'
+     }
+   ),
+----
++
+[NOTE]
+====
+you can see the details of this service by navigating to:
+
+----
+$ echo https://$ks_url/docs
+----
+
+and searching for endpoints able to work with *dynamic* tasks.
+
+image:images/dynamic_task_endpoints.png[Dynamic Task Endpoints]
+====
+
+. Exit the `vi` editor for `api.ts` by executing the vi command [:wq]
+
+=== Add a button to the `User Dropdown` component.
+
+. Locate and open the `app.tsx` file under `~/lab/hiring-app-internal/src/app` directory
++
+----
+vi ~/lab/hiring-app-internal/src/app/app.tsx
+----
+
+. After line 51, modify the array of user dropdown items to show 2 items instead of 1: The *Add dynamic task* new option and the good old *Log out* option:
++
+----
+const userDropdownItems = [
+  <DropdownItem key="addDynamicLink">Add Dynamic Task</DropdownItem>,
+  <DropdownItem key="separatedLink" onClick={appLogout}>Log out</DropdownItem>
+];
+----
+
+. Save and close the `app.tsx` file; we will next build an image with this new Button to visualize it.
+
+=== Visualize the added button (update the container)
+
+In this section you create a Docker image and push it to Openshift so you can update the created container with its new version and visualize the changes.
+The ssh workstation has all the software components required for the following steps to work, if you want to execute this section locally you will need:
+
+* *buildah*: for building an image.
+* *OCP Client Utility*: (`oc`) for pushing the image to our openshift environment.
+* A good internet band-width for uploading the image to Openshift.
+
+[NOTE]
+====
+In the following sections we will be making some changes, then creating a new container version based in a new image and continue with more changes, if you feel like just making changes with out checking the progress so often, you can opt to group some of the changes and create less images.
+====
+
+. Prepare the values that you will use in the client application configuration, take note (copy them to an available text editor so you can retrieve them in a later step) of the following variable values in the `workstation ssh`, we will use them in the next step:
++
+----
+echo -en "\n\nhttps://$rhsso_url/auth\n\n"
+echo -en "\n\nhttps://$ks_url\n\n"
+----
+
+. Use the `workshop ssh` terminal to configure the environment variables inside the Dockerfile that will be used to build the `hiring-app-internal` image.
++
+----
+cd $HOME/lab/hiring-app-internal
+vi Dockerfile
+----
+
+. Using the vi editor, set the proper values to the ENV values:
++
+|===
+|Get The Value From|Assign to ENV in file|Example
+|`echo -en "\n\nhttps://$rhsso_url/auth\n\n"`| SSO_URL |`ENV SSO_URL=https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth`
+|`echo -en "\n\nhttps://$ks_url\n\n"`| KIE_URL |`ENV KIE_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-af16.generic.opentlc.com`
+|===
++
+[NOTE]
+====
+`SSO_REALM` and `SSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `hiring-internal` in the `kie-realm`.
+====
+
+. Build the `hiring-app-internal` image using *buildah*:
++
+----
+cd $HOME/lab/hiring-app-internal
+sudo buildah bud -t hiring-app-internal:1.1 .
+----
+
+. Get the token id for the `pusher` service account in openshift and save it in an environment variable.
++
+----
+export SA_TOKEN_ID=$(oc describe sa pusher -n client-app | grep Tokens | awk '{print $2}')
+echo $SA_TOKEN_ID
+----
+
+. Discover the value of the `pusher` service account token and store that value in an environment variable
++
+----
+export SA_TOKEN=$(oc describe secret $SA_TOKEN_ID -n client-app | grep token: | awk '{print $2}')
+echo $SA_TOKEN
+----
+
+. Push the image to the openshift registry
++
+----
+sudo buildah push --tls-verify=false --creds=pusher:$SA_TOKEN hiring-app-internal:1.1 $docker_registry/client-app/react-hiring-app-internal:1.1
+----
+
+. Tag the image as _latest_, so the build config is triggered and a new container created.
++
+----
+oc tag react-hiring-app-internal:1.1 react-hiring-app-internal:latest
+----
+
+. Wait for the pod to become available.
++
+----
+$ oc get pod -n client-app
+NAME                                READY     STATUS    RESTARTS   AGE
+react-hiring-app-internal-3-xdjpm   1/1       Running   0          44m
+react-hiring-app-public-1-nbknr     1/1       Running   0          6h
+----
+
+. Login to the `internal-hiring-application` as *Tina/Password1!*, and review the newly created button:
++
+image:images/new-button.png[]
+
+=== Open a modal when clicking the `Add Dynamic Task Button`
+
+In this section we will prepare a *Modal* component and open it in the click action of our newly created button; this modal will later host our form to create Dynamic Tasks.
+
+
 . Add a dynamic task form (email like) to describe the dynamic task.
 . Add types to support the dynamic task creation.
 . Add actions to interact with the API and bridge the events of the form and buttons in the components.
@@ -80,36 +277,6 @@ The ssh workstation has all the software components required for the following s
 * *OCP Client Utility*: (`oc`) for pushing the image to our openshift environment.
 * A good internet band-width for uploading the image to Openshift.
 
-To prepare for pushing these images to Openshift:
-
-. Setup an environment variable for the `docker-registry` route in the _default_ namespace: 
-
-+
-----
-export DOCKER_REGISTRY_HOSTNAME=$(oc get route docker-registry -n default -o template --template='{{.spec.host}}')
-----
-
-. Switch to the `client-app` project
-
-+
-----
-oc project client-app
-----
-
-. Create a pusher service account
-
-+
-----
-oc create serviceaccount pusher
-----
-
-. Add `system:image-builder` and `edit` to `pusher` service account
-
-+
-----
-oc policy add-role-to-user system:image-builder system:serviceaccount:client-app:pusher
-oc policy add-role-to-user edit system:serviceaccount:client-app:pusher
-----
 
 ==== The back office application
 . Prepare the values that you will use in the client application configuration, take note (copy them to an available text editor so you can retrieve them in a later step) of the following variable values in the `workstation ssh`, we will use them in the next step:
