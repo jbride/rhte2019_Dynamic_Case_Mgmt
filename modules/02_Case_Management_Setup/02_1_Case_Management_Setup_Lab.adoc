@@ -110,18 +110,12 @@ image:images/job-vacancy-lifecycle-vardef.png[Case definition variables]
 +
 image:images/benefits-compensation-props.png[Benefits and compensation properties]
 
-. Notice the *AdhocActivationCondition* and the *AdhocCompletionCondition*
+. Notice the *AdhocActivationCondition*
 +
 .AdhockActivationCondition
 [source,java]
 ----
 org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") != true)
-----
-+
-.AdhocCompletionCondition
-[source,java]
-----
-org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") == true)
 ----
 
 . At any time during the life-cycle of a *Case Instance* that is based on this *Case Definition*, if state changes of this Case Instance occur that result in one or more of its conditions to be met, the *Case Instance* will react to that information change and either activate or complete stages or milestones. Examine the _completion_ and _activation_ conditions of the remaining stages.
