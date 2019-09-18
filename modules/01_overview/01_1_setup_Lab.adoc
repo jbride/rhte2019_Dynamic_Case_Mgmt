@@ -222,6 +222,25 @@ $ cd src/main/resources
 $ oc apply -f ./document-integration-deployment.yml
 ----
 
+. Monitor the status of the pod start-up processes
++
+----
+oc logs `oc get pods -n swift-integration | grep integration | awk '{print $1}'` -f
+----
++
+[NOTE]
+====
+You should see a set of startup messages in the log, then the log will still idle; [CTRL +C] to exit the log monitoring process.
+
+----
+2019-09-18 15:44:31.224  INFO 1 --- [           main] c.r.g.r.b.d.integration.Application      : Started Application in 22.786 seconds (JVM running for 26.366)
+2019-09-18 15:44:47.122  INFO 1 --- [  XNIO-2 task-1] io.undertow.servlet                      : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2019-09-18 15:44:47.122  INFO 1 --- [  XNIO-2 task-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2019-09-18 15:44:47.150  INFO 1 --- [  XNIO-2 task-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 28 ms
+2019-09-18 15:45:16.429  INFO 1 --- [  XNIO-2 task-7] o.a.c.c.s.CamelHttpTransportServlet      : Initialized CamelHttpTransportServlet[name=CamelServlet, contextPath=]
+----
+====
+
 . Expose the deployment as a service and the service as a route
 +
 ----
