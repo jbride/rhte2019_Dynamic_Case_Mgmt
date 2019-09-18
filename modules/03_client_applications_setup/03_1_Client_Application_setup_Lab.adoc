@@ -158,7 +158,7 @@ image:images/sso-clients-list.png[RH SSO initial clients list]
 +
 image:images/hiring-public-add.png[Add hiring public client]
 
-. Set the *Root URL* of the `hiring-internal` as the route for the public web application:
+. Set the *Root URL* of the `hiring-public` as the route for the public web application:
 +
 ----
 echo http://$(oc get route -n client-app | grep public | awk '{print $2}')
@@ -186,6 +186,6 @@ image:images/hiring-public-home.png[Public Hiring Home]
 +
 image:images/kie-realm-login.png[kie-realm login]
 
-. Congratulations! you had just installed and integrated the public web application with RH-PAM and RH-SSO. Be sure to log out from the public web application. 
+. Congratulations! you had just installed and integrated the public web application with RH-PAM and RH-SSO. Be sure to log out from the public web application.
 +
 image:images/hiring-public-protected.png[Hiring public protected]
