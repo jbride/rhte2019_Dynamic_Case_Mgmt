@@ -42,12 +42,6 @@ oc new-project client-app
 ----
 
 === The back office application
-. Prepare the values that you will use in the client application configuration, take note (copy them to an available text editor so you can retrieve them in a later step) of the following variable values in the `workstation ssh`, we will use them in the next step:
-+
-----
-echo -en "\n\nhttps://$rhsso_url/auth\n\n"
-echo -en "\n\nhttps://$ks_url\n\n"
-----
 
 . Create a new OpenShift DeploymentConfiguration based on the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-internal[react-hiring-app-internal] image.
 +
