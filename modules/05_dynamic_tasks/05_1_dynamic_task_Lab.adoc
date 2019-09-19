@@ -342,9 +342,190 @@ Note the use of:
 * *props.toggleAdditionalInterviewer* : This is a function that will modify the state for `additionalVisible` value.
 
 * *props.interviewerFeedbackModalState.additionalVisible* : This is a property in the state that will control the additional fields visibility and the button caption.
+
+Check the resulting file here: link:https://github.com/barhte2019/hiring-app-internal/blob/3eee1869b066b56361be3f0da856c2861aa82aa4/src/components/interviewer-feedback/index.tsx[index.tsx at gitHub]
 ====
 
-. Add the function and properties that control the fields visibility
+. Register the `types` for the `action` and `state` that control the fields visibility
+.. Open `types.ts` file under `~/lab/hiring-app-internal/src/components/interviewer-feedback` directry.
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/types.ts
+----
+
+.. Modify the definition of the `IInterviewerFeedbackModalState` described in lines 1 - 8; alphabetically adding the new property: `additionalVisible: boolean`
++
+----
+export interface IInterviewerFeedbackModalState {
+    additionalVisible: boolean,
+    candidateScore: string,
+    comment: string,
+    loading: boolean,
+    error_message: string,
+    modalVisible: boolean,
+    taskId: number,
+}
+...
+----
+
+.. In the same file (`types.ts`), after line 20, export a new constant describing the `ADDITIONAL_INTERVIEWER_TOGGLE` action.
++
+----
+...
+export const INTERVIEWER_FEEDBACK_COMMENT_CHANGE = 'INTERVIEWER_FEEDBACK_COMMENT_CHANGE';
+export const ADDITIONAL_INTERVIEWER_TOGGLE = 'ADDITIONAL_INTERVIEWER_TOGGLE';
+
+interface IInterviewerFeedbackToggleAction { type: typeof INTERVIEWER_FEEDBACK_TOGGLE }
+...
+----
+
+.. After line 25, define the interface for dispatching the `InterviewerFeedbackToggleAction`
++
+----
+interface IInterviewerFeedbackCommentChangeAction { type: typeof INTERVIEWER_FEEDBACK_COMMENT_CHANGE, value: string }
+interface IAdditionalInterviewerToggleAction { type: typeof ADDITIONAL_INTERVIEWER_TOGGLE }
+...
+----
+
+.. In the last line, during the exports, modify the export directive to include the option to dispatch the `IAdditionalInterviewerToggleAction` interface:
++
+----
+...
+export type InterviewerFeedbackActionTypes = IInterviewerFeedbackToggleAction |
+    IInterviewerFeedbackScoreChangeAction | IInterviewerFeedbackCommentChangeAction
+    | IAdditionalInterviewerToggleAction;
+----
++
+[TIP]
+====
+Check the resulting file here: link:https://github.com/barhte2019/hiring-app-internal/blob/3eee1869b066b56361be3f0da856c2861aa82aa4/src/components/interviewer-feedback/types.ts[types.ts at gitHub]
+====
+
+.. Save and close the `types.ts` file
+
+. Register the `action` that provides the toggle function.
+.. Open the `actions.ts` file under the `~/lab/hiring-app-internal/src/components/interviewer-feedback` directory
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/actions.ts
+----
+
+.. In the import statement defined between lines 1 - 5, import the `ADDITIONAL_INTERVIEWER_TOGGLE` type
++
+----
+import {
+    ADDITIONAL_INTERVIEWER_TOGGLE,
+    INTERVIEWER_FEEDBACK_TOGGLE,
+    INTERVIEWER_FEEDBACK_SCORE_CHANGE,
+    INTERVIEWER_FEEDBACK_COMMENT_CHANGE
+} from './types';
+----
+
+.. At the end of the file (after line 18), add the `toggleAdditionalInterviewer` function. (Note that this name matches the `onClick` expected action for our toggle button.)
++
+----
+...
+export function toggleAdditionalInterviewer() {
+    return { type: ADDITIONAL_INTERVIEWER_TOGGLE }
+}
+----
++
+[TIP]
+====
+Review the resulting file here: link:https://github.com/barhte2019/hiring-app-internal/blob/d25c006513d7c23046ab456ad0ea3dc9e0b85e74/src/components/interviewer-feedback/actions.ts[actions.ts at gitHub]
+====
+
+.. Save and close the `actions.ts` file
+
+. Modify the `reducer` for `interviewer-feedback` to change the state when the `ADDITIONAL_INTERVIEWER_TOGGLE` action is dispatched.
+.. Open the `reducer.ts` file under the `~/lab/hiring-app-internal/src/components/interviewer-feedback` directory
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/reducer.ts
+----
+
+.. import `ADDITIONAL_INTERVIEWER_TOGGLE` from `types` between lines 1-7
++
+----
+import {
+    InterviewerFeedbackActionTypes,
+    IInterviewerFeedbackModalState,
+    ADDITIONAL_INTERVIEWER_TOGGLE,
+    INTERVIEWER_FEEDBACK_TOGGLE,
+    INTERVIEWER_FEEDBACK_SCORE_CHANGE,
+    INTERVIEWER_FEEDBACK_COMMENT_CHANGE
+} from './types';
+----
+
+.. Add the `additionalVisible` state property to the `initialState` definition between lines 10-18
++
+----
+const initialState: IInterviewerFeedbackModalState = {
+    additionalVisible: false,
+    candidateScore: '',
+    comment: '',
+    error_message: '',
+    loading: false,
+    modalVisible: false,
+    taskId: 0,
+}
+----
+
+.. Add a modification to the state in the `swithc` for `action.type` when the action is `ADDITIONAL_INTERVIEWER_TOGGLE`, this can be performed after line 27:
++
+----
+case INTERVIEWER_FEEDBACK_COMMENT_CHANGE ... // leave this case as it is
+case ADDITIONAL_INTERVIEWER_TOGGLE: { return { ...state, additionalVisible: !state.additionalVisible } }
+default: return state;
+----
++
+[TIP]
+====
+Here we are switching the additionalVisible value every time the action is dispatched, causing to show/hide the additional fields `<div>` every time we dispatch the toggle action.
+See the resulting `reducer.ts` file here: link:https://github.com/barhte2019/hiring-app-internal/blob/1292a3fabc95761e44840a5bb26b64da1b19dbf2/src/components/interviewer-feedback/reducer.ts[reducer.ts at gitHub]
+====
+
+.. Save and close the `reducer.ts` file
+
+. Import and declare the action for toggle at `interviewer-feedback` modal component
+.. Open the `index.tsx` file under the `~/lab/hiring-app-internal/src/components/interviewer-feedback` directory
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/index.tsx
+----
+
+.. between lines 13-17, import the newly created action `toggleAdditionalInterviewer`
++
+----
+import {
+    interviewerFeedbackToggle,
+    interviewerFeedbackCommentChange,
+    interviewerFeedbackScoreChange,
+    toggleAdditionalInterviewer
+} from './actions';
+----
+
+.. in the properties definition between lines 20-26, declare the `toggleAdditionalInterviewer` function to dispatch the `toggleAdditionalInterviewer` action type
++
+----
+interface IInterviewerFeedbackModalProps {
+    interviewerFeedbackModalState: IInterviewerFeedbackModalState,
+    interviewerFeedbackToggle: typeof interviewerFeedbackToggle,
+    onFeedbackSubmit: any,
+    interviewerFeedbackCommentChange: typeof interviewerFeedbackCommentChange,
+    interviewerFeedbackScoreChange: typeof interviewerFeedbackScoreChange,
+    toggleAdditionalInterviewer: typeof toggleAdditionalInterviewer,
+}
+----
++
+[TIP]
+====
+See the resulting file link:https://github.com/barhte2019/hiring-app-internal/blob/aeaae6d1cf20e8a689c8891cd04485671a23f78b/src/components/interviewer-feedback/index.tsx[here]
+====
+
+.. save and close the `index.tsx` file
+
+. Modify the `tasks` component to connect the `redux` actions for the `Modal` component.
 
 . Modify the div to make it visible only when `additionalVisible` property is true.
 
