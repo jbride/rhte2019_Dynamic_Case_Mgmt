@@ -79,7 +79,7 @@ exit
 . Patch the `react-hiring-app-internal` build config to be updated when a _latest_ image is found
 +
 ----
-oc patch dc react-hiring-app-internal --patch '{"spec": { "triggers": [ { "type": "ImageChange", "imageChangeParams": { "containerNames": [ "react-hiring-app-internal" ], "from": { "kind": "ImageStreamTag", "namespace": "react-hiring-app-internal", "name": "react-hiring-app-internal:latest"}}}]}}' -n client-app
+oc patch dc react-hiring-app-internal --patch '{"spec": { "triggers": [ { "type": "ImageChange", "imageChangeParams": { "automatic": true, "containerNames": [ "react-hiring-app-internal" ], "from": { "kind": "ImageStreamTag", "namespace": "client-app", "name": "react-hiring-app-internal:latest"}}}]}}' -n client-app
 ----
 
 === Prepare a few jobs ready for interviews
@@ -139,6 +139,8 @@ image:images/vi_line_109.png[]
 . after the `complete` function, but before the `detail` function, add a `createDynamic` method that uses the `/server/containers/{containerId}/cases/instances/{caseId}/tasks` *POST* endpoint from the kie_server.
 +
 ----
+...
+),
 createDynamic: (
      caseId: string,
      taskDescription: string,
@@ -153,11 +155,18 @@ createDynamic: (
        name: 'AdditionalInterviewer'
      }
    ),
+ detail: (id: number) => api().get('services/rest/server/containers/hr-hiring/tasks/' + id + '/contents/input'),
+   ...
 ----
++
+[TIP]
+====
+See the resulting file here: link:https://github.com/barhte2019/hiring-app-internal/blob/dynamic_task/src/store/api.ts#L109[Solution]
+====
 +
 [NOTE]
 ====
-you can see the details of this service by navigating to:
+You can see the details of this service by navigating to:
 
 ----
 $ echo https://$ks_url/docs
@@ -167,6 +176,7 @@ and searching for endpoints able to work with *dynamic* tasks.
 
 image:images/dynamic_task_endpoints.png[Dynamic Task Endpoints]
 ====
+
 
 . Exit the `vi` editor for `api.ts` by executing the vi command [:wq]
 
@@ -293,6 +303,11 @@ react-hiring-app-public-1-nbknr     1/1       Running   0          6h
 . Select the *Modify/complete* option to access the *Interviewer Feedback* task form and review the newly created fields:
 +
 image:images/new-button.png[]
++
+[CAUTION]
+====
+If you don't visualize your changes, be sure to refresh the browser's cache, this can be achieved by pressing [CTRL]+[F5] in your keyboard.
+====
 
 === Toggle the Additional Interviewer fields
 
@@ -323,8 +338,10 @@ vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/index.tsx
 [NOTE]
 ====
 Note the use of:
-* props.toggleAdditionalInterviewer : This is a function that will modify the state for `additionalVisible` value.
-* props.interviewerFeedbackModalState.additionalVisible : This is a property in the state that will control the additional fields visibility and the button caption.
+
+* *props.toggleAdditionalInterviewer* : This is a function that will modify the state for `additionalVisible` value.
+
+* *props.interviewerFeedbackModalState.additionalVisible* : This is a property in the state that will control the additional fields visibility and the button caption.
 ====
 
 . Add the function and properties that control the fields visibility
