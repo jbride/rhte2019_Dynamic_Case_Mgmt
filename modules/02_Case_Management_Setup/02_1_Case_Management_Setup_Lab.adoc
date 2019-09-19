@@ -176,7 +176,47 @@ image:images/swagger-ks-containers.png[Swagger: kie-server containers]
 Notice that you can fold or unfold the sections by clicking in their title.
 ====
 
-. TO-DO: Provide a listing of the primary endpoints that will be invoked by external clients in this application.
+. During this workshop the client applications will be using the following endpoints:
+
+.. The `hiring-app-public` client application uses the following endpoints: link:https://github.com/barhte2019/hiring-app-public/blob/master/src/api.js[See the api component]
++
+|===
+|HTTP METHOD|ENDPOINT|Usage
+|GET|/server/containers/{containerId}/cases/{caseDefId}/instances | List the job applications (case instances for the `hiring-case-definition`)
+|GET|/server/containers/{containerId}/cases/instances/{caseId} | Get the case details for a given case id
+|GET|/server/containers/{containerId}/cases/instances/{caseId}/caseFile | Get the case file information, the case file contains all business defined information attached to the case.
+|GET|/server/containers/{containerId}/cases/instances/{caseId}/milestones | Get the milestones for a given case Id, with the milestones we can calculate the current status of a case.
+|POST|/server/containers/{containerId}/cases/{caseDefId}/instances | Start a case instance, in our case we start job applications.
+| GET | /server/queries/processes/instance/correlation/{correlationKey} | We use this endpoint to retrieve the process instance Id that belongs to a given case id (given as correlation key). The process id will help us later to retrieve the process instance image.
+| GET | /server/containers/{containerId}/images/processes/instances/{pId} | Retrieve the SVG image of a given process instance id
+| PUT | /server/containers/{containerId}/tasks/{taskId}/states/completed | Complete a task id
+| GET | /server/containers/{containerId}/tasks/{taskId}/contents/input | Retrieve the input information for a given task.
+| GET | /server/queries/tasks/instances/owners | Retrieve the list of owned tasks for the logged in user
+|===
+
+.. The `hiring-app-internal` client application uses the following endpoints: link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/api.ts[See the api component]
++
+|===
+|HTTP METHOD|ENDPOINT|Usage
+|POST|/server/containers/{containerId}/cases/{caseDefId}/instances | Start a case instance, in our case we start a job hiring request.
+|GET|/server/containers/{containerId}/cases/instances/{caseId}/caseFile | Get the case file information, the case file contains all business defined information attached to the case.
+|GET|/server/containers/{containerId}/cases/{caseDefId}/instances | List the hiring requests (case instances for the `job-vacancy-lifecycle`)
+|GET|/server/containers/{containerId}/cases/instances/{caseId}/milestones | Get the milestones for a given case Id, with the milestones we can calculate the current status of a case.
+| GET | /server/queries/processes/instance/correlation/{correlationKey} | We use this endpoint to retrieve the process instance Id that belongs to a given case id (given as correlation key). The process id will help us later to retrieve the process instance image.
+| GET | /server/containers/{containerId}/images/processes/instances/{pId} | Retrieve the SVG image of a given process instance id
+| PUT | /server/containers/{containerId}/tasks/{taskId}/states/claimed | Claim a task id
+| PUT | /server/containers/{containerId}/tasks/{taskId}/states/completed | Complete a task id
+| GET | /server/containers/{containerId}/tasks/{taskId}/contents/input | Retrieve the input information for a given task.
+| GET | /server/queries/tasks/instances/owners | Retrieve the list of owned tasks for the logged in user
+| GET | /server/queries/tasks/instances/pot-owners | Retrieve the list of tasks that can be owned by the logged in user (potential owner)
+|===
+
+. By the end of the workshop we will additional use this endpoint by modifying the `hiring-internal-appication`:
++
+|===
+|HTTP METHOD|ENDPOINT|Usage
+|POST|/server/containers/{containerId}/cases/instances/{caseId}/tasks | Create a dynamic task in a given case id.
+|===
 
 . At this time, do not attempt to invoke any of the endpoints via this OpenAPI documentation:
 +

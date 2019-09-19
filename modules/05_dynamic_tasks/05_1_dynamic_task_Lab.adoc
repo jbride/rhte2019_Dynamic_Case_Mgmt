@@ -183,6 +183,7 @@ vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/index.tsx
 . After line 50, modify the `Modal` content to add a `<div>` after the `</Form>` tag, the newly created `<div>` contains the *Additional Interviewer* fields definition:
 +
 ----
+  ...
   </Form>
   <div>
     <h2>Additional Interviewer Requested</h2>
@@ -197,6 +198,7 @@ vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/index.tsx
     <Button className='pf-c-button pf-m-secondary'>Send</Button>
   </div>
 </Modal>)
+...
 ----
 
 . Save and close the `index.tsx` file; we will next build an image with this new Modal to visualize it.
@@ -296,6 +298,38 @@ image:images/new-button.png[]
 
 In this section you will hide/show the fields to define an additional interviewer. This requires interaction with the `state` of the `reactJs` component.
 Modification of the `state` requires interaction with `actions` and `reducers`. For more information you can read: link:https://redux.js.org/basics/reducers[Redux Tutorial]
+
+. Add a button to show/hide the additional interviewer field in the `interviewer-feedback` modal:
+.. Open the `index.tsx` from the `~/lab/hiring-app-internal/src/components/interviewer-feedback` directory
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/index.tsx
+----
+
+.. In line 49, add an additional `Button` to toggle the _additional interviewer_ fields.
++
+----
+...
+<Button type="submit">Ok</Button>
+<Button
+    onClick={props.toggleAdditionalInterviewer}
+    className="pf-c-button pf-m-inline pf-m-link">
+    {props.interviewerFeedbackModalState.additionalVisible?"Show Additional Interviewer":"Hide Additional Interviewer"}
+</Button>
+</Form>
+...
+----
++
+[NOTE]
+====
+Note the use of:
+* props.toggleAdditionalInterviewer : This is a function that will modify the state for `additionalVisible` value.
+* props.interviewerFeedbackModalState.additionalVisible : This is a property in the state that will control the additional fields visibility and the button caption.
+====
+
+. Add the function and properties that control the fields visibility
+
+. Modify the div to make it visible only when `additionalVisible` property is true.
 
 === Capture state changes (from text fields)
 
