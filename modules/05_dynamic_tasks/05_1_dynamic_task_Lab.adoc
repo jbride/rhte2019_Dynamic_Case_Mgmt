@@ -82,6 +82,25 @@ exit
 oc patch dc react-hiring-app-internal --patch '{"spec": { "triggers": [ { "type": "ImageChange", "imageChangeParams": { "containerNames": [ "react-hiring-app-internal" ], "from": { "kind": "ImageStreamTag", "namespace": "react-hiring-app-internal", "name": "react-hiring-app-internal:latest"}}}]}}' -n client-app
 ----
 
+=== Prepare a few jobs ready for interviews
+
+As in this lab you want the interviewer to react to an applicant that might need an additional interviewer to validate for a different job opportunity, in this section you will generate 3 job requests, one of the job requests will hold the interviewing process for 2 applicants.
+
+. Login to the `hiring-internal` application with *Tina/Password1!* credentials.
+. From the *Dashboard* page, start 3 jobs using the `blue plus button` under the jobs card.
+. Fill the form for each of the 3 jobs.
+. Claim the tasks to define candidate skills, benefits and interviewer teams. Remember than when defining benefits, you will need to select a manager to review the benefits; select *tom* as the manager for the 3 of them.
+. Log out from the `hiring-internal`, and log back in with *Tom/Password1!* credentials.
+. Approve the benefits of the 3 job applications. This action will make the 3 jobs available for logged in users in the `hiring-public` application.
+. Log out from the `hiring-internal` application.
+. Log in into the `hiring-public` application with *Ava/Password1!* credentials.
+. Apply for 2 jobs as *Ava*
+. Log out from the `hiring-public` application and log back in with *Bill/Password1!* credentials.
+. Apply for 2 jobs as *Bill*
+. Log out from the `hiring-public` application.
+. Log in to the `hiring-internal` application as *Tom/Password1!* to schedule interviews for the applicants.
+. Claim the *Schedule Interview* tasks, and provide time slots, this will prepare different tasks with which we will be able to test our changes in the next sections. 
+
 == Change the UI for Dynamic tasks creation
 
 In this section you will change the back office client application to create dynamic tasks using the kie-server REST API.
@@ -210,6 +229,8 @@ vi Dockerfile
 ====
 `SSO_REALM` and `SSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `hiring-internal` in the `kie-realm`.
 ====
++
+TIP: Are these values required for the Dockerfile? May be not, these values are re-calculated by the environment variables of the generated container, but is good for you to know that they also exist during the image creation with their default values.
 
 . Build the `hiring-app-internal` image using *buildah*:
 +
@@ -261,6 +282,27 @@ image:images/new-button.png[]
 
 In this section we will prepare a *Modal* component and open it in the click action of our newly created button; this modal will later host our form to create Dynamic Tasks.
 
+. Locate and open the `app.tsx` file under `~/lab/hiring-app-internal/src/app` directory
++
+----
+vi ~/lab/hiring-app-internal/src/app/app.tsx
+----
+
+. In the line 18, import `Modal, TextInput, Select, SelectVariant, SelectOption,` from '@patternfly/react-core'.
++
+----
+  ...
+  ToolbarItem,
+  Modal, TextInput, Select, SelectVariant, SelectOption,
+} from '@patternfly/react-core';
+...
+----
+
+. In line 120, Create a `<Modal>` tag with the form configuration for the dynamic task creation:
++
+----
+
+----
 
 . Add a dynamic task form (email like) to describe the dynamic task.
 . Add types to support the dynamic task creation.
@@ -309,6 +351,8 @@ vi Dockerfile
 ====
 `SSO_REALM` and `SSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `hiring-internal` in the `kie-realm`. If you perform a different operation in previous sections changing any of these names, please also perform the appropriate changes in the respective environment entry.
 ====
++
+TIP: Are these values required for the Dockerfile? May be not, these values are re-calculated by the environment variables of the generated container, but is good for you to know that they also exist during the image creation with their default values.
 
 . Build the `hiring-app-internal` image using *buildah*:
 
