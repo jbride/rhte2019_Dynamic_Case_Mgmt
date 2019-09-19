@@ -99,7 +99,7 @@ As in this lab you want the interviewer to react to an applicant that might need
 . Apply for 2 jobs as *Bill*
 . Log out from the `hiring-public` application.
 . Log in to the `hiring-internal` application as *Tom/Password1!* to schedule interviews for the applicants.
-. Claim the *Schedule Interview* tasks, and provide time slots, this will prepare different tasks with which we will be able to test our changes in the next sections. 
+. Claim the *Schedule Interview* tasks, and provide time slots, this will prepare different tasks with which we will be able to test our changes in the next sections.
 
 == Change the UI for Dynamic tasks creation
 
@@ -170,26 +170,38 @@ image:images/dynamic_task_endpoints.png[Dynamic Task Endpoints]
 
 . Exit the `vi` editor for `api.ts` by executing the vi command [:wq]
 
-=== Add a button to the `User Dropdown` component.
+=== Add a form for Dynamic task to the `interviewer-feedback` component.
 
-. Locate and open the `app.tsx` file under `~/lab/hiring-app-internal/src/app` directory
+The component responsible for displaying and handling the *Interviewer Feedback* is located under the `~/lab/hiring-app-internal/src/components/interviewer-feedback` directory.
+
+. Locate and open the `index.tsx` file under `~/lab/hiring-app-internal/src/components/interviewer-feedback` directory
 +
 ----
-vi ~/lab/hiring-app-internal/src/app/app.tsx
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/index.tsx
 ----
 
-. After line 51, modify the array of user dropdown items to show 2 items instead of 1: The *Add dynamic task* new option and the good old *Log out* option:
+. After line 50, modify the `Modal` content to add a `<div>` after the `</Form>` tag, the newly created `<div>` contains the *Additional Interviewer* fields definition:
 +
 ----
-const userDropdownItems = [
-  <DropdownItem key="addDynamicLink">Add Dynamic Task</DropdownItem>,
-  <DropdownItem key="separatedLink" onClick={appLogout}>Log out</DropdownItem>
-];
+  </Form>
+  <div>
+    <h2>Additional Interviewer Requested</h2>
+    <TextInput
+        id="textInputDynamicTo"
+        aria-label="Dynamic Task To"
+        placeholder="To" />
+    <TextInput
+        id="textInputDynamicMessage"
+        aria-label="Dynamic Task Message"
+        placeholder="Message" />
+    <Button className='pf-c-button pf-m-secondary'>Send</Button>
+  </div>
+</Modal>)
 ----
 
-. Save and close the `app.tsx` file; we will next build an image with this new Button to visualize it.
+. Save and close the `index.tsx` file; we will next build an image with this new Modal to visualize it.
 
-=== Visualize the added button (update the container)
+=== Visualize the added fields (update the container)
 
 In this section you create a Docker image and push it to Openshift so you can update the created container with its new version and visualize the changes.
 The ssh workstation has all the software components required for the following steps to work, if you want to execute this section locally you will need:
@@ -274,239 +286,26 @@ react-hiring-app-internal-3-xdjpm   1/1       Running   0          44m
 react-hiring-app-public-1-nbknr     1/1       Running   0          6h
 ----
 
-. Login to the `internal-hiring-application` as *Tina/Password1!*, and review the newly created button:
+. Login to the `internal-hiring-application` as *Bob/Password1!*
+. Navigate to the *Tasks > User Tasks* section
+. Select the *Modify/complete* option to access the *Interviewer Feedback* task form and review the newly created fields:
 +
 image:images/new-button.png[]
 
-=== Open a modal when clicking the `Add Dynamic Task Button`
+=== Toggle the Additional Interviewer fields
 
-In this section we will prepare a *Modal* component and open it in the click action of our newly created button; this modal will later host our form to create Dynamic Tasks.
+In this section you will hide/show the fields to define an additional interviewer. This requires interaction with the `state` of the `reactJs` component.
+Modification of the `state` requires interaction with `actions` and `reducers`. For more information you can read: link:https://redux.js.org/basics/reducers[Redux Tutorial]
 
-. Locate and open the `app.tsx` file under `~/lab/hiring-app-internal/src/app` directory
-+
-----
-vi ~/lab/hiring-app-internal/src/app/app.tsx
-----
+=== Capture state changes (from text fields)
 
-. In the line 18, import `Modal, TextInput, Select, SelectVariant, SelectOption,` from '@patternfly/react-core'.
-+
-----
-  ...
-  ToolbarItem,
-  Modal, TextInput, Select, SelectVariant, SelectOption,
-} from '@patternfly/react-core';
-...
-----
+=== Action for the `Send` button
 
-. In line 120, Create a `<Modal>` tag with the form configuration for the dynamic task creation:
-+
-----
+=== Visualize the dynamic tasks
 
-----
-
-. Add a dynamic task form (email like) to describe the dynamic task.
-. Add types to support the dynamic task creation.
-. Add actions to interact with the API and bridge the events of the form and buttons in the components.
-. Add reducer to communicate the state changes after the action `dispatches`.
-. Register the reducer in the `store`.
-. Validate that your code builds.
-
-=== Deploy client applications to Openshift
-In this section you create Docker images and push them to Openshift so you can create containers from them.
-The ssh workstation has all the software components required for the following steps to work, if you want to execute this section locally you will need:
-
-* *buildah*: for building an image.
-* *OCP Client Utility*: (`oc`) for pushing the image to our openshift environment.
-* A good internet band-width for uploading the image to Openshift.
-
-
-==== The back office application
-. Prepare the values that you will use in the client application configuration, take note (copy them to an available text editor so you can retrieve them in a later step) of the following variable values in the `workstation ssh`, we will use them in the next step:
-
-+
-----
-echo -en "\n\nhttps://$rhsso_url/auth\n\n
-echo -en "\n\nhttps://$ks_url\n\n
-----
-
-. Use the `workshop ssh` terminal to configure the environment variables inside the Dockerfile that will be used to build the `hiring-app-internal` image.
-
-+
-----
-cd $HOME/lab/hiring-app-internal
-vi Dockerfile
-----
-
-. Using the vi editor, set the proper values to the ENV values:
-
-+
-|===
-|Get The Value From|Assign to ENV in file|Example
-|`echo -en "\n\nhttps://$rhsso_url/auth\n\n"`| SSO_URL |`ENV SSO_URL=https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth`
-|`echo -en "\n\nhttps://$ks_url\n\n"`| KIE_URL |`ENV KIE_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-af16.generic.opentlc.com`
-|===
-
-+
-[NOTE]
-====
-`SSO_REALM` and `SSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `hiring-internal` in the `kie-realm`. If you perform a different operation in previous sections changing any of these names, please also perform the appropriate changes in the respective environment entry.
-====
-+
-TIP: Are these values required for the Dockerfile? May be not, these values are re-calculated by the environment variables of the generated container, but is good for you to know that they also exist during the image creation with their default values.
-
-. Build the `hiring-app-internal` image using *buildah*:
-
-+
-----
-cd $HOME/lab/hiring-app-internal
-sudo buildah bud -t hiring-app-internal:1.0 .
-----
-
-. Get the token id for the `pusher` service account in openshift and save it in an environment variable.
-
-+
-----
-export SA_TOKEN_ID=$(oc describe sa pusher -n client-app | grep Tokens | awk '{print $2}')
-echo $SA_TOKEN_ID
-----
-
-. Discover the value of the `pusher` service account token and store that value in an environment variable
-
-+
-----
-export SA_TOKEN=$(oc describe secret $SA_TOKEN_ID -n client-app | grep token: | awk '{print $2}')
-echo $SA_TOKEN
-----
-
-. Push the image to the openshift registry
-
-+
-----
-sudo buildah push --tls-verify=false --creds=pusher:$SA_TOKEN hiring-app-internal:1.0 docker-registry-demo-default.apps-8735.generic.opentlc.com/client-app/hiring-app-internal:1.0
-----
-
-. In openshift, create a container based in the pushed image.
-
-+
-----
-oc new-app hiring-app-internal:1.0 -n client-app
-----
-
-. Expose the external route to be able to navigate to the `hiring-app-internal`
-
-+
-----
-oc expose hiring-app-internal -n client-app
-----
-
-. Retrieve and navigate using a browser to the newly created back office web application.
-
-+
-----
-oc get route -n client-app
-----
-
-. Login to the client application as *adminuser/admin1!*
-
-. Congratulations you have installed the back office application.
-
-==== The public web application
-In this section you repeat almost the same steps than in previous section, to create a container based in the git repository for the `hiring-app-public`: https://github.com/barhte2019/hiring-app-public
-
-. Prepare the values that you will use in the client application configuration, take note (copy them to an available text editor so you can retrieve them in a later step) of the following variable values in the `workstation ssh`, we will use them in the next step:
-
-+
-----
-echo -en "\n\nhttps://$rhsso_url/auth\n\n
-echo -en "\n\nhttps://$ks_url\n\n
-----
-
-. Use the `workshop ssh` terminal to configure the environment variables inside the Dockerfile that will be used to build the `hiring-app-internal` image.
-
-+
-----
-cd $HOME/lab/hiring-app-public
-vi Dockerfile
-----
-
-. Using the vi editor, set the proper values to the ENV values:
-
-+
-|===
-|Get The Value From|Assign to ENV in file|Example
-|`echo -en "\n\nhttps://$rhsso_url/auth\n\n"`| SSO_URL |`ENV SSO_URL=https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth`
-|`echo -en "\n\nhttps://$ks_url\n\n"`| KIE_URL |`ENV KIE_URL=https://rhpam-kieserver-rhpam-dev-user1.apps-af16.generic.opentlc.com`
-|===
-
-+
-[NOTE]
-====
-`SSO_REALM` and `SSO_CLIENT` current values assume that you completed the creation of a Red Hat SSO client named as `hiring-public` in the `kie-realm`. If you perform a different operation in previous sections changing any of these names, please also perform the appropriate changes in the respective environment entry.
-====
-
-. Build the `hiring-app-public` image using *buildah*:
-
-+
-----
-cd $HOME/lab/hiring-app-public
-sudo buildah bud -t hiring-app-public:1.0 .
-----
-
-. Get the token id for the `pusher` service account in openshift and save it in an environment variable.
-
-+
-----
-export SA_TOKEN_ID=$(oc describe sa pusher -n client-app | grep Tokens | awk '{print $2}')
-echo $SA_TOKEN_ID
-----
-
-. Discover the value of the `pusher` service account token and store that value in an environment variable
-
-+
-----
-export SA_TOKEN=$(oc describe secret $SA_TOKEN_ID -n client-app | grep token: | awk '{print $2}')
-echo $SA_TOKEN
-----
-
-. Push the image to the openshift registry
-
-+
-----
-sudo buildah push --tls-verify=false --creds=pusher:$SA_TOKEN hiring-app-public:1.0 docker-registry-demo-default.apps-8735.generic.opentlc.com/client-app/hiring-app-public:1.0
-----
-
-. In openshift, create a container based in the pushed image.
-
-+
-----
-oc new-app hiring-app-public:1.0 -n client-app
-----
-
-. Expose the external route to be able to navigate to the `hiring-app-internal`
-
-+
-----
-oc expose hiring-app-public -n client-app
-----
-
-. Retrieve and navigate using a browser to the newly created back office web application.
-
-+
-----
-oc get route -n client-app
-----
-
-. Login to the client application as *bill/Password1!*
-
-. Congratulations you have installed the public web application.
 
 == Switching the candidate for another job
-. Perform an end-to-end job case; creating a new job, defining its interviewer team, skills and benefits; and make a user to apply for that job using the `public-application`
-
-. Once the user applies, approve the documentation and schedule the interviews.
-
-. Login as one of the interviewers and using the newly created *Add Task* button, assign a task to an additional interviewer.
-
-. Login as the additional interviewer and notice the listing of the new task.
+. Create a component to deal with the dynamic task
+. Change the case-file data to change the jobRefId to another job
 
 Congratulations, you have created a dynamic task. As an *additional challenge*: Can you make an internal application app change that completes the newly created task?
