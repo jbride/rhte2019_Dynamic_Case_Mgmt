@@ -18,6 +18,8 @@
 == Overview
 In this lab you will experiment with the dynamic tasks creation: An administrative user wants to create a Human Task that was not initially defined during the case design. Case Management is very flexible, it allows the knowledge worker to change the case usage during run time including: permissions, tasks, case information, documents and comments.
 
+This is a very development intensive laboratory, if you fail to follow the steps or troubleshoot any section, you are free to check out the solution at the `dynamic_task` branch in link:https://github.com/barhte2019/hiring-app-internal/tree/dynamic_task[gitHub]
+
 === Background
 During the interview process one of the interviewers detects that this user can be a good fit for a different position, so asks another user to interview the candidate; the new assigned group or user realizes that this is a good fit and changes the interviewer team and the job to which this user is applying to.
 
@@ -328,8 +330,8 @@ vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/index.tsx
 <Button type="submit">Ok</Button>
 <Button
     onClick={props.toggleAdditionalInterviewer}
-    className="pf-c-button pf-m-inline pf-m-link">
-    {props.interviewerFeedbackModalState.additionalVisible?"Show Additional Interviewer":"Hide Additional Interviewer"}
+    className="pf-c-button pf-m-secondary">
+    {props.interviewerFeedbackModalState.additionalVisible?"Hide Additional Interviewer":"Show Additional Interviewer"}
 </Button>
 </Form>
 ...
@@ -343,7 +345,7 @@ Note the use of:
 
 * *props.interviewerFeedbackModalState.additionalVisible* : This is a property in the state that will control the additional fields visibility and the button caption.
 
-Check the resulting file here: link:https://github.com/barhte2019/hiring-app-internal/blob/3eee1869b066b56361be3f0da856c2861aa82aa4/src/components/interviewer-feedback/index.tsx[index.tsx at gitHub]
+Check the resulting file here: link:https://github.com/barhte2019/hiring-app-internal/blob/a6bb777c61add442f5ea76989f8417ef2d54e61e/src/components/interviewer-feedback/index.tsx[index.tsx at gitHub]
 ====
 
 . Register the `types` for the `action` and `state` that control the fields visibility
@@ -526,8 +528,128 @@ See the resulting file link:https://github.com/barhte2019/hiring-app-internal/bl
 .. save and close the `index.tsx` file
 
 . Modify the `tasks` component to connect the `redux` actions for the `Modal` component.
+.. Open the `index.tsx` file under the `~/lab/hiring-app-internal/src/tasks` directory
++
+----
+vi ~/lab/hiring-app-internal/src/tasks/index.tsx
+----
+
+.. In the imports definition from `src/components/interviewer-feedback/actions` between lines 94-98, import the `toggleAdditionalInterviewer` action.
++
+----
+import {
+    interviewerFeedbackToggle,
+    interviewerFeedbackCommentChange,
+    interviewerFeedbackScoreChange,
+    toggleAdditionalInterviewer
+} from 'src/components/interviewer-feedback/actions';
+----
+
+.. In the ITaskProps interface definition for the available properties of the `Task` component, add the action for `toggleAdditionalInterviewer`; it is recommended to keep it close to the other actions that belong to the same `Modal` component; around line 177 - 179
++
+----
+...
+interviewerFeedbackCommentChange: typeof interviewerFeedbackCommentChange,
+interviewerFeedbackScoreChange: typeof interviewerFeedbackScoreChange,
+toggleAdditionalInterviewer: typeof toggleAdditionalInterviewer,
+
+interviewerFeedbackReviewModalToggle: typeof interviewerFeedbackReviewModalToggle,
+...
+----
+
+.. In the `InterviewerFeedbackModal` definition between lines 470 - 475, add the new `toggleAdditionalInterviewer` property
++
+----
+...
+<InterviewerFeedbackModal
+  toggleAdditionalInterviewer={this.props.toggleAdditionalInterviewer}
+  interviewerFeedbackModalState= ... // do not modify after this line
+----
+
+.. In the `mapDipatchToPros` mapping for Redux defined between lines 501 - 554 register the `toggleAdditionalInterviewer` action; keep these values in alphabetical order, so the new action should be the last record between lines 553-554
++
+----
+...
+  toggleActiveTab,
+  toggleAdditionalInterviewer,
+})
+...
+----
++
+[TIP]
+====
+Review the resulting file link:https://github.com/barhte2019/hiring-app-internal/blob/311f6237fcd6d0a509238d7fa964515838a97dde/src/tasks/index.tsx[here]
+====
+
+.. save and close `tasks/index.tsx` file.
 
 . Modify the div to make it visible only when `additionalVisible` property is true.
+.. Open the `index.tsx` file under the `~/lab/hiring-app-internal/src/components/interviewer-feedback` directory
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/index.tsx
+----
+
+.. modify the `<div>` declaration at line 58 to display only when `additionalVisible` state value is true
++
+----
+{ props.interviewerFeedbackModalState.additionalVisible && <div>
+  <h2>Additional Interviewer Requested</h2>
+  ...
+</div> }
+...
+----
++
+[WARNING]
+====
+Note that we are opening brackets `{` to start the declaration, and we must close the bracket after the div declaration in line 69.
+
+See the modified resulting file link:https://github.com/barhte2019/hiring-app-internal/blob/a6bb777c61add442f5ea76989f8417ef2d54e61e/src/components/interviewer-feedback/index.tsx[here]
+====
+
+.. Save and close the `interviewer-feedback/index.tsx` file
+
+. deploy the changes in a new container version
+.. Build a new image using `buildah`
++
+----
+cd $HOME/lab/hiring-app-internal
+sudo buildah bud -t hiring-app-internal:1.2 .
+----
+
+.. Push the image to *Openshift Registry*
++
+----
+sudo buildah push --tls-verify=false --creds=pusher:$SA_TOKEN hiring-app-internal:1.2 $docker_registry/client-app/react-hiring-app-internal:1.2
+----
++
+[CAUTION]
+====
+Mind the use of `$SA_TOKEN` system variable, if you receive an *Unauthorized* exception, double check that its set by running: `echo $SA_TOKEN`, if you missed it, please generate the token again:
+
+----
+export SA_TOKEN_ID=$(oc describe sa pusher -n client-app | grep Tokens | awk '{print $2}')
+export SA_TOKEN=$(oc describe secret $SA_TOKEN_ID -n client-app | grep token: | awk '{print $2}')
+echo $SA_TOKEN
+----
+
+====
+
+.. Tag the image as latest
++
+----
+oc tag react-hiring-app-internal:1.2 react-hiring-app-internal:latest
+----
+
+. Validate the changes by logging into the `hiring-internal-application` with *Ann/Password1!* credentials (interviewer)
+. Open the *Interviewer Feedback* form and validate the use of the new *Show/Hide Additional Interviewer* button
++
+image:images/show-hide-additional-interviewer-button.png[]
++
+[CAUTION]
+====
+If you don't visualize your changes, be sure to refresh the browser's cache, this can be achieved by pressing [CTRL]+[F5] in your keyboard.
+====
 
 === Capture state changes (from text fields)
 
