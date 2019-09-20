@@ -641,7 +641,7 @@ echo $SA_TOKEN
 oc tag react-hiring-app-internal:1.2 react-hiring-app-internal:latest
 ----
 
-. Validate the changes by logging into the `hiring-internal-application` with *Ann/Password1!* credentials (interviewer)
+. Validate the changes by logging into the `hiring-internal-application` with *Bob/Password1!* credentials (interviewer)
 . Open the *Interviewer Feedback* form and validate the use of the new *Show/Hide Additional Interviewer* button
 +
 image:images/show-hide-additional-interviewer-button.png[]
@@ -652,6 +652,287 @@ If you don't visualize your changes, be sure to refresh the browser's cache, thi
 ====
 
 === Capture state changes (from text fields)
+Working with forms in reactJs means listening to changes in text inputs and capturing those changes to dispatch an action and modify the state; later the state is used in another dispatch to perform actions like interacting with an external API and so. Learn more about it link:https://flaviocopes.com/react-forms/[here]
+
+. Add the properties that will persist the dynamic task's _message_ and _recipient_ in the `IInterviewerFeedbackModalState` interface defined at `components/interviewer-feedback/types.ts`
+.. Open `components/interviewer-feedback/types.ts`
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/types.ts
+----
+
+.. Add `dt_message` and `dt_recipient` to the `IInterviewerFeedbackModalState` defined between lines 1-9
++
+----
+export interface IInterviewerFeedbackModalState {
+    additionalVisible: boolean,
+    candidateScore: string,
+    comment: string,
+    dt_message: string,
+    dt_recipient: string,
+    loading: boolean,
+    error_message: string,
+    modalVisible: boolean,
+    taskId: number,
+}
+----
+
+. Describe the actions for dispatching change events for `dt_message` and `dt_recipient`
+.. Using the same `components/interviewer-feedback/types.ts` file, scroll after line 23 and describe `DYNAMIC_TASK_MESSAGE_CHANGE` and `DYNAMIC_TASK_RECIPIENT_CHANGE` action constants
++
+----
+...
+export const ADDITIONAL_INTERVIEWER_TOGGLE = 'ADDITIONAL_INTERVIEWER_TOGGLE';
+export const DYNAMIC_TASK_MESSAGE_CHANGE = 'DYNAMIC_TASK_MESSAGE_CHANGE';
+export const DYNAMIC_TASK_RECIPIENT_CHANGE = 'DYNAMIC_TASK_RECIPIENT_CHANGE';
+...
+----
+
+.. Scroll after line 30 and define the change action interfaces for `IDynamicTaskMessageChangeAction` and `IDynamicTaskRecipientChangeAction`
++
+----
+...
+interface IAdditionalInterviewerToggleAction { type: typeof ADDITIONAL_INTERVIEWER_TOGGLE }
+interface IDynamicTaskMessageChangeAction { type: typeof DYNAMIC_TASK_MESSAGE_CHANGE, value: string }
+interface IDynamicTaskRecipientChangeAction { type: typeof DYNAMIC_TASK_RECIPIENT_CHANGE, value: string }
+...
+----
+
+.. Scroll to the end of the file, and add the `IDynamicTaskMessageChangeAction` and `IDynamicTaskRecipientChangeAction` interfaces to the exported action types
++
+----
+...
+export type InterviewerFeedbackActionTypes = IInterviewerFeedbackToggleAction |
+    IInterviewerFeedbackScoreChangeAction | IInterviewerFeedbackCommentChangeAction
+    | IAdditionalInterviewerToggleAction | IDynamicTaskMessageChangeAction | IDynamicTaskRecipientChangeAction;
+----
++
+[TIP]
+====
+Review the resulting file link:https://github.com/barhte2019/hiring-app-internal/blob/c7f41bfedc0741b0306480d464898c747a23e908/src/components/interviewer-feedback/types.ts[here]
+====
+
+.. save and close the `interviewer-feedback/types.ts`
+
+. Define the action functions for triggering the change actions at `interviewer-feedback/actions.ts`
+.. Open the `actions.ts` file
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/actions.ts
+----
+
+.. import `DYNAMIC_TASK_MESSAGE_CHANGE` and `DYNAMIC_TASK_RECIPIENT_CHANGE` from `types` between lines 1-6
++
+----
+import {
+    ADDITIONAL_INTERVIEWER_TOGGLE,
+    INTERVIEWER_FEEDBACK_TOGGLE,
+    INTERVIEWER_FEEDBACK_SCORE_CHANGE,
+    INTERVIEWER_FEEDBACK_COMMENT_CHANGE,
+    DYNAMIC_TASK_MESSAGE_CHANGE,
+    DYNAMIC_TASK_RECIPIENT_CHANGE
+} from './types';
+----
+
+.. At the end of the file, define the `dynamicTaskMessageChange` and `dynamicTaskRecipientChange` functions
++
+----
+...
+export function dynamicTaskMessageChange(value: string) {
+    return { type: DYNAMIC_TASK_MESSAGE_CHANGE, value }
+}
+
+export function dynamicTaskRecipientChange(value: string) {
+    return { type: DYNAMIC_TASK_RECIPIENT_CHANGE, value }
+}
+----
++
+[TIP]
+====
+review the resulting file link:https://github.com/barhte2019/hiring-app-internal/blob/2e61c7676f2907d50c7c7dc1d3a04d648f0be587/src/components/interviewer-feedback/actions.ts[here]
+====
+
+.. save and close the `actions.ts` file
+
+. Modify the reducer to define the state changes
+.. Open the `reducer.ts` file
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/reducer.ts
+----
+
+.. Import `DYNAMIC_TASK_MESSAGE_CHANGE` and `DYNAMIC_TASK_RECIPIENT_CHANGE` from `types` between lines 1-8
++
+----
+import {
+    InterviewerFeedbackActionTypes,
+    IInterviewerFeedbackModalState,
+    ADDITIONAL_INTERVIEWER_TOGGLE,
+    INTERVIEWER_FEEDBACK_TOGGLE,
+    INTERVIEWER_FEEDBACK_SCORE_CHANGE,
+    INTERVIEWER_FEEDBACK_COMMENT_CHANGE,
+    DYNAMIC_TASK_MESSAGE_CHANGE,
+    DYNAMIC_TASK_RECIPIENT_CHANGE
+} from './types';
+----
+
+.. Define the default initial value for `dt_message` and `dt_recipient` state properties between lines 12-20 (keep them in alphabetical order)
++
+----
+const initialState: IInterviewerFeedbackModalState = {
+    additionalVisible: false,
+    candidateScore: '',
+    comment: '',
+    dt_message: '',
+    dt_recipient: '',
+    error_message: '',
+    loading: false,
+    modalVisible: false,
+    taskId: 0,
+}
+----
+
+.. After line 32, before the `default:` switch, define the case for `DYNAMIC_TASK_MESSAGE_CHANGE` and `DYNAMIC_TASK_RECIPIENT_CHANGE` dispatch action types.
++
+----
+case DYNAMIC_TASK_MESSAGE_CHANGE: { return { ...state, dt_message: action.value } }
+case DYNAMIC_TASK_RECIPIENT_CHANGE: { return { ...state, dt_recipient: action.value } }
+----
++
+[TIP]
+====
+Review the resulting file link:https://github.com/barhte2019/hiring-app-internal/blob/00c43ea66a102fbdea2fa615041ef44a8758ad0a/src/components/interviewer-feedback/reducer.ts[here]
+====
+
+.. save and close the `reducer.ts` file
+
+. Map the actions to the input fields at `interviewer-feedback/index.tsx`
+.. Open the `index.tsx`
++
+----
+vi ~/lab/hiring-app-internal/src/components/interviewer-feedback/index.tsx
+----
+
+.. Import `dynamicTaskMessageChange` and `dynamicTaskRecipientChange` from `actions` between lines 13-18
++
+----
+import {
+    interviewerFeedbackToggle,
+    interviewerFeedbackCommentChange,
+    interviewerFeedbackScoreChange,
+    toggleAdditionalInterviewer,
+    dynamicTaskMessageChange,
+    dynamicTaskRecipientChange
+} from './actions';
+----
+
+.. Expect the actions to be mapped as a property between lines 22-29
++
+----
+interface IInterviewerFeedbackModalProps {
+    interviewerFeedbackModalState: IInterviewerFeedbackModalState,
+    interviewerFeedbackToggle: typeof interviewerFeedbackToggle,
+    onFeedbackSubmit: any,
+    interviewerFeedbackCommentChange: typeof interviewerFeedbackCommentChange,
+    interviewerFeedbackScoreChange: typeof interviewerFeedbackScoreChange,
+    toggleAdditionalInterviewer: typeof toggleAdditionalInterviewer,
+    dynamicTaskMessageChange: typeof dynamicTaskMessageChange,
+    dynamicTaskRecipientChange: typeof dynamicTaskRecipientChange,
+}
+----
+
+.. Define them as the `onChange` event for the `TextInput` fields between lines 64-74
++
+----
+...
+<TextInput
+    id="textInputDynamicTo"
+    aria-label="Dynamic Task To"
+    placeholder="To"
+    onChange={props.dynamicTaskRecipientChange} />
+<TextInput
+    id="textInputDynamicMessage"
+    aria-label="Dynamic Task Message"
+    placeholder="Message"
+    onChange={props.dynamicTaskMessageChange} />
+<Button className='pf-c-button pf-m-secondary'>Send</Button>
+...
+----
++
+[TIP]
+====
+Review the resulting file link:https://github.com/barhte2019/hiring-app-internal/blob/2f906fba359a23213ae5ed393a000b833ca52097/src/components/interviewer-feedback-review/actions.ts[here]
+====
+.. Save and close the `index.tsx`
+
+. Map the actions in the `redux` connected component: `tasks/index.tsx`
+.. Open `src/tasks/index.tsx`
++
+----
+vi ~/lab/hiring-app-internal/src/tasks/index.tsx
+----
+
+.. import the `dynamicTaskMessageChange` and `dynamicTaskRecipientChange` actions between lines 94-99
++
+----
+import {
+    interviewerFeedbackToggle,
+    interviewerFeedbackCommentChange,
+    interviewerFeedbackScoreChange,
+    toggleAdditionalInterviewer,
+    dynamicTaskMessageChange,
+    dynamicTaskRecipientChange
+} from 'src/components/interviewer-feedback/actions';
+----
+
+.. Define the actions as properties of the component after line 182
++
+----
+...
+interviewerFeedbackToggle: typeof interviewerFeedbackToggle,
+interviewerFeedbackCommentChange: typeof interviewerFeedbackCommentChange,
+interviewerFeedbackScoreChange: typeof interviewerFeedbackScoreChange,
+toggleAdditionalInterviewer: typeof toggleAdditionalInterviewer,
+dynamicTaskMessageChange: typeof dynamicTaskMessageChange,
+dynamicTaskRecipientChange: typeof dynamicTaskRecipientChange,
+
+interviewerFeedbackReviewModalToggle: typeof interviewerFeedbackReviewModalToggle,
+...
+----
+
+.. Map the Modal properties to the container component properties between lines 474-480
++
+----
+...
+<InterviewerFeedbackModal
+  dynamicTaskMessageChange={this.props.dynamicTaskMessageChange}
+  dynamicTaskRecipientChange={this.props.dynamicTaskRecipientChange}
+  toggleAdditionalInterviewer={this.props.toggleAdditionalInterviewer}
+  interviewerFeedbackModalState={this.props.interviewerFeedbackModalState}
+  interviewerFeedbackToggle={this.props.interviewerFeedbackToggle}
+  onFeedbackSubmit={interviewerFeedbackSubmit}
+  interviewerFeedbackCommentChange={this.props.interviewerFeedbackCommentChange}
+  interviewerFeedbackScoreChange={this.props.interviewerFeedbackScoreChange} />
+...
+----
+
+.. Map the connected `mapDispatchToProps` for the `dynamicTaskMessageChange` and `dynamicTaskRecipientChange` actions after line 507, you need to keep them alphabetically ordered, that's about after line 538.
++
+----
+...
+durationChange,
+dynamicTaskMessageChange,
+dynamicTaskRecipientChange,
+handleModalToggle,
+..
+----
++
+[TIP]
+====
+Review the resulting file link:https://github.com/barhte2019/hiring-app-internal/blob/f616fe91700ebf2637211ca575309a6ed50b69f2/src/tasks/index.tsx[here]
+====
+
+.. Save and close `tasks/index.tsx`
 
 === Action for the `Send` button
 
