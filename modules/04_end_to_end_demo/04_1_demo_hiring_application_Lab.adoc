@@ -45,17 +45,23 @@ The form communicates with the kie-server using an api.js component in the sourc
 == HR define job requirements
 By creating a case instance in the previous section, 3 Human Tasks have been initiated that define the job requirement:
 
-* Benefits and compensation
-* Define Candidate Skills
-* Interviewer team
+* Benefits and compensation: To be resolved by talent-acquisition
+* Define Candidate Skills: To be resolved by talent-acquisition
+* Interviewer team: To be resolved by an interviewer
 
 Confirm the creation of those tasks by using the back office application and navigating to the *Tasks* menu, under the *Group Tasks* tab:
 
 image:images/group-tasks.png[Group Tasks]
 
+[CAUTION]
+====
+In your application, if you log in as *Tina*, you will see the 2 tasks to be resolved as a *talent-acquisition*, if you log in as *Bob* or *Ann*, you will see the *Interviewer team* task
+====
+
 The order in which you work in the tasks does not matter, in this section you will work in these 3 tasks and leave the case ready for candidates to apply for jobs.
 
 === Interviewer team task
+. Log in into the `hiring-internal` application as *Ann*
 . From the *Group Tasks*, locate the *Interviewer Team* task name.
 
 . Using the kebab menu, select the *claim* option.
@@ -73,6 +79,7 @@ image:images/interviewers-setup.png[Interviewers setup]
 . You will notice that the task is completed once you define the interviewer team and click *OK*.
 
 === Define Candidate skills
+. Log in into the `hiring-internal` application as *Tina*
 . From the *Group Tasks*, locate the *Define Candidate Skills* task name.
 
 . Using the kebab menu, select the *claim* option.
