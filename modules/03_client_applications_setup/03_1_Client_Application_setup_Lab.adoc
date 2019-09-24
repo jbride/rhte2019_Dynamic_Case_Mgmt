@@ -4,7 +4,7 @@
 :toc2:
 :linkattrs:
 
-= Client Applications Deployment
+= _Hiring Request_ Web Applications
 
 :numbered:
 
@@ -13,8 +13,6 @@
 In this module you will deploy web applications that support a human reosurce department's _employee hiring_ business processes.
 
 These web applications are built using _ReactJs_ and run in Linux container images layered with NodeJs.  They interact with the RESTful API of the RH-PAM kie-server.  Recall from the previous lab that the RESTful API of RH-PAM kie-server are secured using _OpenID Connect_.  Subsequently, these web applications will need to acquire an OIDC access token from RH-SSO and use this token to invoke the kie-server API.
-
-=== Topology
 
 image:images/client-apps-topology.png[Client Apps Topology]
 
@@ -29,7 +27,7 @@ The _Backoffice_  web application allows a hiring manager to initiate a hiring r
 The _Public_ web application allows an applicant to search and apply for jobs and review a job application status.
 
 
-== Deploy client applications to Openshift
+== Deploy Web Apps to Openshift
 In this section you deploy pre-built Linux container images of these two web applications to Openshift.
 
 Client applications will be deployed to a new project in openshift: the `client-app` project.
@@ -71,7 +69,7 @@ oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-public:1.0 -e 
 oc expose svc/react-hiring-app-public -n client-app --port=8080
 ----
 
-== Create RH-SSO clients
+== RH-SSO clients
 
 In this section you create two additional _SSO clients_ in the existing _kie-realm_ of your *Red Hat SSO*.  The purpose of these two additional _SSO clients_ are to secure the two hiring related web applications.
 
@@ -114,6 +112,7 @@ image:images/hiring-internal-add-root-url.png[Root URL for public client]
 
 When saving the `hiring-internal` client you will be able to login to the back office application.
 
+== Browse Web Apps
 . Log out from *Red Hat SSO*
 
 . Navigate to the back office web application route, that you can retrieve from the `ssh console`:

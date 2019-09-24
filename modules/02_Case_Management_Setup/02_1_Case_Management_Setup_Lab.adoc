@@ -4,10 +4,7 @@
 :toc2:
 :linkattrs:
 
-= Case Management Project Deployment
-
-.Prerequisites
-.. Module 01 Overview completion
+= Case Management KIE Project 
 
 :numbered:
 
@@ -27,19 +24,9 @@ Throughout this lab, pay attention to the conditions that trigger completions of
 In particular, notice that these state changes are not as obvious as when depicted using conventional BPMN where the flow is strictly handled by the flow connectors
 With a dynamic case management project, the flow of execution is changed by the data associated to the _Case File_.
 
-=== Topology
+== _Hiring Request_ KIE Project
 
-image:images/managed-topology.png[Managed Topology Usage]
-
-RH-PAM offers both an link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-unmanaged-server-config-proc[un-managed] topology and a link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-managed-kie-server-con[managed] topology.
-In this lab, you will use a _managed_ topology.
-With a managed topology, the RH-PAM kie-server (which is the run-time server of the RH-PAM product)  will request its configuration from a controller.
-The Business Central web application of the RH-PAM product will serve as this controller for the Kie-server.
-This topology also will provide an authoring environment to analyze and change our case definition.
-
-== Browse and Deploy project
-
-=== Import and Browse the project contents
+=== Import and Browse KIE Project contents
 
 We will import the following project to our Business Central: https://github.com/barhte2019/hr-hiring
 
@@ -151,7 +138,7 @@ image:images/hr-hiring-deploy.png[HR Hiring Deploy Success]
 image:images/hr-hiring-deployed.png[Hr-hiring deployed]
 
 
-== Browse and test the run-time
+== Smoke Test _Hiring Request_ Business Process
 In this section you will test the hiring application deployed to your kie-server run-time.
 
 === Browse KIE-Server RESTful endpoints

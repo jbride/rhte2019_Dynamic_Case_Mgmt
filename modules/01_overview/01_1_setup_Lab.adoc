@@ -346,6 +346,15 @@ Your lab environment includes a common authoring installation for Red Hat Proces
 The common Authoring installation includes: A database, Business Central and Kie Server.
 Red Hat Process Automation Manager containers operate in the namespace:  _$RHPAM_PROJECT_.
 
+image:images/managed-topology.png[Managed Topology Usage]
+
+RH-PAM offers both an link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-unmanaged-server-config-proc[un-managed] topology and a link:https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.4/html/managing_and_monitoring_process_server/kie-server-managed-kie-server-con[managed] topology.
+In this lab, you will use a _managed_ topology.
+With a managed topology, the RH-PAM kie-server (which is the run-time server of the RH-PAM product)  will request its configuration from a controller.
+The Business Central web application of the RH-PAM product will serve as this controller for the Kie-server.
+This topology also will provide an authoring environment to analyze and change our case definition.
+
+
 === RH-PAM resources
 
 . Review RH-PAM DeploymentConfigs:
