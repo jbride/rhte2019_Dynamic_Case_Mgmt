@@ -7,7 +7,7 @@
 // The following variable can be one of the following:
 //   1) cf_order
 //   2) guid_grabber
-:lab_order_type: cf_order
+:lab_order_type: guid_grabber
 
 // Guid Grabber dev
 //:guid_grabber_url: link:https://www.opentlc.com/gg/gg.cgi?profile=generic_tester[*Guid Grabber*,window="_blank"]
@@ -59,7 +59,7 @@ In this workshop we will see another example of this implementation with similar
 
 === Deployment Topology
 
-The deployment topology of your _Dynamic Case Management_ solution will be as depicted below:
+The deployment topology of your _Dynamic Case Management_ solution is as follows:
 
 image::images/arch_topology.png[]
 
