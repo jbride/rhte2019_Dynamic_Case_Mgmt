@@ -69,9 +69,12 @@ oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-public:1.0 -e 
 oc expose svc/react-hiring-app-public -n client-app --port=8080
 ----
 
-== RH-SSO clients
+== _Back Office_ Web App
 
-In this section you create two additional _SSO clients_ in the existing _kie-realm_ of your *Red Hat SSO*.  The purpose of these two additional _SSO clients_ are to secure the two hiring related web applications.
+In this section you create an additional _SSO client_ in the existing _kie-realm_ of your *Red Hat SSO*.  
+The purpose of this additional _SSO client_ is to secure the _Back Office_ web applications.
+
+=== RH-SSO _client_
 
 . Be sure to log out from *Business Central*
 +
@@ -90,17 +93,14 @@ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
 +
 image:images/sso_login_home.png[SSO Login Home]
 
-=== Back Office Application RH-SSO client.
 
 . Navigate to the *Clients* section, and click the image:images/create-button.png[] button in the top right corner of the Clients list.
 +
 image:images/sso-clients-list.png[RH SSO initial clients list]
 
-. Set the name of the new client as `hiring-internal`
-+
-image:images/hiring-internal-add.png[Add Kie-remote client]
+.. Set the name of the new client as `hiring-internal`
 
-. Set the *Root URL* of the `hiring-internal` as the route for the back office application:
+.. Set the *Root URL* of the `hiring-internal` as the route for the back office application:
 +
 ----
 echo http://$(oc get route -n client-app | grep internal | awk '{print $2}')
@@ -110,9 +110,9 @@ image:images/hiring-internal-add-root-url.png[Root URL for public client]
 
 . *Save* the `hiring-internal` client.
 
-When saving the `hiring-internal` client you will be able to login to the back office application.
+Once the `hiring-internal` SSO client is saved, you will be able to authenticate into the _back office_ web application.
 
-== Browse Web Apps
+=== Browse _Back Office_ Web App
 . Log out from *Red Hat SSO*
 
 . Navigate to the back office web application route, that you can retrieve from the `ssh console`:
@@ -126,14 +126,14 @@ echo http://$(oc get route -n client-app | grep internal | awk '{print $2}')
 image:images/hiring-internal-home.png[Hiring Internal Home]
 
 . Log in to the internal Application using `adminuser/admin1!` credentials
-+
-image:images/kie-realm-login.png[kie-realm login]
 
-. Congratulations! you had just installed and integrated the back office application with RH-PAM and RH-SSO. Be sure to log out from the back office application.
+. Congratulations! you have just installed and integrated the back office application with RH-PAM and RH-SSO. Be sure to log out from the back office application.
 +
 image:images/hiring-internal-dashboard.png[Hiring internal dashboard]
 
-=== Public Web Application RH-SSO client.
+== Public Web Application 
+
+=== RH-SSO client.
 
 . Log out from the back office application.
 
@@ -147,11 +147,9 @@ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
 +
 image:images/sso-clients-list.png[RH SSO initial clients list]
 
-. Set the name of the new client as `hiring-public`
-+
-image:images/hiring-public-add.png[Add hiring public client]
+.. Set the name of the new client as `hiring-public`
 
-. Set the *Root URL* of the `hiring-public` as the route for the public web application:
+.. Set the *Root URL* of the `hiring-public` as the route for the public web application:
 +
 ----
 echo http://$(oc get route -n client-app | grep public | awk '{print $2}')
@@ -161,7 +159,7 @@ image:images/hiring-public-add-root-url.png[Root URL for public client]
 
 . *Save* the `hiring-public` client.
 
-When saving the `hiring-public` client you will be able to login to the public web application.
+=== Browse _Public_ Web App
 
 . Log out from *Red Hat SSO*
 
@@ -176,8 +174,6 @@ echo http://$(oc get route -n client-app | grep public | awk '{print $2}')
 image:images/hiring-public-home.png[Public Hiring Home]
 
 . Log in to the public web Application using `adminuser/admin1!` credentials
-+
-image:images/kie-realm-login.png[kie-realm login]
 
 . Congratulations! you had just installed and integrated the public web application with RH-PAM and RH-SSO. Be sure to log out from the public web application.
 +
