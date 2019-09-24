@@ -55,12 +55,6 @@ git clone https://github.com/barhte2019/hiring-app-internal.git
 
 === Prepare for Openshift Registry push operations
 
-. Using the ssh terminal, switch to root user
-+
-----
-sudo -i
-----
-
 . Create a pusher service account in the client-app namespace
 +
 ----
@@ -74,13 +68,7 @@ oc policy add-role-to-user system:image-builder system:serviceaccount:client-app
 oc policy add-role-to-user edit system:serviceaccount:client-app:pusher -n client-app
 ----
 
-. Exit the root session at the ssh terminal
-+
-----
-exit
-----
-
-. Patch the `react-hiring-app-internal` build config to be updated when a _latest_ image is found
+. Patch the `react-hiring-app-internal` deployment config to be updated when a _latest_ image is found
 +
 ----
 oc patch dc react-hiring-app-internal --patch '{"spec": { "triggers": [ { "type": "ImageChange", "imageChangeParams": { "automatic": true, "containerNames": [ "react-hiring-app-internal" ], "from": { "kind": "ImageStreamTag", "namespace": "client-app", "name": "react-hiring-app-internal:latest"}}}]}}' -n client-app
@@ -134,7 +122,7 @@ echo $SA_TOKEN
 sudo buildah push --tls-verify=false --creds=pusher:$SA_TOKEN hiring-app-internal:1.1 $docker_registry/client-app/react-hiring-app-internal:1.1
 ----
 
-. Tag the image as _latest_, so the build config is triggered and a new container created.
+. Tag the image as _latest_, so the deployment config is triggered and a new container created.
 +
 ----
 oc tag react-hiring-app-internal:1.1 react-hiring-app-internal:latest

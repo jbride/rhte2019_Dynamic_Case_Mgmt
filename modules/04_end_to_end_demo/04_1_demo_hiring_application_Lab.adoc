@@ -4,20 +4,21 @@
 :toc2:
 :linkattrs:
 
-= End to End Demo
-
-.Prerequisites
-.. Environment setup with all infrastructure components mentioned in lab 01 (setup lab): Kie-Server, Business Central, Red Hat SSO and client applications.
-.. Web browser able to login to client applications: hiring-app-internal and hiring-app-public.
+= End to End Case Mgmt Demo
 
 :numbered:
 
 
 == Overview
-In this lab we will run the end-to-end cases for candidate selection and interviews in the hiring process, acting as different administrative users and as an applicant to experiment the usage of the platform.
+In this lab you execute the end-to-end cases for candidate selection and interviews in the hiring process.
+You act as different administrative users and as an applicant to experiment with the usage of the platform.
 
 === Background
-One of the departments in our organization wants to hire a new person, so the department raises a hiring petition, which is evaluated for the candidate requisites, interviewer team and compensation; once the job details are defined, the job is automatically posted in the *JOB FINDER* web site, so candidates can start applying for jobs; when a candidate applies the interviewer team can be scheduled and candidate evaluation begins; once a candidate is selected a job offer is generated and the candidate can accept the job offer to complete the case management up to this point.
+One of the departments in our organization wants to hire a new person.
+Subsequently, that department raises a hiring petition which is evaluated for the candidate requisites, interviewer team and compensation.
+Once the job details are defined, the job is automatically posted in the *JOB FINDER* web site so candidates can apply for jobs.
+When a candidate applies, the interviewer team can be scheduled and candidate evaluation begins.
+Once a candidate is selected a job offer is generated and the candidate can accept the job offer to complete the case management up to this point.
 
 === Case Management Diagrams
 
@@ -29,7 +30,7 @@ Using the back office application (hiring_app_internal)
 . Login as `Tina/Password1!` to the back office application (hiring-app-internal). To remember the route required to navigate to the back office application run the following command in the `ssh workstation`:
 +
 ----
-oc get route -n client-app | grep internal
+echo -en "\nhttp://$(oc get route -n client-app | grep internal | awk '{print $2}')\n"
 ----
 
 . From the *Dashboard* web page, select the image:images/blue-plus-button.png[Blue plus button] button.
@@ -61,7 +62,7 @@ In your application, if you log in as *Tina*, you will see the 2 tasks to be res
 The order in which you work in the tasks does not matter, in this section you will work in these 3 tasks and leave the case ready for candidates to apply for jobs.
 
 === Interviewer team task
-. Log in into the `hiring-internal` application as *Ann*
+. Log in into the `hiring-internal` application as *Ann / Password1!*
 . From the *Group Tasks*, locate the *Interviewer Team* task name.
 
 . Using the kebab menu, select the *claim* option.
