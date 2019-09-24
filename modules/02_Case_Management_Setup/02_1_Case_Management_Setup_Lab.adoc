@@ -11,7 +11,6 @@
 
 == Overview
 
-=== Background
 The objective of this lab is to use the _dynamic case management_ capabilities of Red Hat's Process Automation Management (RH-PAM) product to manage an employee hiring business process.
 
 RH-PAM will be used to maintain the _wait state_ of the hiring processes and allow for in-flight changes to those processes.
@@ -57,7 +56,7 @@ When you need to import a *private* repository you can provide the credentials t
 ====
 
 . From the repository contents, Business Central will list the available _kjar_ projects
-The _hr-hiring_ kie-project contains only have 1 project (called: hr-hiring); select this project and click ok from the top right corner.
+The _hr-hiring_ kie-project contains only 1 project (called: _hr-hiring_); select this project and click ok from the top right corner.
 +
 image:images/hr-hiring-project-select.png[Select project to import]
 
@@ -69,7 +68,6 @@ The indexing process enables quicker search of the various _Data Objects_, _Rule
 ====
 
 === Browse the project contents
-The main assets to help better understand our business scenario are: *Processes*
 
 . In the top-left corner of the `Assets` tab, select *Process*.
 +
@@ -133,7 +131,7 @@ image:images/hr-hiring-deploy.png[HR Hiring Deploy Success]
 
 . Navigate to *Menu > Deploy > Execution Servers*
 
-. Confirm that the deployment unit is in started (green) status
+. Confirm that the deployment unit is in a _started_ (green) status
 +
 image:images/hr-hiring-deployed.png[Hr-hiring deployed]
 
@@ -198,7 +196,7 @@ Notice that you can fold or unfold the sections by clicking in their title.
 | GET | /server/queries/tasks/instances/pot-owners | Retrieve the list of tasks that can be owned by the logged in user (potential owner)
 |===
 
-. By the end of the workshop we will additional use this endpoint by modifying the `hiring-internal-appication`:
+.. At the end of the workshop, you will use the following endpoint to modify the `hiring-internal-appication`:
 +
 |===
 |HTTP METHOD|ENDPOINT|Usage
@@ -213,28 +211,23 @@ Take for instance the endpoint for starting case instances (*POST* endpoint for 
 As an alternative to using the OpenAPI documentation to test the hiring application, you will instead use `curl` in the next section of the lab.
 
 === Start a case instance
-
-The endpoint to start a case instance is:
-
-|===
-|HTTP METHOD|ENDPOINT
-|POST|/server/containers/{containerId}/cases/{caseDefId}/instances
-|===
+The RH-PAM KIE Server is secured using the _OpenID Connect_ protocol.
+To invoke the KIE Server, the client will need to an OpenID Connect _Access Token_.
 
 . Retrieve an OpenID Connect access token from Red Hat SSO using the pre-configured _kie-server_ SSO client.
 +
 ----
-RESULT=`curl -k --data "grant_type=password&client_id=kie-server&username=adminuser&password=admin1%21&client_secret=252793ed-7118-4ca8-8dab-5622fa97d892" https://$rhsso_url/auth/realms/kie-realm/protocol/openid-connect/token`
-echo $RESULT
+JWT_RESULT=`curl -k --data "grant_type=password&client_id=kie-server&username=adminuser&password=admin1%21&client_secret=252793ed-7118-4ca8-8dab-5622fa97d892" https://$rhsso_url/auth/realms/kie-realm/protocol/openid-connect/token`
+echo $JWT_RESULT
 ----
 +
 NOTE: The _kie-server_ SSO client can generate access tokens via the _Resource Owner Password Credentials_ flow of OpenID Connect.
-For this reason, the userName and password of a end-user (called: _adminuser_) is included in this request.
+For this reason, the userName and password of an end-user (called: _adminuser_) is included in this request.
 
-. As you can see, the `$RESULT` contains more than just the `token` that we need, so we are about to isolate that token from the response so we can use it:
+. Prune the _access_token_ from the `$JWT_RESULT` variable :
 +
 ----
-TOKEN=`echo $RESULT | sed 's/.*access_token":"//g' | sed 's/".*//g'`
+TOKEN=`echo $JWT_RESULT | sed 's/.*access_token":"//g' | sed 's/".*//g'`
 echo $TOKEN
 ----
 +
@@ -244,21 +237,21 @@ Tokens have an expiration date, if you provide a token that has expired you will
 The expiration date for the tokens depends on the Red Hat SSO configuration which by default is *5 minutes*.
 ====
 
-. Now we can use the `token` to execute our endpoint in the kie-server url (Mind the kie-server url, use your own):
+. Use the `token` to execute the kie-server RESTFul API:
 +
 ----
 $ curl -k -H "Authorization: bearer $TOKEN" -H "content-type: application/json" -H "accept: application/json" https://$ks_url/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\", \"salaryMin\": 50000, \"salaryMax\": 60000, \"jobType\": \"Full Time\", \"jobCategory\": \"Operations\"} }, \"case-group-assignments\": { \"applicant\":\"applicant\", \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"talent-acquisition\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"tina\" }}"
 ----
 
 .. Note the replacement of the `{containerId}` and `{caseDefId}` parameters in the URL.
-*** For the `{containerId}` we can either use the deployment-unit *alias* or the *id*, this information can be retrieved from *Business Central*, under the *Menu > Deploy > Execution Servers*.
-*** For the `{caseDefId}` we use one of the properties of our case definition, if you look at the properties for the case definition that you want to create an instance from:
+*** For the `{containerId}`, use either the deployment-unit *alias* or the *id*. This information can be retrieved from *Business Central*, under the *Menu > Deploy > Execution Servers*.
+*** For the `{caseDefId}`, use the _ID_ propertyof the case definition:
 +
 image:images/locate-definition-id.png[Locate Definition Id]
 
-.. The *{containerId}* and *{caseDefId}* are bits of information that we want to keep handy for when we integrate our solution with external tools.
+.. The *{containerId}* and *{caseDefId}* are bits of information to keep handy for when you integrate the solution with external tools.
 
-. The result of executing the `curl` command successfully you will see a Job Id like the following *"JOB-0000000001"*.
+. The result of executing the `curl` command successfully will be a Job Id similar to the following: *"JOB-0000000001"*.
 
 ==== Confirm the current state of the case instance
 
