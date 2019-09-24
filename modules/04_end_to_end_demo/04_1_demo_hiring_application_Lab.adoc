@@ -80,7 +80,7 @@ image:images/interviewers-setup.png[Interviewers setup]
 . You will notice that the task is completed once you define the interviewer team and click *OK*.
 
 === Define Candidate skills
-. Log in into the `hiring-internal` application as *Tina*
+. Log in into the `hiring-internal` application as *Tina / Password1!*
 . From the *Group Tasks*, locate the *Define Candidate Skills* task name.
 
 . Using the kebab menu, select the *claim* option.
@@ -209,7 +209,6 @@ This concludes the end-to-end demo of the application.
 image:images/add-jobs-information-flow.png[Information flow diagram]
 
 . Open the source code for the hiring-internal-app: https://github.com/barhte2019/hiring-app-internal
-
 +
 [NOTE]
 ====
@@ -225,14 +224,12 @@ Im am using this option and navigating the source code using a local installatio
 ====
 
 . The `form submit` event can be found at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx[`src/jobs/add-job/index.tsx`] you can notice that the form is using a class method `this.submit` at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx#L79[line 79].
-
 +
 ----
 <Form ... onSubmit={this.submit}>
 ----
 
 . The method `submit` from the `AddJobForm` class at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx#L195[line 195], prevents default and sets the shared state for other components to take care of storing the data in the back end.
-
 +
 ----
 private submit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -246,7 +243,6 @@ private submit = (event: React.FormEvent<HTMLFormElement>) => {
 .. link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx#L20[line 20]: import the `createJob` method definition (we will navigate to this definition later in this section), also observe its injection in link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/jobs/add-job/index.tsx#L50[line 50].
 
 . Find the implementation for the `onCreateJob` method at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/actions.ts#L147[`src/store/jobs/actions.ts`]
-
 +
 ----
 export function createJob(job: IJob) {
@@ -263,7 +259,6 @@ export function createJob(job: IJob) {
 ----
 
 . The `createJob` method makes use of the redux `dispatch` that invokes the `reducer` to change the state. For example, the reducer for `JOB_SUBMIT` can be found at link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/reducers.ts#L124[`src/store/jobs/reducers.ts`]
-
 +
 ----
 ...
@@ -277,7 +272,6 @@ case JOB_SUBMIT: {
 ----
 
 . In order to talk to the back end, the `onCreateJob` method defined in link:https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/jobs/actions.ts#L150[`src/store/jobs/actions.ts`] uses the `api`. [red]#Api is a very relevant asset for the RHPAM configuration#
-
 +
 ----
 return api.jobs.create(job).then(...).catch(...)

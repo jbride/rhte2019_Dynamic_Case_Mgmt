@@ -6,12 +6,6 @@
 
 = Case Management Dynamic Tasks
 
-.Prerequisites
-.. Execute Setup Lab.
-.. Web browser installed on your laptop.
-.. Broadband internet connectivity.
-.. link:https://account.opentlc.com/account/[Red Hat GPTE _Opentlc_ userId]
-
 :numbered:
 
 
