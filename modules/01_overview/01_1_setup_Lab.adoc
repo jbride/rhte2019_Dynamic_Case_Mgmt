@@ -258,9 +258,9 @@ You should see a set of startup messages in the log, then the log will still idl
 . Expose the deployment as a service and the service as a route
 +
 ----
-$ oc expose deploy/document-integration
-$ oc expose svc/document-integration
-$ oc get route
+$ oc expose deploy/document-integration \
+  && oc expose svc/document-integration \
+  && oc get route
 ----
 
 . The Fuse service exposes an OpenAPI document of its RESTful API.
