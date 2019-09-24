@@ -25,13 +25,12 @@ NOTE: If your network connection is intermittent, consider installing the https:
 
 .. Web browser installed on your laptop.
 .. Broadband internet connectivity.
-.. link:https://account.opentlc.com/account/[Red Hat GPTE _Opentlc_ userId]
 
 :numbered:
 
 == Overview
-In this workshop you will deploy, manage and develop a platform that assists with a hiring request business process.
-This business process consists of :
+In this workshop you will deploy, manage and develop a platform that assists with a _new hire_ business process in a human resource department.
+This _new hire_ business process consists of :
 
 . Receiving a *Hiring Petition*
 . Evaluation of the *Candidate skills*
@@ -53,9 +52,9 @@ During the workshop, you will perform the following activities:
 The scope of the workshop includes the analysis of an existing platform that integrates *Case Management* with modern Javascript frameworks like *ReactJs* over *NodeJs*.
 
 === Background
-This workshop is inspired in the original demo created in March 2019 (link:https://gitlab.consulting.redhat.com/uki-sa/pam-demo[PAM Demo]) by link:https://gitlab.consulting.redhat.com/bholmes[Ben Holmes] and his team. Thank you for the inspiration received by a well done project.
+This workshop is inspired in the original demo created in March 2019 (link:https://gitlab.consulting.redhat.com/uki-sa/pam-demo[PAM Demo]) by link:https://gitlab.consulting.redhat.com/bholmes[Ben Holmes] and his team. Thank you to Ben and the UK team.
 
-In this workshop we will see another example of this implementation with similar flows, but now using a more data-driven case management solution and a different UI approach based on ReactJs (instead of Angular).
+In this workshop you will see another example of this implementation with similar flows, but now using a more data-driven case management solution and a different UI approach based on ReactJs (instead of Angular).
 
 === Deployment Topology
 
@@ -160,6 +159,12 @@ rhpam-postgresql-1-nks5f   1/1       Running   1          20h
 
 The remaining instructions in this lab make use of environment variables.
 In this section, you set these environment variables in your remote lab environment.
+
+. In the terminal of your remote lab environment, authenticate into OpenShift as a non cluster admin user (user1) using the `oc` utility
++
+-----
+oc login https://master00.example.com -u user1 -p r3dh4t1!
+-----
 
 
 . In your remote lab environment, execute the following:
