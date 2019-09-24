@@ -9,6 +9,13 @@
 //   2) guid_grabber
 :lab_order_type: cf_order
 
+// Guid Grabber dev
+//:guid_grabber_url: link:https://www.opentlc.com/gg/gg.cgi?profile=generic_tester[*Guid Grabber*,window="_blank"]
+
+
+// Guid Grabber prod
+:guid_grabber_url: link:https://www.opentlc.com/gg/gg.cgi?profile=generic_rhte[*Guid Grabber*,window="_blank"]
+
 = Lab Setup
 
 .Prerequisites
@@ -171,11 +178,13 @@ $ mkdir -p $HOME/lab && \
 $ cat $HOME/.bashrc
 -----
 
-== Deploy the Fuse Swift Integration
-In order to demonstrate integration between RHPAM and external systems, your case management project will consume a REST web service provided by Spring Boot and empowered by Fuse routes to enable communication with Documents stored in the Openstack SWIFT appliance.
+== Fuse Swift Integration
+As part of this lab, your case management application will integrate with an Openstack SWIFT appliance that serves as a Document Management service.
+Integration between these the case managemeent app and the Openstack SWIFT appliance is via a Fuse service that exposes a RESTful API.
 
-=== Deployment of the Fuse Swift integration
-A Fuse REST service is deployed in the Openshift environment to connect to the Openstack Swift node for document storage and retrieval. This section explains how the Fuse service is deployed.
+In this section of the lab, you deploy this Fuse Service.
+
+=== Deploy
 
 . Using `oc` client, login into your OpenShift environment
 . Create a namespace for the application
@@ -249,65 +258,28 @@ $ oc expose svc/document-integration
 $ oc get route
 ----
 
-. Examine the OpenAPI specification of the API using the following curl command:
+. The Fuse service exposes an OpenAPI document of its RESTful API.
+You can review this OpenAPI document by executing the folloing curl:
 +
 ----
 $ curl http://$fuse_url/api/api-docs
-{
-  "swagger" : "2.0",
-  "info" : {
-    "version" : "1.0.0",
-    "title" : "Document Service API"
-  },
-  "host" : "0.0.0.0",
-  "schemes" : [ "http" ],
-  "paths" : {
-    "/get" : {
-      "get" : {
-        "operationId" : "route1",
-        "produces" : [ "application/octet-stream" ],
-        "parameters" : [ {
-          "name" : "object",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : { }
-        }
-      }
-    },
-    "/put" : {
-      "put" : {
-        "operationId" : "route2",
-        "parameters" : [ {
-          "name" : "object",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : { }
-        }
-      }
-    }
-  }
-}
 ----
 
+
+=== Smoke Test
 . Create a local file under the /tmp directory
 +
 ----
 $ echo "Thanos is purple" > /tmp/swifttest.txt
 ----
 
-. and put the newly created object object in Swift:
+. Put the document in Swift:
 +
 ----
 $ curl -X PUT -T /tmp/swifttest.txt http://$fuse_url/api/put?object=test/swifttest.txt
 ----
 
-. Retrieve an object from Swift:
+. Retrieve the document from Swift:
 +
 ----
 $ curl http://$fuse_url/api/get?object=test/swifttest.txt
@@ -419,6 +391,7 @@ image::images/bc_login_home.png[]
 [blue]#Congratulations!#
 Your lab environment is now ready to use.  Please proceed to the next lab.
 
+ifdef::showscript[]
 == Appendix
 
 === Optional: Review RH-SSO
@@ -892,6 +865,7 @@ INFO Configured keycloak subsystem for openid-connect module root from ROOT.war
 . Additional notes as follows
 
 .. In RH-SSO, change the _kie-server_ SSO client to a _bearer-only_ client
+endif::showscript[]
 
 ifdef::showscript[]
 

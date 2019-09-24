@@ -3,9 +3,14 @@
 This section of the lab explains how to access the Red Hat Tech Exchange _GuidGrabber_ to obtain a Globally Unique Identifier (GUID).
 This GUID will be used to access a virtual machine that you will use in this course.
 
-. In a web browser, navigate to: http://bit.ly/rhte-guidgrabber.
+. In a web browser, navigate to GPTE's system that assigns lab environments:
++
+++++++
+<a href="https://www.opentlc.com/gg/gg.cgi?profile=generic_rhte" target="_blank">GUID Grabber</a>
+++++++
 
-. Select the *Lab Code* :  `A1004 - Dynamic Case Mgmt`.
+
+. Select the *Lab Code* :  `R2015 - Adoptive Case Mgmt using Red Hat Process Automation Manager, Decision Manager and Fuse`.
 
 . Enter the *Activation Key* provided by your instructor.
 
