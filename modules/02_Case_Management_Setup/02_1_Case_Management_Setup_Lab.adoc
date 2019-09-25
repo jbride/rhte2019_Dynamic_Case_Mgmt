@@ -4,7 +4,7 @@
 :toc2:
 :linkattrs:
 
-= Case Management KIE Project 
+= Case Management KIE Project
 
 :numbered:
 
@@ -87,7 +87,7 @@ image:images/job-vacancy-lifecycle-properties.png[Job Vacancy Lifecycle Properti
 When you click in any of the diagram elements you will see the properties of the selected element. If you click in the canvas you will see the diagram properties.
 ====
 
-. Open the *Variable Definitions* drop-down from the *Core Properties*, the drop-down arrow will trigger a modal window with the list of available variables for the case definition. Notice that most of those variables are used for the *Case File*.  There is only 1 variable (_candidateSelected_) that is not used in the *Case File*, but it is used for the *Process Instance*.
+. Open the *Variable Definitions* drop-down from the *Core Properties*, the drop-down arrow will trigger a modal window with the list of available variables for the case definition. Notice that most of those variables are used for the *Case File*.
 +
 image:images/job-vacancy-lifecycle-vardef.png[Case definition variables]
 
