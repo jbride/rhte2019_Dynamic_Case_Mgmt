@@ -221,7 +221,8 @@ oc logs -c rhpam-kieserver `oc get pod -n $RHPAM_PROJECT | grep "rhpam-kieserver
 This concludes the end-to-end demo of the application.
 
 == Appendix
-=== React to Kie-server interaction
+
+=== Optional:  Understand React to Kie-server interaction
 
 image:images/add-jobs-information-flow.png[Information flow diagram]
 
