@@ -178,6 +178,9 @@ If you don't visualize your changes, be sure to refresh the browser's cache, thi
 
 Congratulations, you have created a dynamic task.
 
+== Conclusion
+During this lab you made a change in the client application that creates new human tasks that were not defined during the design of your case definition; this is a characteristic functionality of case management: that you can change the case behavior, flow, data and permissions of the running case "on-the-fly"; reactivate cases or complete them in advance. This is very different to the traditional BPMS approach where we are forced to flow with the process definition, now the things can fully depend on the hands of the knowledge worker and your application capabilities, being the responsibility of RHPAM to maintain the state and log of the multiple operations that where performed through the engine.
+
 == A deeper analysis
 
 Analyze the differences between the *master* branch and the *dynamic_task* branch at gitHub: https://github.com/barhte2019/hiring-app-internal/compare/dynamic_task; pay special attention to the API component that communicates with the *kie-server*: https://github.com/barhte2019/hiring-app-internal/compare/dynamic_task#diff-5630c403e26800aa6e1b0aeeb06a259b
