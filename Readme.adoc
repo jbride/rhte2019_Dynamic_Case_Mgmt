@@ -43,10 +43,11 @@ jobOfferAccepted:Boolean
 org.kie.api.runtime.process.CaseData(data.get("skillsDefined") == true) and org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") == true) and org.kie.api.runtime.process.CaseData(data.get("interviewerTeamDefined") == true)
 -----
 
-* SignalRef
+* Catching Signal Intermediate Event
 +
 -----
-#{jobSignalRef}
+DataOutputActivity:  Boolean jobOfferAccepted -> caseFile_candidateSelected
+SignalRef:           #{jobSignalRef}
 -----
 
 * Milestone 2: Receiving Candidates
@@ -76,9 +77,11 @@ org.kie.api.runtime.process.CaseData(data.get("interviewerTeamDefined") != true)
 -----
 
 . *Questions*
-.. Why does milestone 1 get signalled and then terminate ?
+.. What is the API used to start this new case ?  Is the case instance started similar to how a bpmn process is started ?
 
 == Hiring Case Definition
+
+
 
 . *Case Roles*
 +
@@ -167,6 +170,9 @@ org.kie.api.runtime.process.CaseData(data.get("applicantReviewCompleted") == tru
 -----
 org.kie.api.runtime.process.CaseData(data.get("jobOfferRejected") == true)
 -----
+
+. *Questions*
+.. Appears that the process engine just knows when to start this case instance ?
 
 == Commands
 
