@@ -1,0 +1,180 @@
+= Readme
+
+== Notes
+
+. At any time during the life-cycle of a Case Instance that is based on this Case Definition, if state changes of this Case Instance occur that result in one or more of its conditions to be met, the Case Instance will react to that information change and either activate or complete stages or milestones. 
+
+== job-vacancy-lifecycle
+
+. *Purpose*
++
+Define the candidate skills along with benefits and compensation package.
+In addition, define the team that will interview the candidate.
+
+. *Case Roles*
++
+-----
+talent-acquisition
+vacany-department
+benefits-compensation
+applicant
+-----
+
+. *Process Variables*
++
+-----
+caseFile_hiringPetition:com.myspace.hr_hiring.HiringPetition
+caseFile_skillsDefined:Boolean
+caseFile_benefitsDefined:Boolean
+caseFile_interviewerTeamDefined:Boolean
+caseFile_candidateSelected:Boolean
+caseFile_interviewerAssignments:java.util.ArrayList
+caseFile_requestedSkills:java.util.ArrayList
+caseFile_offeredBenefits:java.util.ArrayList
+jobSignalRef:String
+jobOfferAccepted:Boolean
+-----
+
+. *Milestone Conditions*
+
+* Milestone 1: Job Definition
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("skillsDefined") == true) and org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") == true) and org.kie.api.runtime.process.CaseData(data.get("interviewerTeamDefined") == true)
+-----
+
+* SignalRef
++
+-----
+#{jobSignalRef}
+-----
+
+* Milestone 2: Receiving Candidates
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("candidateSelected") == true)
+-----
+
+. *Stages*
+
+* Candidate Skills Definition
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("skillsDefined") != true)
+-----
+
+* Benefits and Compensation
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("benefitsDefined") != true)
+-----
+
+* Interviewer Team Definition
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("interviewerTeamDefined") != true)
+-----
+
+. *Questions*
+.. Why does milestone 1 get signalled and then terminate ?
+
+== Hiring Case Definition
+
+. *Case Roles*
++
+-----
+talent-acquisition
+benefits-compensation
+job_request_manager
+interviewer
+-----
+
+
+. *Process Variables*
++
+-----
+caseFile_jobApplication:com.myspace.hr_hiring.JobApplication
+caseFile_documentationApproved:Boolean
+caseFile_additionalDocumentsRequested:Boolean
+caseFile_internal:Boolean
+caseFile_applicantReviewCompleted:Boolean
+caseFile_jobOfferCreated:Boolean
+caseFile_jobOfferAccepted:Boolean
+caseFile_applicantRejected:Boolean
+caseFile_rejectCommunicationSent:Boolean
+caseFile_rejectionNotes:String
+interviewerFeebackList:java.util.ArrayList
+caseFile_jobOfferRejected:Boolean
+caseFile_interviewerAppointments:java.util.ArrayList
+jobCaseRef:String
+-----
+
+
+. *Milestone Conditions*
+
+* Milestone 1: Job Application Submitted
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("internal") == true) || org.kie.api.runtime.process.CaseData(data.get("documentationApproved") == true)
+-----
+
+. Milestone 2: Applicant Review
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("applicantReviewCompleted") == true)
+-----
+
+. Milestone 3: Job Offer Acceptance
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("jobOfferAccepted") == true)
+-----
+
+. *Stages*
+
+* External Applicants Review
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("internal") != true) and org.kie.api.runtime.process.CaseData(data.get("documentationApproved") != true) and org.kie.api.runtime.process.CaseData(data.get("additionalDocumentsRequested") != true) and org.kie.api.runtime.process.CaseData(data.get("applicantRejected") != true) and org.kie.api.runtime.process.CaseData(data.get("jobOfferRejected") != true) and org.kie.api.runtime.process.CaseData(data.get("applicantReviewCompleted") != true)
+-----
+
+* Additional Documentation Required
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("additionalDocumentsRequested") == true)
+-----
+
+* Applicant Rejected
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("applicantRejected") == true)
+-----
+
+* Applicant Review
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("applicantReviewCompleted") != true) and (org.kie.api.runtime.process.CaseData(data.get("documentationApproved") == true) or org.kie.api.runtime.process.CaseData(data.get("internal") == true))
+-----
+
+* Job Offer
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("applicantReviewCompleted") == true) and org.kie.api.runtime.process.CaseData(data.get("applicantRejected") != true)
+-----
+
+* Refactor Job Offer
++
+-----
+org.kie.api.runtime.process.CaseData(data.get("jobOfferRejected") == true)
+-----
+
+== Commands
+
+. Start Process Instance
++
+-----
+kserver_userId=
+kserver_passwd=
+ks_url=http://localhost:8085
+curl -k -H "Authorization: $kserver_userId: $kserver_passwd" -H "content-type: application/json" -H "accept: application/json" $ks_url/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\", \"salaryMin\": 50000, \"salaryMax\": 60000, \"jobType\": \"Full Time\", \"jobCategory\": \"Operations\"} }, \"case-group-assignments\": { \"applicant\":\"applicant\", \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"interviewer\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"tina\" }}"
+-----
