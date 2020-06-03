@@ -78,6 +78,7 @@ org.kie.api.runtime.process.CaseData(data.get("interviewerTeamDefined") != true)
 
 . *Questions*
 .. What is the API used to start this new case ?  Is the case instance started similar to how a bpmn process is started ?
+.. https://github.com/barhte2019/hiring-app-internal/blob/master/src/store/api.ts#L37-L53
 
 == Hiring Case Definition
 
