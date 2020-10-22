@@ -326,7 +326,7 @@ Both of these applications are secured using the OpenID Connect protocol via an 
 
 . *rhsso-sso0*
 +
-This OCP project contains an installation of Red Hat Single Sign-On (RH-SSO) pre-configured with a SSO _realm_ (called: kie-realm) used to secure both RH-PAM Business Central and KieServer.
+This OCP project contains an installation of Red Hat Single Sign-On (RH-SSO) pre-configured with a SSO _realm_ (called: kieRealm) used to secure both RH-PAM Business Central and KieServer.
 
 === OCP Web Console
 
@@ -418,12 +418,12 @@ In particular, RH-SSO will :
 . Assist in the handling of the authorization of internal users to manage and track their hiring requests.
 . Serve as the Identity Provider for Business Central, Kie-Server and the client applications.
 
-In this section you will review the current configurations of the SSO realm called: _kie-realm_ :
+In this section you will review the current configurations of the SSO realm called: _kieRealm_ :
 
-. Log into the pre-configured _kie-realm_:
+. Log into the pre-configured _kieRealm_:
 +
 -----
-$ echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
+$ echo -en "\n\nhttps://$rhsso_hostname/auth/admin/kieRealm/console\n\n"
 -----
 
 . Authenticate using the following credentials:  admin / admin1234
@@ -457,7 +457,7 @@ Supports liveness and readiness probes of kie-server using the user: _adminUser_
 
 ==== View pre-configured users in *Red Hat SSO*
 
-. In the left panel of _kie-realm_, navigate to: `Users -> View all users`.
+. In the left panel of _kieRealm_, navigate to: `Users -> View all users`.
 . The following table is reference only.  The table provides details of each pre-configured user:
 +
 [cols="1,1,5",options="header"]
@@ -492,10 +492,10 @@ $ oc logs `oc get pod -n $RHPAM_PROJECT | grep "rhpam-bc" | awk '{print $1}'` -n
 
 ...
 
-INFO Obtained auth token from https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth for realm kie-realm
+INFO Obtained auth token from https://sso-rhsso-sso0.apps-af16.generic.opentlc.com/auth for realm kieRealm
 -----
 +
-The log statements above allude to an integration with an SSO _realm_ called: _kie-realm_ using an SSO _client_ called:  _business-central_.
+The log statements above allude to an integration with an SSO _realm_ called: _kieRealm_ using an SSO _client_ called:  _business-central_.
 This _business-central_ SSO client comes pre-configured to implement the _Authorization Code_ flow of OIDC.
 
 
@@ -506,10 +506,10 @@ $ oc logs -c rhpam-kieserver `oc get pod -n $RHPAM_PROJECT | grep "rhpam-kieserv
 
 ...
 
-INFO Obtained auth token from https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth for realm kie-realm
+INFO Obtained auth token from https://sso-rhsso-sso0.apps-be98.generic.opentlc.com/auth for realm kieRealm
 -----
 +
-The log statements above allude to an integration with an SSO _realm_ called: _kie-realm_ using an SSO _client_ called:  _kie-server_.
+The log statements above allude to an integration with an SSO _realm_ called: _kieRealm_ using an SSO _client_ called:  _kie-server_.
 This _business-central_ SSO client is of type _bearer-only_.
 
 === Optional: OCP cluster admin related tasks
@@ -825,7 +825,7 @@ link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm[rh-sso-multi-realm
 . Determine rhsso_url environment variable:
 +
 -----
-rhsso_url = https://sso-rhsso-sso0.apps-71b4.generic.opentlc.com
+rhsso_url = https://$rhsso_hostname
 -----
 
 . Log into _master realm_ of RH-SSO at the following URL:
@@ -869,8 +869,8 @@ $ https://github.com/jboss-container-images/jboss-eap-modules/blob/master/os-eap
 -----
 
 -----
-INFO Obtained auth token from https://sso-rhsso-sso0.apps-71b4.generic.opentlc.com/auth for realm kie-realm
-INFO Registered openid-connect client for module root in realm kie-realm on
+INFO Obtained auth token from https://sso-rhsso-sso0.apps-71b4.generic.opentlc.com/auth for realm kieRealm
+INFO Registered openid-connect client for module root in realm kieRealm on
 INFO Configured keycloak subsystem for openid-connect module root from ROOT.war
 -----
 
@@ -884,7 +884,7 @@ endif::showscript[]
 
 ifdef::showscript[]
 
-ansible-playbook playbooks/rhpam_dev.yml    -e ocp_user=$ocp_user     -e guid=$guid     -e use_cluster_quota=$use_cluster_quota     -e kieserver_image_namespace=$kieserver_image_namespace     -e businesscentral_image_namespace=$businesscentral_image_namespace     -e use_custom_pam=$use_custom_pam     -e rhsso_url=https://$rhsso_url/auth     -e smtp_host=$smtp_host     -e smtp_port=$smtp_port     -e smtp_userid=$smtp_userid     -e smtp_passwd=$smtp_passwd -e configure_smtp_relay=true
+ansible-playbook playbooks/rhpam_dev.yml    -e ocp_user=$ocp_user     -e guid=$guid     -e use_cluster_quota=$use_cluster_quota     -e kieserver_image_namespace=$kieserver_image_namespace     -e businesscentral_image_namespace=$businesscentral_image_namespace     -e use_custom_pam=$use_custom_pam     -e rhsso_url=https://$rhsso_hostname/auth     -e smtp_host=$smtp_host     -e smtp_port=$smtp_port     -e smtp_userid=$smtp_userid     -e smtp_passwd=$smtp_passwd -e configure_smtp_relay=true
 
 
 oc delete all -l "service=rhpam-kieserver"

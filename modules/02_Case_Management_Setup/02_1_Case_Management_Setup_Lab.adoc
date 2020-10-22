@@ -149,7 +149,7 @@ In this section, you review this API documentation.
 . Point your browser to the output of the following:
 +
 ----
-$ echo -en "\n\nhttps://$ks_url/docs\n\n"
+$ echo -en "\n\nhttps://$ks_hostname/docs\n\n"
 ----
 
 . In this OpenAPI documentation, locate the *KIE Server and KIE containers* section.
@@ -217,7 +217,7 @@ To invoke the KIE Server, the client will need to an OpenID Connect _Access Toke
 . Retrieve an OpenID Connect access token from Red Hat SSO using the pre-configured _kie-server_ SSO client.
 +
 ----
-JWT_RESULT=`curl -k --data "grant_type=password&client_id=kie-server&username=adminuser&password=admin1%21&client_secret=252793ed-7118-4ca8-8dab-5622fa97d892" https://$rhsso_url/auth/realms/kie-realm/protocol/openid-connect/token`
+JWT_RESULT=`curl -k --data "grant_type=password&client_id=kie-server&username=adminuser&password=admin1%21&client_secret=252793ed-7118-4ca8-8dab-5622fa97d892" https://$rhsso_hostname/auth/realms/kieRealm/protocol/openid-connect/token`
 echo $JWT_RESULT
 ----
 +
@@ -240,7 +240,7 @@ The expiration date for the tokens depends on the Red Hat SSO configuration whic
 . Use the `token` to execute the kie-server RESTFul API:
 +
 ----
-$ curl -k -H "Authorization: bearer $TOKEN" -H "content-type: application/json" -H "accept: application/json" https://$ks_url/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\", \"salaryMin\": 50000, \"salaryMax\": 60000, \"jobType\": \"Full Time\", \"jobCategory\": \"Operations\"} }, \"case-group-assignments\": { \"applicant\":\"applicant\", \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"interviewer\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"tina\" }}"
+$ curl -k -H "Authorization: bearer $TOKEN" -H "content-type: application/json" -H "accept: application/json" https://$ks_hostname/services/rest/server/containers/hr-hiring/cases/com.myspace.hr_hiring.job-vacancy-lifecycle/instances -d "{\"case-data\" : { \"hiringPetition\" : { \"jobTitle\": \"Business Automation SME\", \"jobDescription\": \"A nice job with a great company, are you ready for this challenge? This could be your next opportunity\", \"location\": \"remote Mexico\", \"salaryMin\": 50000, \"salaryMax\": 60000, \"jobType\": \"Full Time\", \"jobCategory\": \"Operations\"} }, \"case-group-assignments\": { \"applicant\":\"applicant\", \"talent-acquisition\": \"talent-acquisition\", \"vacancy-department\": \"interviewer\", \"benefits-compensation\": \"talent-acquisition\" }, \"case-user-assignments\" : { \"owner\" : \"tina\" }}"
 ----
 
 .. Note the replacement of the `{containerId}` and `{caseDefId}` parameters in the URL.

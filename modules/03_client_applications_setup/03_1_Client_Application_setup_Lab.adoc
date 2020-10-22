@@ -10,9 +10,9 @@
 
 
 == Overview
-In this module you will deploy web applications that support a human reosurce department's _employee hiring_ business processes.
+In this module you will deploy web applications that support a human resource department's _employee hiring_ business processes.
 
-These web applications are built using _ReactJs_ and run in Linux container images layered with NodeJs.  They interact with the RESTful API of the RH-PAM kie-server.  Recall from the previous lab that the RESTful API of RH-PAM kie-server are secured using _OpenID Connect_.  Subsequently, these web applications will need to acquire an OIDC access token from RH-SSO and use this token to invoke the kie-server API.
+These web applications are built using _ReactJs_ and run in Linux container images layered with NodeJs.  They interact with the RESTful API of the RH-PAM kie-server.  Recall from the previous lab that the RESTful API of RH-PAM kie-server are secured using _OpenID Connect_ (OIDC).  Subsequently, these web applications will need to acquire an OIDC access token from RH-SSO and use this token to invoke the kie-server API.
 
 image:images/client-apps-topology.png[Client Apps Topology]
 
@@ -44,7 +44,11 @@ oc new-project client-app
 . Create a new OpenShift DeploymentConfiguration based on the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-internal[react-hiring-app-internal] image.
 +
 ----
-oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-internal:1.0 -e SSO_URL=https://$rhsso_url/auth -e KIE_URL=https://$ks_url
+oc new-app quay.io/rhtgptetraining/react-hiring-app-internal:1.0 \
+   -e SSO_URL=https://$rhsso_hostname/auth \
+   -e SSO_REALM=kieRealm \
+   -e KIE_URL=https://$ks_hostname \
+   -n client-app
 ----
 
 
@@ -60,7 +64,11 @@ In this section, you create an OpenShift DeploymentConfiguration of the _Public_
 . Create a new DeploymentConfiguration based on the link:https://quay.io/repository/rhtgptetraining/react-hiring-app-public[react-hiring-app-public] image.
 +
 ----
-oc new-app -n client-app quay.io/rhtgptetraining/react-hiring-app-public:1.0 -e SSO_URL=https://$rhsso_url/auth -e KIE_URL=https://$ks_url
+oc new-app quay.io/rhtgptetraining/react-hiring-app-public:1.0 \
+   -e SSO_URL=https://$rhsso_hostname/auth \
+   -e SSO_REALM=kieRealm \
+   -e KIE_URL=https://$ks_hostname \
+   -n client-app
 ----
 
 . Expose the external route to be able to navigate to the `react-hiring-app-public`
@@ -71,7 +79,7 @@ oc expose svc/react-hiring-app-public -n client-app --port=8080
 
 == _Back Office_ Web App
 
-In this section you create an additional _SSO client_ in the existing _kie-realm_ of your *Red Hat SSO*.  
+In this section you create an additional _SSO client_ in the existing _kieRealm_ of your *Red Hat SSO*.  
 The purpose of this additional _SSO client_ is to secure the _Back Office_ web applications.
 
 === RH-SSO _client_
@@ -83,10 +91,10 @@ The purpose of this additional _SSO client_ is to secure the _Back Office_ web a
 During the labs in this workshop is very probable that you will be using the same browser to perform different activities secured behind the same realm in *Red Hat SSO*, for purposes of sanitizing the OpenId web sessions you will be required to log out from previous applications before entering to another.
 ====
 
-. Navigate your browser to the _kie-realm_ of *Red Hat SSO* available at the following URL:
+. Navigate your browser to the _kieRealm_ of *Red Hat SSO* available at the following URL:
 +
 ----
-echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
+echo -en "\n\nhttps://$rhsso_hostname/auth/admin/kieRealm/console\n\n"
 ----
 
 . Use the `admin/admin1234` credentials to authenticate into this SSO realm.
@@ -140,7 +148,7 @@ image:images/hiring-internal-dashboard.png[Hiring internal dashboard]
 . Login to Red Hat SSO_URL
 +
 ----
-echo -en "\n\nhttps://$rhsso_url/auth/admin/kie-realm/console\n\n"
+echo -en "\n\nhttps://$rhsso_hostname/auth/admin/kieRealm/console\n\n"
 ----
 
 . Navigate to the *Clients* section, and click the image:images/create-button.png[] button in the top right corner of the Clients list.
